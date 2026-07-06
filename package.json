@@ -1,0 +1,20 @@
+{
+  "name": "mundo-jjersey",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web",
+    "apps/studio"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace @mundo-jjersey/web run dev",
+    "dev:studio": "npm --workspace @mundo-jjersey/studio run dev",
+    "build:web": "npm --workspace @mundo-jjersey/web run build",
+    "build:studio": "npm --workspace @mundo-jjersey/studio run build",
+    "check": "npm --workspace @mundo-jjersey/web run check"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
