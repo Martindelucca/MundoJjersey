@@ -1,0 +1,31 @@
+---
+import { getImageUrl } from '../lib/sanity/image';
+import type { ProductSummary } from '../lib/sanity/types';
+
+interface Props {
+  product: ProductSummary;
+}
+
+const { product } = Astro.props;
+const imageUrl = getImageUrl(product.image, 640);
+const isAvailable = product.stock > 0;
+const price = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  maximumFractionDigits: 0
+}).format(product.price);
+---
+
+<article class="product-card">
+  <a class="product-card__media" href={`/catalogo/${product.slug}`} aria-label={`Ver ${product.title}`}>
+    {imageUrl ? <img src={imageUrl} alt={product.image?.alt || product.title} loading="lazy" /> : <span>Sin imagen</span>}
+  </a>
+  <div class="product-card__body">
+    <p class="product-card__meta">{product.team?.name || 'Equipo'}{product.season ? ` · ${product.season}` : ''}</p>
+    <h2><a href={`/catalogo/${product.slug}`}>{product.title}</a></h2>
+    <p class="product-card__price">{price}</p>
+    <p class={isAvailable ? 'product-card__stock' : 'product-card__stock product-card__stock--empty'}>
+      {isAvailable ? `${product.stock} disponible${product.stock === 1 ? '' : 's'}` : 'Sin stock'}
+    </p>
+  </div>
+</article>

@@ -1,0 +1,127 @@
+---
+import ProductCard from '../../components/ProductCard.astro';
+import WhatsAppButton from '../../components/WhatsAppButton.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getImageUrl } from '../../lib/sanity/image';
+import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
+import { productBySlugQuery, productSlugsQuery, productsQuery, siteSettingsQuery } from '../../lib/sanity/queries';
+import type { ProductDetail, ProductSummary, SiteSettings } from '../../lib/sanity/types';
+import { buildWhatsAppUrl } from '../../lib/whatsapp';
+
+export async function getStaticPaths() {
+  if (!hasSanityConfig) {
+    return [];
+  }
+
+  const slugs = await sanityClient.fetch<Array<{ slug?: string }>>(productSlugsQuery);
+
+  return slugs
+    .filter(({ slug }) => Boolean(slug))
+    .map(({ slug }) => ({ params: { slug } }));
+}
+
+const slug = Astro.params.slug || '';
+const [product, settings, products] = hasSanityConfig
+  ? await Promise.all([
+      sanityClient.fetch<ProductDetail | null>(productBySlugQuery, { slug }),
+      sanityClient.fetch<SiteSettings | null>(siteSettingsQuery),
+      sanityClient.fetch<ProductSummary[]>(productsQuery)
+    ])
+  : [null, null, [] as ProductSummary[]];
+
+const price = product
+  ? new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      maximumFractionDigits: 0
+    }).format(product.price)
+  : '';
+const isAvailable = Boolean(product && product.stock > 0);
+const imageUrl = getImageUrl(product?.image, 960);
+const imageAlt = product?.image?.alt || product?.title || 'Camiseta de fútbol';
+const whatsappNumber = settings?.whatsappNumber || import.meta.env.PUBLIC_WHATSAPP_NUMBER || '';
+const siteUrl = import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
+const productUrl = product && siteUrl ? `${siteUrl}/catalogo/${product.slug}` : undefined;
+const whatsappUrl = product
+  ? buildWhatsAppUrl({
+      phoneNumber: whatsappNumber,
+      productTitle: product.title,
+      productUrl
+    })
+  : '';
+const relatedProducts = product
+  ? products.filter((relatedProduct) => relatedProduct._id !== product._id).slice(0, 3)
+  : [];
+---
+
+<BaseLayout
+  title={product ? `${product.title} | Mundo JJersey` : 'Producto no encontrado | Mundo JJersey'}
+  description={product?.description || 'Detalle de camiseta disponible para consultar por WhatsApp.'}
+>
+  <main class="site-shell product-detail-page">
+    <nav class="breadcrumbs" aria-label="Migas de pan">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a href="/catalogo">Catálogo</a>
+      {product && <span aria-hidden="true">/</span>}
+      {product && <span>{product.title}</span>}
+    </nav>
+
+    {product ? (
+      <>
+        <section class="product-detail" aria-labelledby="product-title">
+          <div class="product-detail__media">
+            {imageUrl ? <img src={imageUrl} alt={imageAlt} /> : <span>Sin imagen</span>}
+          </div>
+
+          <div class="product-detail__content">
+            <p class="eyebrow">{product.team?.name || 'Camiseta'}{product.season ? ` · ${product.season}` : ''}</p>
+            <h1 id="product-title">{product.title}</h1>
+            <p class="product-detail__price">{price}</p>
+
+            <dl class="product-detail__facts">
+              {product.season && (
+                <>
+                  <dt>Temporada</dt>
+                  <dd>{product.season}</dd>
+                </>
+              )}
+              {product.sizes && product.sizes.length > 0 && (
+                <>
+                  <dt>Talles</dt>
+                  <dd>{product.sizes.join(', ')}</dd>
+                </>
+              )}
+              <dt>Stock</dt>
+              <dd class={isAvailable ? 'stock-label' : 'stock-label stock-label--empty'}>
+                {isAvailable ? `${product.stock} disponible${product.stock === 1 ? '' : 's'}` : 'Sin stock'}
+              </dd>
+            </dl>
+
+            {product.description && <p class="product-detail__description">{product.description}</p>}
+
+            <WhatsAppButton href={whatsappUrl} available={isAvailable} />
+          </div>
+        </section>
+
+        {relatedProducts.length > 0 && (
+          <section class="related-products" aria-labelledby="related-products-title">
+            <div>
+              <p class="eyebrow">También te puede gustar</p>
+              <h2 id="related-products-title">Más camisetas</h2>
+            </div>
+            <div class="product-grid">
+              {relatedProducts.map((relatedProduct) => <ProductCard product={relatedProduct} />)}
+            </div>
+          </section>
+        )}
+      </>
+    ) : (
+      <section class="empty-state" aria-live="polite">
+        <h1>Producto no encontrado</h1>
+        <p>Volvé al catálogo para ver las camisetas disponibles.</p>
+        <a class="button" href="/catalogo">Ir al catálogo</a>
+      </section>
+    )}
+  </main>
+</BaseLayout>

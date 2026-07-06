@@ -1,0 +1,35 @@
+---
+import ProductCard from '../components/ProductCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { hasSanityConfig, sanityClient } from '../lib/sanity/client';
+import { productsQuery } from '../lib/sanity/queries';
+import type { ProductSummary } from '../lib/sanity/types';
+
+const products = hasSanityConfig
+  ? await sanityClient.fetch<ProductSummary[]>(productsQuery)
+  : [];
+---
+
+<BaseLayout
+  title="Catálogo | Mundo JJersey"
+  description="Explorá camisetas de fútbol retro y actuales disponibles para consultar por WhatsApp."
+>
+  <main class="site-shell catalog-page">
+    <section class="catalog-hero" aria-labelledby="catalog-title">
+      <p class="eyebrow">Catálogo</p>
+      <h1 id="catalog-title">Camisetas disponibles</h1>
+      <p>Elegí una camiseta y consultanos directo por WhatsApp.</p>
+    </section>
+
+    {products.length > 0 ? (
+      <section class="product-grid" aria-label="Productos">
+        {products.map((product) => <ProductCard product={product} />)}
+      </section>
+    ) : (
+      <section class="empty-state" aria-live="polite">
+        <h2>El catálogo todavía no tiene productos cargados.</h2>
+        <p>Cuando el equipo cargue nuevas camisetas, van a aparecer acá automáticamente.</p>
+      </section>
+    )}
+  </main>
+</BaseLayout>

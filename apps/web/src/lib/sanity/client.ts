@@ -1,0 +1,15 @@
+import { createClient } from '@sanity/client';
+
+const projectId = import.meta.env.SANITY_PROJECT_ID;
+const dataset = import.meta.env.SANITY_DATASET || 'production';
+const apiVersion = import.meta.env.SANITY_API_VERSION || '2025-01-01';
+const useCdn = import.meta.env.SANITY_USE_CDN !== 'false';
+
+export const hasSanityConfig = Boolean(projectId && dataset);
+
+export const sanityClient = createClient({
+  projectId: projectId || 'missing-project-id',
+  dataset,
+  apiVersion,
+  useCdn
+});

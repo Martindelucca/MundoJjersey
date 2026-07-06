@@ -4,12 +4,17 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  canonicalPath?: string;
 }
 
 const {
   title = 'Mundo JJersey',
-  description = 'Catálogo de camisetas de fútbol retro y actuales.'
+  description = 'Catálogo de camisetas de fútbol retro y actuales.',
+  canonicalPath = Astro.url.pathname
 } = Astro.props;
+
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || Astro.url.origin;
+const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
 ---
 
 <!doctype html>
@@ -18,6 +23,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={canonicalUrl} />
     <title>{title}</title>
   </head>
   <body>

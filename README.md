@@ -22,12 +22,16 @@ apps/
 
 ```bash
 npm install
+npm test
 npm run dev:web
 npm run dev:studio
 npm run build:web
+npm run build:studio
 npm run check
 ```
 
 ## Variables
 
 Copiar `.env.example` a `.env.local` y completar los valores de Sanity y WhatsApp antes de conectar datos reales.
+
+La web lee datos públicos de Sanity durante el build. No exponer tokens privados con prefijo `PUBLIC_`.

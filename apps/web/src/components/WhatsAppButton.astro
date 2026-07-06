@@ -1,0 +1,16 @@
+---
+interface Props {
+  href: string;
+  available: boolean;
+}
+
+const { href, available } = Astro.props;
+---
+
+{href ? (
+  <a class="button" href={href} target="_blank" rel="noreferrer">
+    {available ? 'Consultar por WhatsApp' : 'Consultar reposición'}
+  </a>
+) : (
+  <p class="contact-unavailable">WhatsApp no está configurado todavía.</p>
+)}
