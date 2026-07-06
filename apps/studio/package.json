@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "sanity dev",
-    "build": "sanity build"
+    "build": "sanity build",
+    "test": "node --experimental-strip-types scripts/validate-schemas.mjs"
   },
   "dependencies": {
     "@sanity/vision": "3.99.0",

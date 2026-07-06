@@ -1,10 +1,10 @@
 # Mundo JJersey
 
-Catalogo administrable para camisetas de futbol retro y actuales. El sitio no incluye carrito ni pagos: cada producto deriva consultas a WhatsApp.
+Catálogo administrable para camisetas de fútbol retro y actuales. El sitio no incluye carrito ni pagos: cada producto deriva consultas a WhatsApp.
 
 ## Stack
 
-- Astro para el frontend publico.
+- Astro para el frontend público.
 - Sanity Studio para administrar productos.
 - TypeScript.
 - CSS global inicialmente, con estructura preparada para evolucionar a Tailwind si hace falta.
