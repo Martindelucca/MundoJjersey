@@ -29,7 +29,12 @@ const price = new Intl.NumberFormat('es-AR', {
     {imageUrl ? <img src={imageUrl} alt={product.image?.alt || product.title} loading="lazy" /> : <span>Sin imagen</span>}
   </a>
   <div class="product-card__body">
-    <p class="product-card__meta">{categoryLabel} · {product.brand}{product.team?.name ? ` · ${product.team.name}` : ''}</p>
+    <div class="product-card__ticket" aria-label="Datos rápidos del producto">
+      <span>{categoryLabel}</span>
+      <span>{product.brand}</span>
+      <span>{isAvailable ? `${totalStock} en stock` : 'Sin stock'}</span>
+    </div>
+    <p class="product-card__meta">{product.team?.name || 'Equipo por consultar'}{product.season ? ` · ${product.season}` : ''}</p>
     <h2><a href={`/producto/${product.slug}`}>{product.title}</a></h2>
     <div class="product-card__details">
       <p class="product-card__price">{price}</p>

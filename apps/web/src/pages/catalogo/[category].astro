@@ -24,9 +24,14 @@ const products = hasSanityConfig && category
 >
   <main class="site-shell catalog-page">
     <section class="catalog-hero" aria-labelledby="catalog-category-title">
-      <p class="eyebrow">Catálogo por categoría</p>
+      <p class="hero__stamp">Catálogo por categoría</p>
       <h1 id="catalog-category-title">{category?.title}</h1>
       <p>{category?.description}</p>
+      <dl class="catalog-hero__facts" aria-label="Datos de la categoría">
+        <div><dt>Categoría</dt><dd>{category?.plural}</dd></div>
+        <div><dt>Estado</dt><dd>nuevo</dd></div>
+        <div><dt>Salida</dt><dd>consulta directa</dd></div>
+      </dl>
       <ul class="catalog-chips" aria-label="Categorías del catálogo">
         <li><a href="/catalogo">Todo</a></li>
         {catalogCategories.map((item) => (

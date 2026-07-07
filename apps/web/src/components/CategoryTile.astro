@@ -4,13 +4,17 @@ interface Props {
   copy: string;
   href: string;
   label?: string;
+  tone?: 'primary' | 'secondary' | 'quiet';
+  featured?: boolean;
 }
 
-const { title, copy, href, label } = Astro.props;
+const { title, copy, href, label, tone = 'secondary', featured = false } = Astro.props;
+const className = ['category-tile', `category-tile--${tone}`, featured ? 'category-tile--featured' : ''].filter(Boolean).join(' ');
 ---
 
-<a class="category-tile" href={href}>
+<a class={className} href={href}>
   {label ? <span class="category-tile__label">{label}</span> : null}
   <span class="category-tile__title">{title}</span>
   <span class="category-tile__copy">{copy}</span>
+  <span class="category-tile__cue" aria-hidden="true">Ver drop</span>
 </a>

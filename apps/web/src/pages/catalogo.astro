@@ -17,9 +17,14 @@ const products = hasSanityConfig
 >
   <main class="site-shell catalog-page">
     <section class="catalog-hero" aria-labelledby="catalog-title">
-      <p class="eyebrow">Selección Mundo JJersey</p>
+      <p class="hero__stamp">Selección Mundo JJersey</p>
       <h1 id="catalog-title">Ropa de fútbol elegida para usar con identidad.</h1>
       <p>Camisetas, camperas y shorts con mirada futbolera y streetwear. Mirá el stock real y consultá por WhatsApp el producto que te mueve.</p>
+      <dl class="catalog-hero__facts" aria-label="Datos del catálogo">
+        <div><dt>Stock</dt><dd>por talle</dd></div>
+        <div><dt>Compra</dt><dd>por mensaje</dd></div>
+        <div><dt>Consulta</dt><dd>WhatsApp directo</dd></div>
+      </dl>
       <ul class="catalog-chips" aria-label="Categorías representadas en el catálogo">
         <li><a aria-current="page" href="/catalogo">Todo el catálogo</a></li>
         {catalogCategories.map((category) => <li><a href={`/catalogo/${category.slug}`}>{category.plural}</a></li>)}

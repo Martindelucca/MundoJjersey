@@ -74,6 +74,13 @@ assert.match(css, /--color-navy/);
 assert.match(css, /--color-gold/);
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /:focus-visible/);
+assert.match(css, /--font-display/);
+assert.match(css, /body::before/);
+assert.match(css, /position:\s*fixed/);
+assert.match(css, /drop-marquee/);
+assert.match(css, /category-grid--drop/);
+assert.match(css, /product-card__ticket/);
+assert.match(css, /product-detail__sheet/);
 
 const reducedMotionRule = css.match(/@media \(prefers-reduced-motion: reduce\)\s*{(?<body>[\s\S]*)}\s*$/)?.groups?.body ?? '';
 assert.match(reducedMotionRule, /transition-property:\s*none/);
@@ -105,9 +112,11 @@ assert.match(categoryTile, /title: string/);
 assert.match(categoryTile, /copy: string/);
 assert.match(categoryTile, /href: string/);
 assert.match(categoryTile, /label\?: string/);
-assert.match(categoryTile, /<a[^>]+class="category-tile"/s);
+assert.match(categoryTile, /className = \['category-tile'/);
+assert.match(categoryTile, /<a class=\{className\}/);
 
 assert.match(productCard, /product-card__badge/);
+assert.match(productCard, /product-card__ticket/);
 assert.match(productCard, /Disponible/);
 assert.match(productCard, /Sin stock/);
 assert.doesNotMatch(productCard, /Nuevo ingreso/);
@@ -136,18 +145,24 @@ assert.match(home, /import FAQBlock/);
 assert.match(home, /hasSanityConfig/);
 assert.match(home, /productsQuery/);
 assert.match(home, /slice\(0, 4\)/);
-assert.match(home, /Camisetas · camperas · shorts · consulta por WhatsApp/);
+assert.match(home, /drop-scene/);
+assert.match(home, /hero__spec-sheet/);
+assert.match(home, /drop-marquee/);
 assert.match(home, /Nuevos ingresos/);
 assert.match(home, /Entrá por categoría/);
 assert.match(home, /catalogCategories/);
+assert.match(home, /category-grid--drop/);
+assert.doesNotMatch(home, /label=\{`0\$\{index \+ 1\}`\}/);
 
 assert.match(catalog, /<ul class="catalog-chips"/);
 assert.doesNotMatch(catalog, /<nav class="catalog-chips"/);
 assert.match(catalog, /catalogCategories/);
+assert.match(catalog, /catalog-hero__facts/);
 
 assert.match(productDetail, /Te respondemos por disponibilidad, talle y env[ií]o\./);
 assert.match(productDetail, /localhost|127\.0\.0\.1/);
 assert.match(productDetail, /product-detail__sizes/);
+assert.match(productDetail, /product-detail__sheet/);
 
 const productCardHover = css.match(/\.product-card:hover\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.match(productCardHover, /transform:/);

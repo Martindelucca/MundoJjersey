@@ -82,7 +82,7 @@ const relatedProducts = product
             {imageUrl ? <img src={imageUrl} alt={imageAlt} /> : <span>Sin imagen</span>}
           </div>
 
-          <div class="product-detail__content">
+          <div class="product-detail__content product-detail__sheet">
             <div class="product-detail__header">
               <p class="product-detail__kicker">{categoryLabel}</p>
               <p class="product-detail__meta">{product.brand}{product.team?.name ? ` · ${product.team.name}` : ''}</p>
