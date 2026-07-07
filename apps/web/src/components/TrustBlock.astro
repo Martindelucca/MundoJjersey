@@ -1,0 +1,13 @@
+---
+interface Props {
+  title: string;
+  copy: string;
+}
+
+const { title, copy } = Astro.props;
+---
+
+<article class="trust-block">
+  <h3>{title}</h3>
+  <p>{copy}</p>
+</article>

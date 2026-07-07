@@ -1,0 +1,23 @@
+---
+const navLinks = [
+  { href: '/', label: 'Inicio' },
+  { href: '/catalogo', label: 'Catálogo' },
+  { href: '/catalogo', label: 'Retro' },
+  { href: '#contacto', label: 'Contacto' }
+];
+---
+
+<header class="site-header">
+  <div class="site-header__inner site-shell">
+    <a class="site-header__brand" href="/" aria-label="Mundo JJersey inicio">
+      <span class="site-header__mark" aria-hidden="true">MJ</span>
+      <span>Mundo JJersey</span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="Navegacion principal">
+      {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+
+    <a class="site-header__cta" href="/catalogo">Ver catálogo</a>
+  </div>
+</header>

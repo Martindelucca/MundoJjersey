@@ -1,0 +1,33 @@
+---
+const faqs = [
+  {
+    question: 'Como hago una consulta?',
+    answer: 'Entrá al producto que te gusta y escribinos por WhatsApp. Te respondemos disponibilidad, talle y cualquier duda antes de coordinar.'
+  },
+  {
+    question: 'Las camisetas son nuevas?',
+    answer: 'Sí. La selección está enfocada en camisetas nuevas, retro y actuales, elegidas por diseño, estado y demanda.'
+  },
+  {
+    question: 'Como confirmo los talles?',
+    answer: 'Cada producto muestra los talles disponibles cuando están cargados. Si dudás entre dos medidas, consultanos y te orientamos antes de comprar.'
+  },
+  {
+    question: 'Hacen envios?',
+    answer: 'Sí, los envíos se coordinan por WhatsApp según tu ubicación y la camiseta elegida.'
+  },
+  {
+    question: 'Como se coordina el pago?',
+    answer: 'Las formas de pago se coordinan directo por WhatsApp para que tengas la información clara antes de avanzar.'
+  }
+];
+---
+
+<div class="faq-block">
+  {faqs.map((faq) => (
+    <details class="faq-block__item">
+      <summary>{faq.question}</summary>
+      <p>{faq.answer}</p>
+    </details>
+  ))}
+</div>

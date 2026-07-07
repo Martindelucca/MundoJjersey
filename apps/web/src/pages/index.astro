@@ -1,19 +1,110 @@
 ---
+import CategoryTile from '../components/CategoryTile.astro';
+import FAQBlock from '../components/FAQBlock.astro';
+import ProductCard from '../components/ProductCard.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import TrustBlock from '../components/TrustBlock.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { hasSanityConfig, sanityClient } from '../lib/sanity/client';
+import { productsQuery } from '../lib/sanity/queries';
+import type { ProductSummary } from '../lib/sanity/types';
+
+const products = hasSanityConfig
+  ? (await sanityClient.fetch<ProductSummary[]>(productsQuery)).slice(0, 4)
+  : [];
 ---
 
 <BaseLayout
   title="Mundo JJersey | Camisetas de fútbol retro y actuales"
   description="Camisetas de fútbol retro y actuales para consultar por WhatsApp."
 >
-  <main class="site-shell">
+  <main>
     <section class="hero" aria-labelledby="home-title">
-      <p class="eyebrow">Camisetas seleccionadas</p>
-      <h1 id="home-title">Mundo JJersey</h1>
-      <p class="hero__copy">
-        Camisetas de fútbol retro y actuales seleccionadas para consultar directo por WhatsApp.
-      </p>
-      <a class="button" href="/catalogo">Ver catálogo</a>
+      <div class="site-shell hero__inner">
+        <p class="eyebrow">Camisetas seleccionadas</p>
+        <h1 id="home-title">La camiseta que buscás, elegida con criterio.</h1>
+        <p class="hero__copy">
+          Un catálogo curado de camisetas de fútbol nuevas, retro y actuales para descubrir sin vueltas.
+        </p>
+        <div class="hero__actions">
+          <a class="button" href="/catalogo">Ver catálogo</a>
+          <p>Retro y actuales · consulta por WhatsApp</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-shell home-section home-section--arrivals">
+      <SectionHeader
+        label="Nuevos ingresos"
+        title="Camisetas que acaban de entrar"
+        copy="Una primera mirada a la selección más reciente. Si una camiseta te interesa, entrá al detalle y consultanos por WhatsApp."
+      />
+
+      {products.length > 0 ? (
+        <div class="product-grid product-grid--home">
+          {products.map((product) => <ProductCard product={product} />)}
+        </div>
+      ) : (
+        <div class="empty-state empty-state--home" aria-live="polite">
+          <h2>Estamos preparando los nuevos ingresos.</h2>
+          <p>Las camisetas seleccionadas van a aparecer acá apenas estén cargadas. Mientras tanto, escribinos y te contamos qué hay disponible.</p>
+          <a class="button" href="#contacto">Consultar por WhatsApp</a>
+        </div>
+      )}
+    </section>
+
+    <section class="home-section home-section--categories">
+      <div class="site-shell categories__inner">
+        <SectionHeader
+          title="Entrá por el tipo de camiseta"
+          copy="Tres caminos simples para empezar: clubes, selecciones o piezas retro. Por ahora todas te llevan al catálogo completo."
+        />
+
+        <div class="category-grid">
+          <CategoryTile title="Clubes" copy="Camisetas de equipos elegidas por identidad, color y uso real." href="/catalogo" label="01" />
+          <CategoryTile title="Selecciones" copy="Modelos nacionales para llevar historia y presente en la misma prenda." href="/catalogo" label="02" />
+          <CategoryTile title="Retro" copy="Piezas con memoria futbolera, estética fuerte y selección cuidada." href="/catalogo" label="03" />
+        </div>
+      </div>
+    </section>
+
+    <section class="site-shell home-section about-section" aria-labelledby="about-title">
+      <div class="about-section__panel">
+        <p class="about-section__label">Mundo JJersey</p>
+        <h2 id="about-title">Camisetas para usar, guardar y volver a mirar.</h2>
+      </div>
+      <div class="about-section__copy">
+        <p>
+          Nacimos de mirar camisetas como algo más que indumentaria: colores que te llevan a un partido, una temporada, una selección o una forma de vestir fútbol en la calle.
+        </p>
+        <p>
+          Elegimos cada ingreso con criterio: diseño, estado, talle, demanda y ese punto especial que hace que una camiseta destaque antes de preguntar el precio.
+        </p>
+      </div>
+    </section>
+
+    <section class="site-shell home-section trust-section">
+      <SectionHeader
+        title="Consultá con confianza"
+        copy="La compra se coordina persona a persona. Preguntá disponibilidad, talle, envío o formas de pago antes de avanzar."
+        variant="compact"
+      />
+
+      <div class="trust-grid">
+        <TrustBlock title="WhatsApp directo" copy="Respondemos consultas de producto, talle y disponibilidad sin pasos raros." />
+        <TrustBlock title="Pago a coordinar" copy="Te contamos las formas de pago disponibles antes de confirmar la camiseta." />
+        <TrustBlock title="Envios" copy="Coordinamos el envío según tu ubicación y el producto elegido." />
+        <TrustBlock title="Cambios y consultas" copy="Si necesitás revisar talle, estado o detalle, lo vemos con vos antes de cerrar." />
+      </div>
+    </section>
+
+    <section class="site-shell home-section faq-section">
+      <SectionHeader
+        title="Preguntas antes de escribir"
+        copy="Lo básico para llegar a WhatsApp con todo más claro."
+        variant="compact"
+      />
+      <FAQBlock />
     </section>
   </main>
 </BaseLayout>

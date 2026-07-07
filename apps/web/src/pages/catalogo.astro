@@ -16,9 +16,15 @@ const products = hasSanityConfig
 >
   <main class="site-shell catalog-page">
     <section class="catalog-hero" aria-labelledby="catalog-title">
-      <p class="eyebrow">Catálogo</p>
-      <h1 id="catalog-title">Camisetas disponibles</h1>
-      <p>Elegí una camiseta y consultanos directo por WhatsApp.</p>
+      <p class="eyebrow">Selección Mundo JJersey</p>
+      <h1 id="catalog-title">Camisetas elegidas para usar con identidad.</h1>
+      <p>Retro, clubes y selecciones con mirada streetwear. Mirá el stock real y consultá por WhatsApp la camiseta que te mueve.</p>
+      <ul class="catalog-chips" aria-label="Categorías representadas en el catálogo">
+        <li>Todo el catálogo</li>
+        <li>Clubes</li>
+        <li>Selecciones</li>
+        <li>Retro</li>
+      </ul>
     </section>
 
     {products.length > 0 ? (
@@ -27,8 +33,8 @@ const products = hasSanityConfig
       </section>
     ) : (
       <section class="empty-state" aria-live="polite">
-        <h2>El catálogo todavía no tiene productos cargados.</h2>
-        <p>Cuando el equipo cargue nuevas camisetas, van a aparecer acá automáticamente.</p>
+        <h2>Estamos preparando la próxima selección.</h2>
+        <p>Las camisetas aparecen acá cuando el stock está listo para consultar. Volvé pronto o escribinos por WhatsApp si buscás un equipo en particular.</p>
       </section>
     )}
   </main>

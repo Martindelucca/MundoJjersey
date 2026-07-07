@@ -1,0 +1,16 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  copy?: string;
+  variant?: 'default' | 'light' | 'compact';
+}
+
+const { label, title, copy, variant = 'default' } = Astro.props;
+---
+
+<header class:list={['section-header', `section-header--${variant}`]}>
+  {label ? <p class="section-header__label">{label}</p> : null}
+  <h2>{title}</h2>
+  {copy ? <p class="section-header__copy">{copy}</p> : null}
+</header>

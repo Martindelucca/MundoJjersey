@@ -1,0 +1,16 @@
+---
+interface Props {
+  title: string;
+  copy: string;
+  href: string;
+  label?: string;
+}
+
+const { title, copy, href, label } = Astro.props;
+---
+
+<a class="category-tile" href={href}>
+  {label ? <span class="category-tile__label">{label}</span> : null}
+  <span class="category-tile__title">{title}</span>
+  <span class="category-tile__copy">{copy}</span>
+</a>

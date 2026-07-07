@@ -5,11 +5,13 @@ interface Props {
 }
 
 const { href, available } = Astro.props;
+const label = available ? 'Consultar disponibilidad por WhatsApp' : 'Consultar reposicion por WhatsApp';
 ---
 
 {href ? (
-  <a class="button" href={href} target="_blank" rel="noreferrer">
-    {available ? 'Consultar por WhatsApp' : 'Consultar reposición'}
+  <a class="whatsapp-button" href={href} target="_blank" rel="noreferrer" aria-label={label}>
+    <span class="whatsapp-button__label">{available ? 'Consultar por WhatsApp' : 'Consultar reposicion'}</span>
+    <span class="whatsapp-button__hint">Respuesta directa por disponibilidad y talle</span>
   </a>
 ) : (
   <p class="contact-unavailable">WhatsApp no está configurado todavía.</p>

@@ -41,7 +41,8 @@ const imageUrl = getImageUrl(product?.image, 960);
 const imageAlt = product?.image?.alt || product?.title || 'Camiseta de fútbol';
 const whatsappNumber = settings?.whatsappNumber || import.meta.env.PUBLIC_WHATSAPP_NUMBER || '';
 const siteUrl = import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
-const productUrl = product && siteUrl ? `${siteUrl}/catalogo/${product.slug}` : undefined;
+const isLocalSiteUrl = siteUrl ? /localhost|127\.0\.0\.1/.test(siteUrl) : false;
+const productUrl = product && siteUrl && !isLocalSiteUrl ? `${siteUrl}/catalogo/${product.slug}` : undefined;
 const whatsappUrl = product
   ? buildWhatsAppUrl({
       phoneNumber: whatsappNumber,
@@ -75,9 +76,18 @@ const relatedProducts = product
           </div>
 
           <div class="product-detail__content">
-            <p class="eyebrow">{product.team?.name || 'Camiseta'}{product.season ? ` · ${product.season}` : ''}</p>
-            <h1 id="product-title">{product.title}</h1>
-            <p class="product-detail__price">{price}</p>
+            <div class="product-detail__header">
+              <p class="product-detail__kicker">Drop seguro</p>
+              <p class="product-detail__meta">{product.team?.name || 'Camiseta'}{product.season ? ` · ${product.season}` : ''}</p>
+              <h1 id="product-title">{product.title}</h1>
+            </div>
+
+            <div class="product-detail__commerce" aria-label="Precio y disponibilidad">
+              <p class="product-detail__price">{price}</p>
+              <p class={isAvailable ? 'stock-label' : 'stock-label stock-label--empty'}>
+                {isAvailable ? `${product.stock} disponible${product.stock === 1 ? '' : 's'}` : 'Sin stock'}
+              </p>
+            </div>
 
             <dl class="product-detail__facts">
               {product.season && (
@@ -86,21 +96,25 @@ const relatedProducts = product
                   <dd>{product.season}</dd>
                 </>
               )}
-              {product.sizes && product.sizes.length > 0 && (
-                <>
-                  <dt>Talles</dt>
-                  <dd>{product.sizes.join(', ')}</dd>
-                </>
-              )}
-              <dt>Stock</dt>
-              <dd class={isAvailable ? 'stock-label' : 'stock-label stock-label--empty'}>
-                {isAvailable ? `${product.stock} disponible${product.stock === 1 ? '' : 's'}` : 'Sin stock'}
-              </dd>
+              <dt>Equipo</dt>
+              <dd>{product.team?.name || 'Consultanos'}</dd>
             </dl>
+
+            {product.sizes && product.sizes.length > 0 && (
+              <div class="product-detail__sizes" aria-label="Talles disponibles">
+                <p>Talles disponibles</p>
+                <ul>
+                  {product.sizes.map((size) => <li>{size}</li>)}
+                </ul>
+              </div>
+            )}
 
             {product.description && <p class="product-detail__description">{product.description}</p>}
 
-            <WhatsAppButton href={whatsappUrl} available={isAvailable} />
+            <div class="product-detail__cta">
+              <WhatsAppButton href={whatsappUrl} available={isAvailable} />
+              <p class="product-detail__trust">Te respondemos por disponibilidad, talle y envío.</p>
+            </div>
           </div>
         </section>
 

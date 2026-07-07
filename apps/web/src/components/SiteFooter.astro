@@ -1,0 +1,26 @@
+---
+const footerLinks = [
+  { href: '/', label: 'Inicio' },
+  { href: '/catalogo', label: 'Catálogo' }
+];
+---
+
+<footer class="site-footer" id="contacto">
+  <div class="site-footer__inner site-shell">
+    <div class="site-footer__brand">
+      <p class="site-footer__eyebrow">Mundo JJersey</p>
+      <p>
+        Camisetas de fútbol retro y actuales elegidas con criterio para hinchas que buscan identidad,
+        estilo y consulta directa.
+      </p>
+    </div>
+
+    <nav class="site-footer__links" aria-label="Enlaces del pie">
+      {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+
+    <p class="site-footer__note">
+      Consultanos por WhatsApp para confirmar disponibilidad, talle, envío y formas de pago.
+    </p>
+  </div>
+</footer>
