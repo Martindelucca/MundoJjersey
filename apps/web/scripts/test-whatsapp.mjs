@@ -7,12 +7,26 @@ assert.equal(normalizeWhatsAppNumber(''), '');
 const url = buildWhatsAppUrl({
   phoneNumber: '+54 9 11 1234-5678',
   productTitle: 'Camiseta Boca Juniors 1998',
-  productUrl: 'https://mundojjersey.com/catalogo/boca-1998'
+  productCategory: 'Camiseta',
+  productUrl: 'https://mundojjersey.com/producto/boca-1998'
 });
 
 assert.equal(
   url,
-  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20la%20camiseta%3A%20Camiseta%20Boca%20Juniors%201998.%20%C2%BFSigue%20disponible%3F%0Ahttps%3A%2F%2Fmundojjersey.com%2Fcatalogo%2Fboca-1998'
+  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20la%20Camiseta%3A%20Camiseta%20Boca%20Juniors%201998.%20%C2%BFSigue%20disponible%3F%0Ahttps%3A%2F%2Fmundojjersey.com%2Fproducto%2Fboca-1998'
+);
+
+const templatedUrl = buildWhatsAppUrl({
+  phoneNumber: '+54 9 11 1234-5678',
+  productTitle: 'Campera Argentina 2022',
+  productCategory: 'Campera',
+  productUrl: 'https://mundojjersey.com/producto/campera-argentina-2022',
+  messageTemplate: 'Hola, me interesa esta {category}: {productTitle}. Link: {productUrl}'
+});
+
+assert.equal(
+  templatedUrl,
+  'https://wa.me/5491112345678?text=Hola%2C%20me%20interesa%20esta%20Campera%3A%20Campera%20Argentina%202022.%20Link%3A%20https%3A%2F%2Fmundojjersey.com%2Fproducto%2Fcampera-argentina-2022'
 );
 
 assert.equal(

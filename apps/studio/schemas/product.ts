@@ -15,7 +15,10 @@ export const product = defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: { source: 'title' },
+      options: {
+        source: 'title',
+        isUnique: (slug, context) => context.defaultIsUnique(slug, context)
+      },
       validation: (Rule) => Rule.required()
     }),
     defineField({
@@ -30,7 +33,8 @@ export const product = defineType({
             defineField({
               name: 'alt',
               title: 'Texto alternativo',
-              type: 'string'
+              type: 'string',
+              validation: (Rule) => Rule.required()
             })
           ]
         }
@@ -42,6 +46,27 @@ export const product = defineType({
       title: 'Precio',
       type: 'number',
       validation: (Rule) => Rule.required().min(0)
+    }),
+    defineField({
+      name: 'category',
+      title: 'Categoría',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Camiseta', value: 'shirt' },
+          { title: 'Campera', value: 'jacket' },
+          { title: 'Short', value: 'shorts' }
+        ],
+        layout: 'radio'
+      },
+      validation: (Rule) => Rule.required()
+    }),
+    defineField({
+      name: 'brand',
+      title: 'Marca',
+      type: 'string',
+      description: 'Ejemplo: Adidas, Nike, Puma, Umbro.',
+      validation: (Rule) => Rule.required()
     }),
     defineField({
       name: 'team',
@@ -63,26 +88,46 @@ export const product = defineType({
       description: 'Ejemplo: 1998/99, 2006 o 2024/25.'
     }),
     defineField({
-      name: 'stock',
-      title: 'Stock',
-      type: 'number',
-      initialValue: 1,
-      validation: (Rule) => Rule.required().integer().min(0)
-    }),
-    defineField({
-      name: 'sizes',
-      title: 'Talles',
+      name: 'variants',
+      title: 'Talles y stock',
       type: 'array',
-      of: [{ type: 'string' }],
-      options: {
-        list: [
-          { title: 'S', value: 'S' },
-          { title: 'M', value: 'M' },
-          { title: 'L', value: 'L' },
-          { title: 'XL', value: 'XL' },
-          { title: 'XXL', value: 'XXL' }
-        ]
-      }
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'size',
+              title: 'Talle',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'XS', value: 'XS' },
+                  { title: 'S', value: 'S' },
+                  { title: 'M', value: 'M' },
+                  { title: 'L', value: 'L' },
+                  { title: 'XL', value: 'XL' },
+                  { title: 'XXL', value: 'XXL' }
+                ]
+              },
+              validation: (Rule) => Rule.required()
+            }),
+            defineField({
+              name: 'stock',
+              title: 'Stock',
+              type: 'number',
+              initialValue: 1,
+              validation: (Rule) => Rule.required().integer().min(0)
+            })
+          ],
+          preview: {
+            select: { size: 'size', stock: 'stock' },
+            prepare: ({ size, stock }) => ({
+              title: `${size || 'Talle'} · ${stock ?? 0} disponible${stock === 1 ? '' : 's'}`
+            })
+          }
+        }
+      ],
+      validation: (Rule) => Rule.required().min(1)
     }),
     defineField({
       name: 'description',
@@ -100,7 +145,7 @@ export const product = defineType({
   preview: {
     select: {
       title: 'title',
-      subtitle: 'season',
+      subtitle: 'category',
       media: 'images.0'
     }
   }

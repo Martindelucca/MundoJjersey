@@ -1,0 +1,49 @@
+---
+import ProductCard from '../../components/ProductCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { catalogCategories, getCatalogCategoryBySlug } from '../../lib/catalog/categories';
+import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
+import { productsByCategoryQuery } from '../../lib/sanity/queries';
+import type { ProductSummary } from '../../lib/sanity/types';
+
+export function getStaticPaths() {
+  return catalogCategories.map((category) => ({ params: { category: category.slug } }));
+}
+
+const categorySlug = Astro.params.category || '';
+const category = getCatalogCategoryBySlug(categorySlug);
+const products = hasSanityConfig && category
+  ? await sanityClient.fetch<ProductSummary[]>(productsByCategoryQuery, { category: category.value })
+  : [];
+---
+
+<BaseLayout
+  title={`${category?.plural || 'Catálogo'} | Mundo JJersey`}
+  description={category?.description || 'Productos de fútbol disponibles para consultar por WhatsApp.'}
+  canonicalPath={`/catalogo/${categorySlug}`}
+>
+  <main class="site-shell catalog-page">
+    <section class="catalog-hero" aria-labelledby="catalog-category-title">
+      <p class="eyebrow">Catálogo por categoría</p>
+      <h1 id="catalog-category-title">{category?.title}</h1>
+      <p>{category?.description}</p>
+      <ul class="catalog-chips" aria-label="Categorías del catálogo">
+        <li><a href="/catalogo">Todo</a></li>
+        {catalogCategories.map((item) => (
+          <li><a aria-current={item.slug === categorySlug ? 'page' : undefined} href={`/catalogo/${item.slug}`}>{item.plural}</a></li>
+        ))}
+      </ul>
+    </section>
+
+    {products.length > 0 ? (
+      <section class="product-grid" aria-label={category?.plural}>
+        {products.map((product) => <ProductCard product={product} />)}
+      </section>
+    ) : (
+      <section class="empty-state" aria-live="polite">
+        <h2>{category?.plural} en preparación.</h2>
+        <p>Cuando haya stock listo de esta categoría, va a aparecer acá. También podés escribirnos por WhatsApp si buscás algo puntual.</p>
+      </section>
+    )}
+  </main>
+</BaseLayout>

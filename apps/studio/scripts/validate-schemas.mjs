@@ -18,17 +18,36 @@ for (const fieldName of [
   'team',
   'league',
   'season',
-  'stock',
-  'sizes'
+  'variants',
+  'category',
+  'brand'
 ]) {
   assert.ok(productFields.has(fieldName), `Missing product field: ${fieldName}`);
 }
 
 assert.equal(productFields.has('condition'), false, 'Product should not include condition');
+assert.equal(productFields.has('stock'), false, 'Product should not include legacy stock');
+assert.equal(productFields.has('sizes'), false, 'Product should not include legacy sizes');
 
-const stockField = product.fields.find((field) => field.name === 'stock');
+const productSlugField = product.fields.find((field) => field.name === 'slug');
+const teamSlugField = schemasByName.get('team').fields.find((field) => field.name === 'slug');
+const leagueSlugField = schemasByName.get('league').fields.find((field) => field.name === 'slug');
+const imagesField = product.fields.find((field) => field.name === 'images');
+const imageAltField = imagesField.of[0].fields.find((field) => field.name === 'alt');
+const variantsField = product.fields.find((field) => field.name === 'variants');
+const variantFields = new Set(variantsField.of[0].fields.map((field) => field.name));
+const categoryField = product.fields.find((field) => field.name === 'category');
 
-assert.equal(stockField.type, 'number');
-assert.equal(typeof stockField.validation, 'function');
+for (const slugField of [productSlugField, teamSlugField, leagueSlugField]) {
+  assert.equal(typeof slugField.options?.isUnique, 'function', `${slugField.name} should define isUnique`);
+}
+
+assert.equal(typeof imageAltField.validation, 'function', 'Product image alt should be required');
+assert.ok(variantFields.has('size'), 'Variant should include size');
+assert.ok(variantFields.has('stock'), 'Variant should include stock');
+assert.deepEqual(
+  categoryField.options.list.map(({ value }) => value),
+  ['shirt', 'jacket', 'shorts']
+);
 
 console.log('Sanity schemas validated.');

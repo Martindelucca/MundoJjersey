@@ -2,6 +2,8 @@
 import ProductCard from '../../components/ProductCard.astro';
 import WhatsAppButton from '../../components/WhatsAppButton.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProductCategoryLabel } from '../../lib/catalog/categories';
+import { getTotalStock, isAvailable as hasAvailableStock } from '../../lib/catalog/availability';
 import { getImageUrl } from '../../lib/sanity/image';
 import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
 import { productBySlugQuery, productSlugsQuery, productsQuery, siteSettingsQuery } from '../../lib/sanity/queries';
@@ -36,18 +38,23 @@ const price = product
       maximumFractionDigits: 0
     }).format(product.price)
   : '';
-const isAvailable = Boolean(product && product.stock > 0);
+const variants = product?.variants || [];
+const totalStock = getTotalStock(variants);
+const isAvailable = hasAvailableStock(variants);
+const categoryLabel = product ? getProductCategoryLabel(product.category) : 'Producto';
 const imageUrl = getImageUrl(product?.image, 960);
-const imageAlt = product?.image?.alt || product?.title || 'Camiseta de fútbol';
+const imageAlt = product?.image?.alt || product?.title || 'Producto de fútbol';
 const whatsappNumber = settings?.whatsappNumber || import.meta.env.PUBLIC_WHATSAPP_NUMBER || '';
 const siteUrl = import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
 const isLocalSiteUrl = siteUrl ? /localhost|127\.0\.0\.1/.test(siteUrl) : false;
-const productUrl = product && siteUrl && !isLocalSiteUrl ? `${siteUrl}/catalogo/${product.slug}` : undefined;
+const productUrl = product && siteUrl && !isLocalSiteUrl ? `${siteUrl}/producto/${product.slug}` : undefined;
 const whatsappUrl = product
   ? buildWhatsAppUrl({
       phoneNumber: whatsappNumber,
       productTitle: product.title,
-      productUrl
+      productCategory: categoryLabel,
+      productUrl,
+      messageTemplate: settings?.whatsappMessage
     })
   : '';
 const relatedProducts = product
@@ -57,7 +64,7 @@ const relatedProducts = product
 
 <BaseLayout
   title={product ? `${product.title} | Mundo JJersey` : 'Producto no encontrado | Mundo JJersey'}
-  description={product?.description || 'Detalle de camiseta disponible para consultar por WhatsApp.'}
+  description={product?.description || 'Detalle de producto disponible para consultar por WhatsApp.'}
 >
   <main class="site-shell product-detail-page">
     <nav class="breadcrumbs" aria-label="Migas de pan">
@@ -77,19 +84,23 @@ const relatedProducts = product
 
           <div class="product-detail__content">
             <div class="product-detail__header">
-              <p class="product-detail__kicker">Drop seguro</p>
-              <p class="product-detail__meta">{product.team?.name || 'Camiseta'}{product.season ? ` · ${product.season}` : ''}</p>
+              <p class="product-detail__kicker">{categoryLabel}</p>
+              <p class="product-detail__meta">{product.brand}{product.team?.name ? ` · ${product.team.name}` : ''}</p>
               <h1 id="product-title">{product.title}</h1>
             </div>
 
             <div class="product-detail__commerce" aria-label="Precio y disponibilidad">
               <p class="product-detail__price">{price}</p>
               <p class={isAvailable ? 'stock-label' : 'stock-label stock-label--empty'}>
-                {isAvailable ? `${product.stock} disponible${product.stock === 1 ? '' : 's'}` : 'Sin stock'}
+                {isAvailable ? `${totalStock} disponible${totalStock === 1 ? '' : 's'}` : 'Sin stock'}
               </p>
             </div>
 
             <dl class="product-detail__facts">
+              <dt>Categoría</dt>
+              <dd>{categoryLabel}</dd>
+              <dt>Marca</dt>
+              <dd>{product.brand}</dd>
               {product.season && (
                 <>
                   <dt>Temporada</dt>
@@ -100,14 +111,17 @@ const relatedProducts = product
               <dd>{product.team?.name || 'Consultanos'}</dd>
             </dl>
 
-            {product.sizes && product.sizes.length > 0 && (
-              <div class="product-detail__sizes" aria-label="Talles disponibles">
-                <p>Talles disponibles</p>
-                <ul>
-                  {product.sizes.map((size) => <li>{size}</li>)}
-                </ul>
-              </div>
-            )}
+            <div class="product-detail__sizes" aria-label="Talles y stock">
+              <p>Talles y stock</p>
+              <ul>
+                {variants.map((variant) => (
+                  <li class={variant.stock > 0 ? '' : 'is-empty'}>
+                    <span>{variant.size}</span>
+                    <small>{variant.stock > 0 ? `${variant.stock} disp.` : 'sin stock'}</small>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {product.description && <p class="product-detail__description">{product.description}</p>}
 
@@ -122,7 +136,7 @@ const relatedProducts = product
           <section class="related-products" aria-labelledby="related-products-title">
             <div>
               <p class="eyebrow">También te puede gustar</p>
-              <h2 id="related-products-title">Más camisetas</h2>
+              <h2 id="related-products-title">Más productos</h2>
             </div>
             <div class="product-grid">
               {relatedProducts.map((relatedProduct) => <ProductCard product={relatedProduct} />)}
@@ -133,7 +147,7 @@ const relatedProducts = product
     ) : (
       <section class="empty-state" aria-live="polite">
         <h1>Producto no encontrado</h1>
-        <p>Volvé al catálogo para ver las camisetas disponibles.</p>
+        <p>Volvé al catálogo para ver los productos disponibles.</p>
         <a class="button" href="/catalogo">Ir al catálogo</a>
       </section>
     )}

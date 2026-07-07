@@ -1,6 +1,7 @@
 ---
 import ProductCard from '../components/ProductCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { catalogCategories } from '../lib/catalog/categories';
 import { hasSanityConfig, sanityClient } from '../lib/sanity/client';
 import { productsQuery } from '../lib/sanity/queries';
 import type { ProductSummary } from '../lib/sanity/types';
@@ -12,18 +13,16 @@ const products = hasSanityConfig
 
 <BaseLayout
   title="Catálogo | Mundo JJersey"
-  description="Explorá camisetas de fútbol retro y actuales disponibles para consultar por WhatsApp."
+  description="Explorá camisetas, camperas y shorts de fútbol disponibles para consultar por WhatsApp."
 >
   <main class="site-shell catalog-page">
     <section class="catalog-hero" aria-labelledby="catalog-title">
       <p class="eyebrow">Selección Mundo JJersey</p>
-      <h1 id="catalog-title">Camisetas elegidas para usar con identidad.</h1>
-      <p>Retro, clubes y selecciones con mirada streetwear. Mirá el stock real y consultá por WhatsApp la camiseta que te mueve.</p>
+      <h1 id="catalog-title">Ropa de fútbol elegida para usar con identidad.</h1>
+      <p>Camisetas, camperas y shorts con mirada futbolera y streetwear. Mirá el stock real y consultá por WhatsApp el producto que te mueve.</p>
       <ul class="catalog-chips" aria-label="Categorías representadas en el catálogo">
-        <li>Todo el catálogo</li>
-        <li>Clubes</li>
-        <li>Selecciones</li>
-        <li>Retro</li>
+        <li><a aria-current="page" href="/catalogo">Todo el catálogo</a></li>
+        {catalogCategories.map((category) => <li><a href={`/catalogo/${category.slug}`}>{category.plural}</a></li>)}
       </ul>
     </section>
 
@@ -34,7 +33,7 @@ const products = hasSanityConfig
     ) : (
       <section class="empty-state" aria-live="polite">
         <h2>Estamos preparando la próxima selección.</h2>
-        <p>Las camisetas aparecen acá cuando el stock está listo para consultar. Volvé pronto o escribinos por WhatsApp si buscás un equipo en particular.</p>
+        <p>Los productos aparecen acá cuando el stock está listo para consultar. Volvé pronto o escribinos por WhatsApp si buscás un equipo en particular.</p>
       </section>
     )}
   </main>

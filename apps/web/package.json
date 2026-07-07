@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "test": "node --experimental-strip-types scripts/test-whatsapp.mjs",
+    "test:catalog": "node --experimental-strip-types scripts/test-catalog.mjs",
     "test:design": "node scripts/validate-design.mjs"
   },
   "dependencies": {

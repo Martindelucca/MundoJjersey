@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import TrustBlock from '../components/TrustBlock.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { catalogCategories } from '../lib/catalog/categories';
 import { hasSanityConfig, sanityClient } from '../lib/sanity/client';
 import { productsQuery } from '../lib/sanity/queries';
 import type { ProductSummary } from '../lib/sanity/types';
@@ -22,13 +23,13 @@ const products = hasSanityConfig
     <section class="hero" aria-labelledby="home-title">
       <div class="site-shell hero__inner">
         <p class="eyebrow">Camisetas seleccionadas</p>
-        <h1 id="home-title">La camiseta que buscás, elegida con criterio.</h1>
+        <h1 id="home-title">La ropa de fútbol que buscás, elegida con criterio.</h1>
         <p class="hero__copy">
-          Un catálogo curado de camisetas de fútbol nuevas, retro y actuales para descubrir sin vueltas.
+          Un catálogo curado de camisetas, camperas y shorts de fútbol nuevos para descubrir sin vueltas.
         </p>
         <div class="hero__actions">
           <a class="button" href="/catalogo">Ver catálogo</a>
-          <p>Retro y actuales · consulta por WhatsApp</p>
+          <p>Camisetas · camperas · shorts · consulta por WhatsApp</p>
         </div>
       </div>
     </section>
@@ -37,7 +38,7 @@ const products = hasSanityConfig
       <SectionHeader
         label="Nuevos ingresos"
         title="Camisetas que acaban de entrar"
-        copy="Una primera mirada a la selección más reciente. Si una camiseta te interesa, entrá al detalle y consultanos por WhatsApp."
+        copy="Una primera mirada a la selección más reciente. Si un producto te interesa, entrá al detalle y consultanos por WhatsApp."
       />
 
       {products.length > 0 ? (
@@ -47,7 +48,7 @@ const products = hasSanityConfig
       ) : (
         <div class="empty-state empty-state--home" aria-live="polite">
           <h2>Estamos preparando los nuevos ingresos.</h2>
-          <p>Las camisetas seleccionadas van a aparecer acá apenas estén cargadas. Mientras tanto, escribinos y te contamos qué hay disponible.</p>
+          <p>Los productos seleccionados van a aparecer acá apenas estén cargados. Mientras tanto, escribinos y te contamos qué hay disponible.</p>
           <a class="button" href="#contacto">Consultar por WhatsApp</a>
         </div>
       )}
@@ -56,14 +57,14 @@ const products = hasSanityConfig
     <section class="home-section home-section--categories">
       <div class="site-shell categories__inner">
         <SectionHeader
-          title="Entrá por el tipo de camiseta"
-          copy="Tres caminos simples para empezar: clubes, selecciones o piezas retro. Por ahora todas te llevan al catálogo completo."
+          title="Entrá por categoría"
+          copy="Tres caminos simples para empezar: camisetas, camperas o shorts. Cada categoría tiene su propia página para encontrar más rápido lo que buscás."
         />
 
         <div class="category-grid">
-          <CategoryTile title="Clubes" copy="Camisetas de equipos elegidas por identidad, color y uso real." href="/catalogo" label="01" />
-          <CategoryTile title="Selecciones" copy="Modelos nacionales para llevar historia y presente en la misma prenda." href="/catalogo" label="02" />
-          <CategoryTile title="Retro" copy="Piezas con memoria futbolera, estética fuerte y selección cuidada." href="/catalogo" label="03" />
+          {catalogCategories.map((category, index) => (
+            <CategoryTile title={category.plural} copy={category.description} href={`/catalogo/${category.slug}`} label={`0${index + 1}`} />
+          ))}
         </div>
       </div>
     </section>
@@ -75,10 +76,10 @@ const products = hasSanityConfig
       </div>
       <div class="about-section__copy">
         <p>
-          Nacimos de mirar camisetas como algo más que indumentaria: colores que te llevan a un partido, una temporada, una selección o una forma de vestir fútbol en la calle.
+          Nacimos de mirar la ropa de fútbol como algo más que indumentaria: colores que te llevan a un partido, una temporada, una selección o una forma de vestir fútbol en la calle.
         </p>
         <p>
-          Elegimos cada ingreso con criterio: diseño, estado, talle, demanda y ese punto especial que hace que una camiseta destaque antes de preguntar el precio.
+          Elegimos cada ingreso con criterio: diseño, talle, demanda y ese punto especial que hace que una prenda destaque antes de preguntar el precio.
         </p>
       </div>
     </section>
@@ -92,7 +93,7 @@ const products = hasSanityConfig
 
       <div class="trust-grid">
         <TrustBlock title="WhatsApp directo" copy="Respondemos consultas de producto, talle y disponibilidad sin pasos raros." />
-        <TrustBlock title="Pago a coordinar" copy="Te contamos las formas de pago disponibles antes de confirmar la camiseta." />
+        <TrustBlock title="Pago a coordinar" copy="Te contamos las formas de pago disponibles antes de confirmar el producto." />
         <TrustBlock title="Envios" copy="Coordinamos el envío según tu ubicación y el producto elegido." />
         <TrustBlock title="Cambios y consultas" copy="Si necesitás revisar talle, estado o detalle, lo vemos con vos antes de cerrar." />
       </div>

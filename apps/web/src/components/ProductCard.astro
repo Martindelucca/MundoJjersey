@@ -1,6 +1,8 @@
 ---
 import { getImageUrl } from '../lib/sanity/image';
 import type { ProductSummary } from '../lib/sanity/types';
+import { getProductCategoryLabel } from '../lib/catalog/categories';
+import { getTotalStock, isAvailable as hasAvailableStock } from '../lib/catalog/availability';
 
 interface Props {
   product: ProductSummary;
@@ -8,8 +10,10 @@ interface Props {
 
 const { product } = Astro.props;
 const imageUrl = getImageUrl(product.image, 640);
-const isAvailable = product.stock > 0;
+const totalStock = getTotalStock(product.variants);
+const isAvailable = hasAvailableStock(product.variants);
 const stockLabel = isAvailable ? 'Disponible' : 'Sin stock';
+const categoryLabel = getProductCategoryLabel(product.category);
 const price = new Intl.NumberFormat('es-AR', {
   style: 'currency',
   currency: 'ARS',
@@ -18,19 +22,19 @@ const price = new Intl.NumberFormat('es-AR', {
 ---
 
 <article class="product-card">
-  <a class="product-card__media" href={`/catalogo/${product.slug}`} aria-label={`Ver ${product.title}`}>
+  <a class="product-card__media" href={`/producto/${product.slug}`} aria-label={`Ver ${product.title}`}>
     <span class={isAvailable ? 'product-card__badge' : 'product-card__badge product-card__badge--empty'}>
       {stockLabel}
     </span>
     {imageUrl ? <img src={imageUrl} alt={product.image?.alt || product.title} loading="lazy" /> : <span>Sin imagen</span>}
   </a>
   <div class="product-card__body">
-    <p class="product-card__meta">{product.team?.name || 'Equipo'}{product.season ? ` · ${product.season}` : ''}</p>
-    <h2><a href={`/catalogo/${product.slug}`}>{product.title}</a></h2>
+    <p class="product-card__meta">{categoryLabel} · {product.brand}{product.team?.name ? ` · ${product.team.name}` : ''}</p>
+    <h2><a href={`/producto/${product.slug}`}>{product.title}</a></h2>
     <div class="product-card__details">
       <p class="product-card__price">{price}</p>
       <p class={isAvailable ? 'product-card__stock' : 'product-card__stock product-card__stock--empty'}>
-        {isAvailable ? `${product.stock} disponible${product.stock === 1 ? '' : 's'}` : 'Sin stock'}
+        {isAvailable ? `${totalStock} disponible${totalStock === 1 ? '' : 's'}` : 'Sin stock'}
       </p>
     </div>
   </div>

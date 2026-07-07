@@ -13,7 +13,7 @@
     "build:web": "npm --workspace @mundo-jjersey/web run build",
     "build:studio": "npm --workspace @mundo-jjersey/studio run build",
     "check": "npm --workspace @mundo-jjersey/web run check",
-    "test": "npm --workspace @mundo-jjersey/studio run test && npm --workspace @mundo-jjersey/web run test && npm --workspace @mundo-jjersey/web run test:design"
+    "test": "npm --workspace @mundo-jjersey/studio run test && npm --workspace @mundo-jjersey/web run test && npm --workspace @mundo-jjersey/web run test:catalog && npm --workspace @mundo-jjersey/web run test:design"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -9,6 +9,13 @@ export interface SanityImage {
   alt?: string;
 }
 
+export type ProductCategory = 'shirt' | 'jacket' | 'shorts';
+
+export interface ProductVariant {
+  size: string;
+  stock: number;
+}
+
 export interface TeamSummary {
   name?: string;
   slug?: string;
@@ -28,9 +35,10 @@ export interface ProductSummary {
   title: string;
   slug: string;
   price: number;
-  stock: number;
+  category: ProductCategory;
+  brand: string;
+  variants?: ProductVariant[];
   season?: string;
-  sizes?: string[];
   image?: SanityImage;
   team?: TeamSummary;
   league?: LeagueSummary;

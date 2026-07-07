@@ -37,7 +37,8 @@ const [
   readProjectFile('apps/web/src/components/FAQBlock.astro'),
   readProjectFile('apps/web/src/pages/index.astro'),
   readProjectFile('apps/web/src/pages/catalogo.astro'),
-  readProjectFile('apps/web/src/pages/catalogo/[slug].astro')
+  readProjectFile('apps/web/src/pages/producto/[slug].astro'),
+  readProjectFile('apps/web/src/pages/catalogo/[category].astro')
 ]);
 
 assert.match(product, /## Register/);
@@ -120,7 +121,7 @@ assert.match(trustBlock, /copy: string/);
 assert.match(trustBlock, /class="trust-block"/);
 
 assert.match(faqBlock, /consulta/i);
-assert.match(faqBlock, /nuevas/i);
+assert.match(faqBlock, /nuev[oa]s/i);
 assert.match(faqBlock, /talles/i);
 assert.match(faqBlock, /env[ií]os/i);
 assert.match(faqBlock, /pago/i);
@@ -135,15 +136,14 @@ assert.match(home, /import FAQBlock/);
 assert.match(home, /hasSanityConfig/);
 assert.match(home, /productsQuery/);
 assert.match(home, /slice\(0, 4\)/);
-assert.match(home, /Retro y actuales · consulta por WhatsApp/);
+assert.match(home, /Camisetas · camperas · shorts · consulta por WhatsApp/);
 assert.match(home, /Nuevos ingresos/);
-assert.match(home, /Clubes/);
-assert.match(home, /Selecciones/);
-assert.match(home, /Retro/);
+assert.match(home, /Entrá por categoría/);
+assert.match(home, /catalogCategories/);
 
 assert.match(catalog, /<ul class="catalog-chips"/);
 assert.doesNotMatch(catalog, /<nav class="catalog-chips"/);
-assert.doesNotMatch(catalog, /<a href="\/catalogo">(?:Todo el catálogo|Clubes|Selecciones|Retro)<\/a>/);
+assert.match(catalog, /catalogCategories/);
 
 assert.match(productDetail, /Te respondemos por disponibilidad, talle y env[ií]o\./);
 assert.match(productDetail, /localhost|127\.0\.0\.1/);

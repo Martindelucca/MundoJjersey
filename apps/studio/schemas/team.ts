@@ -15,7 +15,10 @@ export const team = defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: { source: 'name' },
+      options: {
+        source: 'name',
+        isUnique: (slug, context) => context.defaultIsUnique(slug, context)
+      },
       validation: (Rule) => Rule.required()
     }),
     defineField({
