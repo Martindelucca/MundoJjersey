@@ -28,7 +28,9 @@ export const siteSettings = defineType({
       name: 'whatsappMessage',
       title: 'Mensaje base de WhatsApp',
       type: 'text',
-      rows: 2
+      rows: 2,
+      description: 'Opcional. Podés usar {productTitle}, {category} y {productUrl}. Si queda vacío, la web usa un mensaje automático por producto.',
+      initialValue: 'Hola, quiero consultar por esta {category}: {productTitle}. ¿Sigue disponible para separar? {productUrl}'
     }),
     defineField({
       name: 'instagramUrl',

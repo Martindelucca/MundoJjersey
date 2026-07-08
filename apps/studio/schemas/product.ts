@@ -25,6 +25,7 @@ export const product = defineType({
       name: 'images',
       title: 'Imágenes',
       type: 'array',
+      description: 'Subí al menos una foto clara del producto. Ideal: formato vertical 4:5, buena luz y camiseta completa.',
       of: [
         {
           type: 'image',
@@ -45,6 +46,7 @@ export const product = defineType({
       name: 'price',
       title: 'Precio',
       type: 'number',
+      description: 'Precio final visible en el catálogo, en pesos argentinos.',
       validation: (Rule) => Rule.required().min(0)
     }),
     defineField({
@@ -91,6 +93,7 @@ export const product = defineType({
       name: 'variants',
       title: 'Talles y stock',
       type: 'array',
+      description: 'Fuente única de stock del sitio. Cargá un ítem por talle y actualizá el número cuando se separa o vende una camiseta.',
       of: [
         {
           type: 'object',
@@ -127,7 +130,17 @@ export const product = defineType({
           }
         }
       ],
-      validation: (Rule) => Rule.required().min(1)
+      validation: (Rule) =>
+        Rule.required().min(1).custom((variants) => {
+          if (!Array.isArray(variants)) {
+            return true;
+          }
+
+          const sizes = variants.map((variant) => variant?.size).filter(Boolean);
+          const duplicatedSize = sizes.find((size, index) => sizes.indexOf(size) !== index);
+
+          return duplicatedSize ? `El talle ${duplicatedSize} está duplicado. Usá un solo registro por talle.` : true;
+        })
     }),
     defineField({
       name: 'description',
@@ -146,7 +159,19 @@ export const product = defineType({
     select: {
       title: 'title',
       subtitle: 'category',
-      media: 'images.0'
+      media: 'images.0',
+      variants: 'variants'
+    },
+    prepare: ({ title, subtitle, media, variants = [] }) => {
+      const totalStock = Array.isArray(variants)
+        ? variants.reduce((total, variant) => total + Math.max(0, variant?.stock || 0), 0)
+        : 0;
+
+      return {
+        title,
+        subtitle: `${subtitle || 'Producto'} · ${totalStock} en stock`,
+        media
+      };
     }
   }
 });

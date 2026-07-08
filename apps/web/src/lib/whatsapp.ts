@@ -6,8 +6,26 @@ interface BuildWhatsAppUrlInput {
   messageTemplate?: string;
 }
 
+interface BuildGeneralWhatsAppUrlInput {
+  phoneNumber: string;
+  message?: string;
+}
+
 export function normalizeWhatsAppNumber(phoneNumber: string): string {
   return phoneNumber.replace(/\D/g, '');
+}
+
+export function buildGeneralWhatsAppUrl({
+  phoneNumber,
+  message = 'Hola, quiero consultar por el catálogo de Mundo JJersey. ¿Qué camisetas tienen disponibles?'
+}: BuildGeneralWhatsAppUrlInput): string {
+  const normalizedPhoneNumber = normalizeWhatsAppNumber(phoneNumber);
+
+  if (!normalizedPhoneNumber) {
+    return '';
+  }
+
+  return `https://wa.me/${normalizedPhoneNumber}?text=${encodeURIComponent(message)}`;
 }
 
 export function buildWhatsAppUrl({
@@ -23,7 +41,7 @@ export function buildWhatsAppUrl({
     return '';
   }
 
-  const fallbackTemplate = 'Hola, quiero consultar por la {category}: {productTitle}. ¿Sigue disponible?';
+  const fallbackTemplate = 'Hola, quiero consultar por esta {category}: {productTitle}. ¿Sigue disponible para separar?';
   const template = messageTemplate || fallbackTemplate;
   const message = template
     .replaceAll('{productTitle}', productTitle)

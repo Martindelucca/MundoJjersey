@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { buildWhatsAppUrl, normalizeWhatsAppNumber } from '../src/lib/whatsapp.ts';
+import { buildGeneralWhatsAppUrl, buildWhatsAppUrl, normalizeWhatsAppNumber } from '../src/lib/whatsapp.ts';
 
 assert.equal(normalizeWhatsAppNumber('+54 9 11 1234-5678'), '5491112345678');
 assert.equal(normalizeWhatsAppNumber(''), '');
@@ -13,7 +13,7 @@ const url = buildWhatsAppUrl({
 
 assert.equal(
   url,
-  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20la%20Camiseta%3A%20Camiseta%20Boca%20Juniors%201998.%20%C2%BFSigue%20disponible%3F%0Ahttps%3A%2F%2Fmundojjersey.com%2Fproducto%2Fboca-1998'
+  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20esta%20Camiseta%3A%20Camiseta%20Boca%20Juniors%201998.%20%C2%BFSigue%20disponible%20para%20separar%3F%0Ahttps%3A%2F%2Fmundojjersey.com%2Fproducto%2Fboca-1998'
 );
 
 const templatedUrl = buildWhatsAppUrl({
@@ -33,5 +33,12 @@ assert.equal(
   buildWhatsAppUrl({ phoneNumber: '', productTitle: 'Camiseta River Plate 1996' }),
   ''
 );
+
+assert.equal(
+  buildGeneralWhatsAppUrl({ phoneNumber: '+54 9 11 1234-5678', message: 'Hola, quiero ver el catálogo.' }),
+  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20ver%20el%20cat%C3%A1logo.'
+);
+
+assert.equal(buildGeneralWhatsAppUrl({ phoneNumber: '' }), '');
 
 console.log('WhatsApp helpers validated.');

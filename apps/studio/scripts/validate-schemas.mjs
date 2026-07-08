@@ -37,6 +37,8 @@ const imageAltField = imagesField.of[0].fields.find((field) => field.name === 'a
 const variantsField = product.fields.find((field) => field.name === 'variants');
 const variantFields = new Set(variantsField.of[0].fields.map((field) => field.name));
 const categoryField = product.fields.find((field) => field.name === 'category');
+const siteSettings = schemasByName.get('siteSettings');
+const whatsappMessageField = siteSettings.fields.find((field) => field.name === 'whatsappMessage');
 
 for (const slugField of [productSlugField, teamSlugField, leagueSlugField]) {
   assert.equal(typeof slugField.options?.isUnique, 'function', `${slugField.name} should define isUnique`);
@@ -45,9 +47,13 @@ for (const slugField of [productSlugField, teamSlugField, leagueSlugField]) {
 assert.equal(typeof imageAltField.validation, 'function', 'Product image alt should be required');
 assert.ok(variantFields.has('size'), 'Variant should include size');
 assert.ok(variantFields.has('stock'), 'Variant should include stock');
+assert.equal(typeof variantsField.validation, 'function', 'Variants should validate duplicates and minimum stock rows');
 assert.deepEqual(
   categoryField.options.list.map(({ value }) => value),
   ['shirt', 'jacket', 'shorts']
 );
+assert.match(whatsappMessageField.description, /\{productTitle\}/);
+assert.match(whatsappMessageField.description, /\{category\}/);
+assert.match(whatsappMessageField.description, /\{productUrl\}/);
 
 console.log('Sanity schemas validated.');
