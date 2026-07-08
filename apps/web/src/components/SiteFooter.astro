@@ -1,7 +1,14 @@
 ---
+interface Props {
+  whatsappUrl?: string;
+  instagramUrl?: string;
+}
+
+const { whatsappUrl = '', instagramUrl = '' } = Astro.props;
 const footerLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/catalogo', label: 'Catálogo' },
+  { href: '/#nuevos-ingresos', label: 'Nuevos ingresos' },
   { href: '/catalogo/camisetas', label: 'Camisetas' },
   { href: '/catalogo/camperas', label: 'Camperas' },
   { href: '/catalogo/shorts', label: 'Shorts' }
@@ -13,7 +20,7 @@ const footerLinks = [
     <div class="site-footer__brand">
       <p class="site-footer__eyebrow">Mundo JJersey</p>
       <p>
-        Ropa de fútbol elegida con criterio para hinchas que buscan identidad, estilo y consulta directa.
+        Tandas chicas de camisetas, camperas y shorts para hinchas que buscan club, selección, temporada y consulta directa.
       </p>
     </div>
 
@@ -21,8 +28,18 @@ const footerLinks = [
       {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>
 
-    <p class="site-footer__note">
-      Consultanos por WhatsApp para confirmar disponibilidad, talle, envío y formas de pago.
-    </p>
+    <div class="site-footer__contact" aria-label="Contacto directo">
+      <p class="site-footer__note">
+        Entrá a la ficha de la camiseta o escribinos por la tanda actual. Revisamos talle, envío y formas de pago antes de separar.
+      </p>
+      <div class="site-footer__contact-links">
+        {whatsappUrl ? (
+          <a class="site-footer__contact-link site-footer__contact-link--primary" href={whatsappUrl} target="_blank" rel="noreferrer">Escribir por WhatsApp</a>
+        ) : (
+          <p class="contact-unavailable">WhatsApp no está configurado todavía.</p>
+        )}
+        {instagramUrl ? <a class="site-footer__contact-link" href={instagramUrl} target="_blank" rel="noreferrer">Instagram</a> : null}
+      </div>
+    </div>
   </div>
 </footer>

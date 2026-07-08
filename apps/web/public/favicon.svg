@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mundo JJersey">
+  <rect width="64" height="64" rx="16" fill="#0B1F3A"/>
+  <path d="M14 12h36v10H38v30H26V22H14V12Z" fill="#C9A24A"/>
+  <path d="M18 48h28" stroke="#F7F3EA" stroke-width="4" stroke-linecap="round"/>
+</svg>

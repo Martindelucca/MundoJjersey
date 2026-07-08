@@ -6,15 +6,37 @@ interface Props {
   label?: string;
   tone?: 'primary' | 'secondary' | 'quiet';
   featured?: boolean;
+  imageSrc?: string;
+  imageAlt?: string;
+  cue?: string;
+  variant?: 'poster' | 'archive' | 'fresh';
 }
 
-const { title, copy, href, label, tone = 'secondary', featured = false } = Astro.props;
-const className = ['category-tile', `category-tile--${tone}`, featured ? 'category-tile--featured' : ''].filter(Boolean).join(' ');
+const {
+  title,
+  copy,
+  href,
+  label,
+  tone = 'secondary',
+  featured = false,
+  imageSrc,
+  imageAlt = '',
+  cue = 'Ver selección',
+  variant = 'poster'
+} = Astro.props;
+const className = [
+  'category-tile',
+  `category-tile--${tone}`,
+  `category-tile--${variant}`,
+  featured ? 'category-tile--featured' : '',
+  imageSrc ? 'category-tile--image' : ''
+].filter(Boolean).join(' ');
 ---
 
 <a class={className} href={href}>
+  {imageSrc ? <img class="category-tile__image" src={imageSrc} alt={imageAlt} loading="lazy" /> : null}
   {label ? <span class="category-tile__label">{label}</span> : null}
   <span class="category-tile__title">{title}</span>
   <span class="category-tile__copy">{copy}</span>
-  <span class="category-tile__cue" aria-hidden="true">Ver drop</span>
+  <span class="category-tile__cue" aria-hidden="true">{cue}</span>
 </a>

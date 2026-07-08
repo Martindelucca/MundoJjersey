@@ -5,24 +5,33 @@ import { catalogCategories } from '../lib/catalog/categories';
 import { hasSanityConfig, sanityClient } from '../lib/sanity/client';
 import { productsQuery } from '../lib/sanity/queries';
 import type { ProductSummary } from '../lib/sanity/types';
+import { getSiteContact } from '../lib/site-contact';
 
 const products = hasSanityConfig
   ? await sanityClient.fetch<ProductSummary[]>(productsQuery)
   : [];
+const siteContact = await getSiteContact();
+const contactHref = siteContact.whatsappUrl || '#contacto';
+const contactTarget = siteContact.whatsappUrl ? '_blank' : undefined;
+const contactRel = siteContact.whatsappUrl ? 'noreferrer' : undefined;
 ---
 
 <BaseLayout
   title="Catálogo | Mundo JJersey"
   description="Explorá camisetas, camperas y shorts de fútbol disponibles para consultar por WhatsApp."
 >
-  <main class="site-shell catalog-page">
+  <main id="contenido-principal" class="site-shell catalog-page">
     <section class="catalog-hero" aria-labelledby="catalog-title">
-      <p class="hero__stamp">Selección Mundo JJersey</p>
-      <h1 id="catalog-title">Ropa de fútbol elegida para usar con identidad.</h1>
-      <p>Camisetas, camperas y shorts con mirada futbolera y streetwear. Mirá el stock real y consultá por WhatsApp el producto que te mueve.</p>
+      <p class="hero__stamp">Perchero disponible</p>
+      <h1 id="catalog-title">La tanda actual de Mundo JJersey.</h1>
+      <p>Camisetas, camperas y shorts con talle, temporada y stock real. Si una te cierra, entrás a la ficha y escribís por WhatsApp con el modelo cargado.</p>
+      <div class="catalog-hero__actions">
+        <a class="button" href={contactHref} target={contactTarget} rel={contactRel}>Consultar tanda</a>
+        <span>Cada camiseta tiene su ficha para escribir con el producto ya cargado.</span>
+      </div>
       <dl class="catalog-hero__facts" aria-label="Datos del catálogo">
         <div><dt>Stock</dt><dd>por talle</dd></div>
-        <div><dt>Compra</dt><dd>por mensaje</dd></div>
+        <div><dt>Reserva</dt><dd>por mensaje</dd></div>
         <div><dt>Consulta</dt><dd>WhatsApp directo</dd></div>
       </dl>
       <ul class="catalog-chips" aria-label="Categorías representadas en el catálogo">
@@ -38,7 +47,8 @@ const products = hasSanityConfig
     ) : (
       <section class="empty-state" aria-live="polite">
         <h2>Estamos preparando la próxima selección.</h2>
-        <p>Los productos aparecen acá cuando el stock está listo para consultar. Volvé pronto o escribinos por WhatsApp si buscás un equipo en particular.</p>
+        <p>Los productos aparecen acá cuando la tanda está lista. Si buscás un equipo, selección o temporada puntual, escribinos y revisamos el perchero.</p>
+        <a class="button" href={contactHref} target={contactTarget} rel={contactRel}>Escribir por WhatsApp</a>
       </section>
     )}
   </main>

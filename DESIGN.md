@@ -6,17 +6,17 @@ Mundo JJersey is a public brand catalog for new football jerseys. It uses Astro 
 
 ## Design Direction
 
-The primary direction is a balanced street-catalog system: premium deep blue foundation with streetwear energy in hero composition, cards, badges, section rhythm and calls to action.
+The primary direction is an “archivo de tandas futboleras”: a deep blue foundation with poster-like jersey photography, garment-tag details, stock stamps, asymmetric sections, and WhatsApp as the real sales counter.
 
-The site should feel modern, football-aware and commercial, inspired by the strong hero, simple navigation and clean product grids of KickOffs, with the catalog confidence and collection depth associated with Classic Football Shirts. These references guide structure and trust, not direct visual copying.
+The site should feel modern, football-aware and commercial, inspired by the confidence of vintage football shirt catalogs, the pace of Instagram drop culture, and the physical language of hang tags, receipts, folded jerseys and perchero stock. These references guide structure and trust, not direct visual copying.
 
 ## Visual Personality
 
 - Energetic, young, bold.
-- Premium but close.
+- Confident but close.
 - Football culture without literal football clichés.
 - Commercial without becoming a marketplace.
-- Retro-modern without looking old or nostalgic by default.
+- Retro-current without looking old or nostalgic by default.
 
 ## Color System
 
@@ -36,8 +36,9 @@ Use the palette below as the primary identity system.
 ### Color Rules
 
 - Navy is the base identity color. It should carry the brand more than cream.
-- Gold is an accent, never the dominant surface color.
+- Gold is an accent and stock stamp, never a luxury wash over the whole site.
 - Cream is allowed for contrast and product-card breathing room, but must not turn the site into beige luxury.
+- Photo color should carry extra energy. Do not invent more accent tokens unless the product photography demands it.
 - Body text must maintain WCAG AA contrast.
 - Avoid default gray-on-tinted-background text. Muted text should be a darker blue/ink mix, not generic gray.
 
@@ -108,13 +109,14 @@ Recommended order:
 ### Product Cards
 
 - Use strong image area, clear title, team/season metadata, price and stock.
+- Cards should feel like product tags from a current tanda, not generic ecommerce cards.
 - Cards can use layered or framed treatments, but avoid generic gray borders.
 - Hover can lift or reveal secondary information, but content must remain accessible without hover.
 
 ### Category Tiles
 
 - Large, high-impact blocks for Clubes, Selecciones and Retro.
-- Should feel like merch/drop navigation, not basic category buttons.
+- Should feel like different doors into the perchero: clubes, selecciones, retro and tanda actual must not share identical treatment.
 
 ### Trust Blocks
 

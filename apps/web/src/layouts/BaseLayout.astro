@@ -1,6 +1,7 @@
 ---
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import { getSiteContact } from '../lib/site-contact';
 import '../styles/global.css';
 
 interface Props {
@@ -17,6 +18,8 @@ const {
 
 const siteUrl = import.meta.env.PUBLIC_SITE_URL || Astro.url.origin;
 const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
+const ogImageUrl = new URL('/og.svg', siteUrl).toString();
+const siteContact = await getSiteContact();
 ---
 
 <!doctype html>
@@ -26,11 +29,26 @@ const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mundo JJersey" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <title>{title}</title>
   </head>
   <body>
-    <SiteHeader />
+    <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
+    <SiteHeader whatsappUrl={siteContact.whatsappUrl} />
     <slot />
-    <SiteFooter />
+    <SiteFooter whatsappUrl={siteContact.whatsappUrl} instagramUrl={siteContact.instagramUrl} />
   </body>
 </html>

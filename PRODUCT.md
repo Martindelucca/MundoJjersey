@@ -6,21 +6,21 @@ brand
 
 ## Users
 
-Mundo JJersey habla principalmente a jóvenes futboleros y a hinchas casuales que compran camisetas por identidad, estilo y pertenencia. Buscan una camiseta que funcione tanto como prenda urbana como pieza futbolera, sin tener que navegar una tienda compleja ni pasar por un checkout tradicional.
+Mundo JJersey habla principalmente a jóvenes futboleros y a hinchas casuales que compran camisetas por club, selección, temporada y pinta. Buscan una camiseta que funcione como prenda urbana y como guiño futbolero, sin tener que navegar una tienda infinita ni pasar por un checkout tradicional.
 
-El usuario llega con intención de descubrir, comparar y consultar rápido. Puede estar buscando un club específico, una camiseta retro, una selección o simplemente algo que le guste para usar. La experiencia debe hacerlo sentir que está viendo una selección curada, no un listado genérico.
+El usuario llega con intención de descubrir, comparar y consultar rápido. Puede estar buscando un club específico, una camiseta retro, una selección o simplemente algo que le guste para usar. La experiencia debe hacerlo sentir que está mirando una tanda real de perchero: pocas prendas, criterio claro, stock chico y reserva directa por WhatsApp.
 
 ## Product Purpose
 
-Mundo JJersey es un catálogo administrable de camisetas de fútbol nuevas, retro y actuales. Su objetivo es generar deseo de marca, permitir una exploración clara del catálogo y convertir el interés en una consulta directa por WhatsApp.
+Mundo JJersey es un catálogo de tandas de camisetas de fútbol nuevas, retro y actuales. Su objetivo es generar deseo de marca, permitir una exploración clara del catálogo y convertir el interés en una consulta directa por WhatsApp.
 
 El sitio no compite como marketplace ni como e-commerce completo. No tiene carrito ni pagos online. Su valor está en mostrar producto con criterio, transmitir confianza y reducir la fricción para preguntar disponibilidad, talle, precio, envío o formas de pago por WhatsApp.
 
 ## Brand Personality
 
-La personalidad de marca es energética, joven y bold, con una base premium y confiable. Debe sentirse streetwear moderno, futbolero y comercial, pero sin caer en clichés visuales de deporte ni en una plantilla de tienda sin identidad.
+La personalidad de marca es energética, joven y bold, con una base confiable. Debe sentirse como archivo de camisetas, perchero de tanda y streetwear futbolero argentino, pero sin caer en clichés visuales de deporte ni en una plantilla de tienda sin identidad.
 
-La voz debe ser directa, cercana y honesta. La marca puede hablar con energía de drop y novedad, pero siempre con claridad: qué hay disponible, cómo consultar y por qué la selección tiene criterio.
+La voz debe ser directa, cercana y honesta. La marca puede hablar con energía de tanda y novedad, pero siempre con claridad: qué hay disponible, qué talle queda, cómo abrir la ficha de una camiseta y cómo reservar por WhatsApp.
 
 ## Anti-references
 

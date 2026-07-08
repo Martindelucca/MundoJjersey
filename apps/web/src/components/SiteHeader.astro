@@ -1,25 +1,47 @@
 ---
-const navLinks = [
-  { href: '/', label: 'Inicio' },
+import logoImage from '../../fotos/LogoMundoJjersey.png';
+
+interface Props {
+  whatsappUrl?: string;
+}
+
+const { whatsappUrl = '' } = Astro.props;
+const pathname = Astro.url.pathname;
+const primaryLinks = [
   { href: '/catalogo', label: 'Catálogo' },
-  { href: '/catalogo/camisetas', label: 'Camisetas' },
-  { href: '/catalogo/camperas', label: 'Camperas' },
-  { href: '/catalogo/shorts', label: 'Shorts' },
+  { href: '/#nuevos-ingresos', label: 'Nuevos ingresos' },
   { href: '#contacto', label: 'Contacto' }
 ];
+
+function isCurrentLink(href: string): boolean {
+  if (href === '/') {
+    return pathname === '/';
+  }
+
+  if (href.startsWith('#')) {
+    return false;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 ---
 
 <header class="site-header">
   <div class="site-header__inner site-shell">
     <a class="site-header__brand" href="/" aria-label="Mundo JJersey inicio">
-      <span class="site-header__mark" aria-hidden="true">MJ</span>
+      <span class="site-header__mark" aria-hidden="true">
+        <img src={logoImage.src} alt="" loading="eager" />
+      </span>
       <span>Mundo JJersey</span>
     </a>
 
     <nav class="site-header__nav" aria-label="Navegacion principal">
-      {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      {primaryLinks.map((link) => <a href={link.href} aria-current={isCurrentLink(link.href) ? 'page' : undefined}>{link.label}</a>)}
     </nav>
 
-    <a class="site-header__cta" href="/catalogo">Ver catálogo</a>
+    <div class="site-header__actions">
+      {whatsappUrl ? <a class="site-header__wa" href={whatsappUrl} target="_blank" rel="noreferrer">WhatsApp</a> : null}
+      <a class="site-header__cta" href="/catalogo">Ver catálogo</a>
+    </div>
   </div>
 </header>

@@ -5,6 +5,7 @@ import { catalogCategories, getCatalogCategoryBySlug } from '../../lib/catalog/c
 import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
 import { productsByCategoryQuery } from '../../lib/sanity/queries';
 import type { ProductSummary } from '../../lib/sanity/types';
+import { getSiteContact } from '../../lib/site-contact';
 
 export function getStaticPaths() {
   return catalogCategories.map((category) => ({ params: { category: category.slug } }));
@@ -15,6 +16,10 @@ const category = getCatalogCategoryBySlug(categorySlug);
 const products = hasSanityConfig && category
   ? await sanityClient.fetch<ProductSummary[]>(productsByCategoryQuery, { category: category.value })
   : [];
+const siteContact = await getSiteContact();
+const contactHref = siteContact.whatsappUrl || '#contacto';
+const contactTarget = siteContact.whatsappUrl ? '_blank' : undefined;
+const contactRel = siteContact.whatsappUrl ? 'noreferrer' : undefined;
 ---
 
 <BaseLayout
@@ -22,11 +27,15 @@ const products = hasSanityConfig && category
   description={category?.description || 'Productos de fútbol disponibles para consultar por WhatsApp.'}
   canonicalPath={`/catalogo/${categorySlug}`}
 >
-  <main class="site-shell catalog-page">
+  <main id="contenido-principal" class="site-shell catalog-page">
     <section class="catalog-hero" aria-labelledby="catalog-category-title">
       <p class="hero__stamp">Catálogo por categoría</p>
       <h1 id="catalog-category-title">{category?.title}</h1>
       <p>{category?.description}</p>
+      <div class="catalog-hero__actions">
+        <a class="button" href={contactHref} target={contactTarget} rel={contactRel}>Consultar tanda</a>
+        <span>Entrá a una ficha para escribir con esa camiseta cargada, o preguntá si no ves tu equipo.</span>
+      </div>
       <dl class="catalog-hero__facts" aria-label="Datos de la categoría">
         <div><dt>Categoría</dt><dd>{category?.plural}</dd></div>
         <div><dt>Estado</dt><dd>nuevo</dd></div>
@@ -47,7 +56,8 @@ const products = hasSanityConfig && category
     ) : (
       <section class="empty-state" aria-live="polite">
         <h2>{category?.plural} en preparación.</h2>
-        <p>Cuando haya stock listo de esta categoría, va a aparecer acá. También podés escribirnos por WhatsApp si buscás algo puntual.</p>
+        <p>Cuando haya stock listo de esta categoría, va a aparecer acá. También podés escribirnos si buscás un club, selección o temporada puntual.</p>
+        <a class="button" href={contactHref} target={contactTarget} rel={contactRel}>Escribir por WhatsApp</a>
       </section>
     )}
   </main>

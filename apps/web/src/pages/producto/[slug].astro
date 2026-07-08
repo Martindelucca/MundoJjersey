@@ -66,7 +66,7 @@ const relatedProducts = product
   title={product ? `${product.title} | Mundo JJersey` : 'Producto no encontrado | Mundo JJersey'}
   description={product?.description || 'Detalle de producto disponible para consultar por WhatsApp.'}
 >
-  <main class="site-shell product-detail-page">
+  <main id="contenido-principal" class="site-shell product-detail-page">
     <nav class="breadcrumbs" aria-label="Migas de pan">
       <a href="/">Inicio</a>
       <span aria-hidden="true">/</span>
@@ -79,7 +79,7 @@ const relatedProducts = product
       <>
         <section class="product-detail" aria-labelledby="product-title">
           <div class="product-detail__media">
-            {imageUrl ? <img src={imageUrl} alt={imageAlt} /> : <span>Sin imagen</span>}
+            {imageUrl ? <img src={imageUrl} alt={imageAlt} /> : <span class="product-detail__image-placeholder">Imagen pendiente</span>}
           </div>
 
           <div class="product-detail__content product-detail__sheet">
@@ -92,7 +92,7 @@ const relatedProducts = product
             <div class="product-detail__commerce" aria-label="Precio y disponibilidad">
               <p class="product-detail__price">{price}</p>
               <p class={isAvailable ? 'stock-label' : 'stock-label stock-label--empty'}>
-                {isAvailable ? `${totalStock} disponible${totalStock === 1 ? '' : 's'}` : 'Sin stock'}
+                {isAvailable ? `${totalStock} en tanda` : 'Sin stock'}
               </p>
             </div>
 
@@ -127,6 +127,11 @@ const relatedProducts = product
 
             <div class="product-detail__cta">
               <WhatsAppButton href={whatsappUrl} available={isAvailable} />
+              <ul class="product-detail__confirm" aria-label="Qué confirmamos por WhatsApp">
+                <li>Talle y medidas</li>
+                <li>Estado de la camiseta</li>
+                <li>Envío y forma de pago</li>
+              </ul>
               <p class="product-detail__trust">Te respondemos por disponibilidad, talle y envío.</p>
             </div>
           </div>
@@ -135,8 +140,8 @@ const relatedProducts = product
         {relatedProducts.length > 0 && (
           <section class="related-products" aria-labelledby="related-products-title">
             <div>
-              <p class="eyebrow">También te puede gustar</p>
-              <h2 id="related-products-title">Más productos</h2>
+              <p class="eyebrow">Seguís mirando la tanda</p>
+              <h2 id="related-products-title">Más del perchero</h2>
             </div>
             <div class="product-grid">
               {relatedProducts.map((relatedProduct) => <ProductCard product={relatedProduct} />)}

@@ -2,7 +2,7 @@
 import { getImageUrl } from '../lib/sanity/image';
 import type { ProductSummary } from '../lib/sanity/types';
 import { getProductCategoryLabel } from '../lib/catalog/categories';
-import { getTotalStock, isAvailable as hasAvailableStock } from '../lib/catalog/availability';
+import { getAvailableSizes, getTotalStock, isAvailable as hasAvailableStock } from '../lib/catalog/availability';
 
 interface Props {
   product: ProductSummary;
@@ -10,10 +10,18 @@ interface Props {
 
 const { product } = Astro.props;
 const imageUrl = getImageUrl(product.image, 640);
-const totalStock = getTotalStock(product.variants);
-const isAvailable = hasAvailableStock(product.variants);
+const variants = product.variants || [];
+const totalStock = getTotalStock(variants);
+const isAvailable = hasAvailableStock(variants);
+const availableSizes = getAvailableSizes(variants);
 const stockLabel = isAvailable ? 'Disponible' : 'Sin stock';
 const categoryLabel = getProductCategoryLabel(product.category);
+const teamLabel = product.team?.name || 'Equipo a confirmar';
+const seasonLabel = product.season || 'Tanda actual';
+const sizesPreview = availableSizes.length > 0
+  ? `Talles ${availableSizes.slice(0, 4).join(' / ')}${availableSizes.length > 4 ? ' +' : ''}`
+  : 'Consultar reposición';
+const stockText = isAvailable ? `${totalStock} en tanda` : 'Sin stock · preguntá reposición';
 const price = new Intl.NumberFormat('es-AR', {
   style: 'currency',
   currency: 'ARS',
@@ -26,20 +34,25 @@ const price = new Intl.NumberFormat('es-AR', {
     <span class={isAvailable ? 'product-card__badge' : 'product-card__badge product-card__badge--empty'}>
       {stockLabel}
     </span>
-    {imageUrl ? <img src={imageUrl} alt={product.image?.alt || product.title} loading="lazy" /> : <span>Sin imagen</span>}
+    <span class="product-card__season">{seasonLabel}</span>
+    {imageUrl ? (
+      <img src={imageUrl} alt={product.image?.alt || product.title} loading="lazy" />
+    ) : (
+      <span class="product-card__placeholder" aria-hidden="true"><span>MJJ</span><small>Imagen pendiente</small></span>
+    )}
   </a>
   <div class="product-card__body">
     <div class="product-card__ticket" aria-label="Datos rápidos del producto">
-      <span>{categoryLabel}</span>
       <span>{product.brand}</span>
-      <span>{isAvailable ? `${totalStock} en stock` : 'Sin stock'}</span>
+      <span>{categoryLabel}</span>
+      <span>{teamLabel} · {seasonLabel}</span>
     </div>
-    <p class="product-card__meta">{product.team?.name || 'Equipo por consultar'}{product.season ? ` · ${product.season}` : ''}</p>
+    <p class="product-card__meta">{categoryLabel} · {sizesPreview}</p>
     <h2><a href={`/producto/${product.slug}`}>{product.title}</a></h2>
     <div class="product-card__details">
       <p class="product-card__price">{price}</p>
       <p class={isAvailable ? 'product-card__stock' : 'product-card__stock product-card__stock--empty'}>
-        {isAvailable ? `${totalStock} disponible${totalStock === 1 ? '' : 's'}` : 'Sin stock'}
+        {stockText}
       </p>
     </div>
   </div>
