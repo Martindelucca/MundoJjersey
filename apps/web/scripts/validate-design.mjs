@@ -96,7 +96,7 @@ assert.match(baseLayout, /<SiteFooter whatsappUrl=\{siteContact\.whatsappUrl\} i
 
 assert.match(siteHeader, /href="\/"/);
 assert.match(siteHeader, /Mundo JJersey/);
-assert.match(siteHeader, /href: '\/catalogo'/);
+assert.match(siteHeader, /href="\/catalogo"/);
 assert.match(siteHeader, /href: '#contacto'/);
 assert.match(siteHeader, /Ver cat[aá]logo/);
 

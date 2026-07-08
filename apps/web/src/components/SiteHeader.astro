@@ -1,16 +1,12 @@
 ---
-import logoImage from '../../fotos/LogoMundoJjersey.png';
-
 interface Props {
   whatsappUrl?: string;
 }
 
-const { whatsappUrl = '' } = Astro.props;
 const pathname = Astro.url.pathname;
 const primaryLinks = [
-  { href: '/catalogo', label: 'Catálogo' },
-  { href: '/#nuevos-ingresos', label: 'Nuevos ingresos' },
-  { href: '#contacto', label: 'Contacto' }
+  { href: '/#nuevos-ingresos', label: 'Nuevos ingresos', shortLabel: 'Nuevos' },
+  { href: '#contacto', label: 'Contacto', shortLabel: 'Contacto' }
 ];
 
 function isCurrentLink(href: string): boolean {
@@ -30,18 +26,25 @@ function isCurrentLink(href: string): boolean {
   <div class="site-header__inner site-shell">
     <a class="site-header__brand" href="/" aria-label="Mundo JJersey inicio">
       <span class="site-header__mark" aria-hidden="true">
-        <img src={logoImage.src} alt="" loading="eager" />
+        <img src="/brand-mark.svg" alt="" loading="eager" />
       </span>
-      <span>Mundo JJersey</span>
+      <span class="site-header__brand-copy">
+        <span>Mundo JJersey</span>
+        <small>Camisetas seleccionadas</small>
+      </span>
     </a>
 
     <nav class="site-header__nav" aria-label="Navegacion principal">
-      {primaryLinks.map((link) => <a href={link.href} aria-current={isCurrentLink(link.href) ? 'page' : undefined}>{link.label}</a>)}
+      {primaryLinks.map((link) => (
+        <a href={link.href} aria-current={isCurrentLink(link.href) ? 'page' : undefined}>
+          <span class="site-header__label-full">{link.label}</span>
+          <span class="site-header__label-short" aria-hidden="true">{link.shortLabel}</span>
+        </a>
+      ))}
     </nav>
 
     <div class="site-header__actions">
-      {whatsappUrl ? <a class="site-header__wa" href={whatsappUrl} target="_blank" rel="noreferrer">WhatsApp</a> : null}
-      <a class="site-header__cta" href="/catalogo">Ver catálogo</a>
+      <a class="site-header__cta" href="/catalogo"><span>Ver catálogo</span></a>
     </div>
   </div>
 </header>
