@@ -5,8 +5,14 @@ interface Props {
 
 const pathname = Astro.url.pathname;
 const primaryLinks = [
-  { href: '/#nuevos-ingresos', label: 'Nuevos ingresos', shortLabel: 'Nuevos' },
+  { href: '/#nuevos-ingresos', label: 'Nuevos ingresos', shortLabel: 'Nuevos ingresos' },
   { href: '#contacto', label: 'Contacto', shortLabel: 'Contacto' }
+];
+const mobileLinks = [
+  { href: '/catalogo', label: 'Ver catálogo' },
+  { href: '/#nuevos-ingresos', label: 'Nuevos ingresos' },
+  { href: '#contacto', label: 'Contacto' },
+  { href: '/#sobre-nosotros', label: 'Sobre nosotros' }
 ];
 
 function isCurrentLink(href: string): boolean {
@@ -44,7 +50,18 @@ function isCurrentLink(href: string): boolean {
     </nav>
 
     <div class="site-header__actions">
-      <a class="site-header__cta" href="/catalogo"><span>Ver catálogo</span></a>
+      <a class="site-header__cta" href="/catalogo">
+        <span class="site-header__cta-hole" aria-hidden="true"></span>
+        <span class="site-header__cta-full">Ver catálogo</span>
+        <span class="site-header__cta-short" aria-hidden="true">Catálogo</span>
+      </a>
     </div>
+
+    <details class="site-header__menu">
+      <summary>Menú</summary>
+      <div class="site-header__menu-panel">
+        {mobileLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </div>
+    </details>
   </div>
 </header>
