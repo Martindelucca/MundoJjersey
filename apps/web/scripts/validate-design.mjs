@@ -19,7 +19,6 @@ const [
   categoryTile,
   productCard,
   whatsappButton,
-  trustBlock,
   faqBlock,
   ...pages
 ] = await Promise.all([
@@ -33,7 +32,6 @@ const [
   readProjectFile('apps/web/src/components/CategoryTile.astro'),
   readProjectFile('apps/web/src/components/ProductCard.astro'),
   readProjectFile('apps/web/src/components/WhatsAppButton.astro'),
-  readProjectFile('apps/web/src/components/TrustBlock.astro'),
   readProjectFile('apps/web/src/components/FAQBlock.astro'),
   readProjectFile('apps/web/src/pages/index.astro'),
   readProjectFile('apps/web/src/pages/catalogo.astro'),
@@ -85,6 +83,17 @@ assert.match(css, /final-cta/);
 assert.match(css, /product-card__ticket/);
 assert.match(css, /product-detail__sheet/);
 
+const skipLinkRule = css.match(/\.skip-link\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const siteHeaderRule = css.match(/\.site-header\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(skipLinkRule, /z-index:\s*4\d/);
+assert.match(siteHeaderRule, /z-index:\s*20/);
+
+const summaryFocusRule = css.match(/\.site-header__menu summary:focus-visible,\s*\.faq-block__item summary:focus-visible,\s*\.site-footer__mobile-navigation summary:focus-visible\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(summaryFocusRule, /outline:\s*3px solid var\(--color-gold-soft\)/);
+
+const mobileMenuSummaryRule = css.match(/\.site-header__menu summary\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(mobileMenuSummaryRule, /min-height:\s*44px/);
+
 const reducedMotionRule = css.match(/@media \(prefers-reduced-motion: reduce\)\s*{(?<body>[\s\S]*)}\s*$/)?.groups?.body ?? '';
 assert.match(reducedMotionRule, /transition-property:\s*none/);
 
@@ -129,11 +138,6 @@ assert.doesNotMatch(productCard, /Nuevo ingreso/);
 assert.match(whatsappButton, /rel="noreferrer"/);
 assert.match(whatsappButton, /aria-label/);
 
-assert.match(trustBlock, /interface Props/);
-assert.match(trustBlock, /title: string/);
-assert.match(trustBlock, /copy: string/);
-assert.match(trustBlock, /class="trust-block"/);
-
 assert.match(faqBlock, /consulta/i);
 assert.match(faqBlock, /nuev[oa]s/i);
 assert.match(faqBlock, /talles/i);
@@ -145,7 +149,6 @@ const catalog = pages[1];
 const productDetail = pages[2];
 assert.match(home, /import ProductCard/);
 assert.match(home, /import CategoryTile/);
-assert.match(home, /import TrustBlock/);
 assert.match(home, /import FAQBlock/);
 assert.match(home, /hasSanityConfig/);
 assert.match(home, /productsQuery/);
@@ -155,17 +158,20 @@ assert.match(home, /hero__poster/);
 assert.match(home, /Fútbol para vestir todos los días/);
 assert.doesNotMatch(home, /drop-marquee/);
 assert.doesNotMatch(home, /buying-flow/);
-assert.match(home, /Nuevos ingresos/);
+assert.match(home, /Recién colgadas/);
 assert.match(home, /editorialCategories/);
 assert.match(home, /Clubes/);
 assert.match(home, /Selecciones/);
 assert.match(home, /Retro/);
+assert.match(home, /Camperas/);
 assert.match(home, /Entrá por cultura/);
 assert.match(home, /final-cta/);
 assert.match(home, /contactHref/);
 assert.match(home, /catalogCategories/);
 assert.match(home, /category-grid--drop/);
 assert.doesNotMatch(home, /label=\{`0\$\{index \+ 1\}`\}/);
+assert.doesNotMatch(home, /Foto de los dueños de Mundo JJersey pendiente/);
+assert.doesNotMatch(home, /role="img"/);
 
 assert.match(catalog, /<ul class="catalog-chips"/);
 assert.doesNotMatch(catalog, /<nav class="catalog-chips"/);

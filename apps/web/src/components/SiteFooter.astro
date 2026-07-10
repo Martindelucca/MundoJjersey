@@ -6,40 +6,53 @@ interface Props {
 
 const { whatsappUrl = '', instagramUrl = '' } = Astro.props;
 const footerLinks = [
-  { href: '/', label: 'Inicio' },
   { href: '/catalogo', label: 'Catálogo' },
   { href: '/#nuevos-ingresos', label: 'Nuevos ingresos' },
   { href: '/catalogo/camisetas', label: 'Camisetas' },
   { href: '/catalogo/camperas', label: 'Camperas' },
   { href: '/catalogo/shorts', label: 'Shorts' }
 ];
+const currentYear = new Date().getFullYear();
 ---
 
 <footer class="site-footer" id="contacto">
   <div class="site-footer__inner site-shell">
     <div class="site-footer__brand">
-      <p class="site-footer__eyebrow">Mundo JJersey</p>
-      <p>
-        Tandas chicas de camisetas, camperas y shorts para hinchas que buscan club, selección, temporada y consulta directa.
-      </p>
+      <a class="site-footer__brand-link" href="/" aria-label="Mundo JJersey inicio">
+        <span class="site-footer__mark" aria-hidden="true"><img src="/brand-mark.svg" alt="" loading="lazy" /></span>
+        <span>Mundo JJersey</span>
+      </a>
+      <p>Camisetas nuevas, actuales y retro para vestir el fútbol todos los días.</p>
     </div>
 
-    <nav class="site-footer__links" aria-label="Enlaces del pie">
-      {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
-    </nav>
+    <div class="site-footer__navigation site-footer__navigation--desktop">
+      <p class="site-footer__label">Explorar</p>
+      <nav class="site-footer__links" aria-label="Explorar el catálogo">
+        {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    </div>
 
     <div class="site-footer__contact" aria-label="Contacto directo">
-      <p class="site-footer__note">
-        Entrá a la ficha de la camiseta o escribinos por la tanda actual. Revisamos talle, envío y formas de pago antes de separar.
-      </p>
+      <p class="site-footer__label">¿Tenés una consulta?</p>
       <div class="site-footer__contact-links">
         {whatsappUrl ? (
           <a class="site-footer__contact-link site-footer__contact-link--primary" href={whatsappUrl} target="_blank" rel="noreferrer">Escribir por WhatsApp</a>
         ) : (
           <p class="contact-unavailable">WhatsApp no está configurado todavía.</p>
         )}
-        {instagramUrl ? <a class="site-footer__contact-link" href={instagramUrl} target="_blank" rel="noreferrer">Instagram</a> : null}
+        {instagramUrl ? <a class="site-footer__contact-link site-footer__contact-link--instagram" href={instagramUrl} target="_blank" rel="noreferrer">Instagram</a> : null}
       </div>
     </div>
+
+    <details class="site-footer__mobile-navigation">
+      <summary>Explorar</summary>
+      <nav class="site-footer__links" aria-label="Explorar el catálogo">
+        {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    </details>
+  </div>
+  <div class="site-footer__bottom site-shell">
+    <p>© {currentYear} Mundo JJersey</p>
+    <p>Catálogo de camisetas nuevas · Consultas por WhatsApp</p>
   </div>
 </footer>

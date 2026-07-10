@@ -1,5 +1,17 @@
 import { defineConfig } from 'astro/config';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { loadEnv } from 'vite';
 
-export default defineConfig({
-  site: process.env.PUBLIC_SITE_URL || 'http://localhost:4321'
+const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, rootDir, '');
+
+  return {
+    site: env.PUBLIC_SITE_URL || 'http://localhost:4321',
+    vite: {
+      envDir: rootDir
+    }
+  };
 });

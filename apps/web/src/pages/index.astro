@@ -3,9 +3,8 @@ import CategoryTile from '../components/CategoryTile.astro';
 import FAQBlock from '../components/FAQBlock.astro';
 import ProductCard from '../components/ProductCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import TrustBlock from '../components/TrustBlock.astro';
 import heroPosterImage from '../../fotos/HERO1.jpg';
-import actualImage from '../../fotos/actual.jpg';
+import camperasImage from '../../fotos/camperas.jpg';
 import clubesImage from '../../fotos/clubes2.jpg';
 import retroImage from '../../fotos/retro.jpg';
 import seleccionesImage from '../../fotos/selecciones.jpg';
@@ -59,14 +58,14 @@ const editorialCategories = [
     tone: 'secondary' as const
   },
   {
-    title: 'Nuevos ingresos',
-    label: 'stock chico',
-    copy: 'La tanda más reciente para revisar talle real y reservar por WhatsApp antes de que vuele.',
-    href: '#nuevos-ingresos',
-    imageSrc: actualImage.src,
-    imageAlt: 'Camiseta actual colgada en una percha',
-    cue: 'Ver tanda',
-    variant: 'fresh' as const,
+    title: 'Camperas',
+    label: 'abrigo de cancha',
+    copy: 'Abrigo con identidad de cancha para usar todos los días.',
+    href: '/catalogo/camperas',
+    imageSrc: camperasImage.src,
+    imageAlt: 'Campera de fútbol colgada en una percha',
+    cue: 'Ver camperas',
+    variant: 'poster' as const,
     tone: 'quiet' as const
   }
 ];
@@ -96,8 +95,8 @@ const editorialCategories = [
 
     <section id="nuevos-ingresos" class="site-shell home-section home-section--arrivals">
       <SectionHeader
-        title="Lo último que entró al perchero"
-        copy="Modelos recién cargados para revisar talle, precio y disponibilidad antes de separar por WhatsApp."
+        title="Recién colgadas"
+        copy="La tanda nueva va apareciendo acá: clubes, selecciones y retro con stock confirmado por talle."
       />
 
       {products.length > 0 ? (
@@ -117,7 +116,7 @@ const editorialCategories = [
       <div class="site-shell categories__inner">
         <SectionHeader
           title="Entrá por cultura, no por góndola"
-          copy="Buscá como busca un hincha: club, selección, retro o tanda nueva. Las prendas quedan abajo, como ruta secundaria."
+          copy="Buscá como busca un hincha: club, selección, retro o campera. Si preferís ir por prenda, también tenés accesos rápidos."
         />
 
         <div class="category-grid category-grid--drop">
@@ -138,7 +137,7 @@ const editorialCategories = [
         </div>
 
         <div class="garment-routes" aria-label="Buscar por tipo de prenda">
-          <p>También podés buscar por tipo de prenda</p>
+          <p>Buscar por prenda</p>
           <div>
             {catalogCategories.map((category) => <a href={`/catalogo/${category.slug}`}>{category.plural}</a>)}
           </div>
@@ -147,44 +146,26 @@ const editorialCategories = [
     </section>
 
     <section id="sobre-nosotros" class="site-shell home-section about-section" aria-labelledby="about-title">
-      <div class="about-section__panel">
-        <p class="about-section__label">Mundo JJersey</p>
-        <h2 id="about-title">No cargamos por cargar.</h2>
+      <div class="about-section__portrait">
+        <span>Mundo JJersey</span>
       </div>
       <div class="about-section__copy">
+        <h2 id="about-title">Sobre nosotros</h2>
         <p>
-          Miramos cada camiseta como club, selección y temporada. Si no tiene estado claro, talle confirmado o buena presencia, no entra al catálogo.
+          Somos Mundo JJersey: amigos de toda la vida que decidimos emprender con la venta de indumentaria deportiva, especializados en camisetas de fútbol actuales y retro de colección.
         </p>
         <p>
-          La idea es simple: pocas prendas, fotos cuidadas, stock real y una respuesta humana para separar sin vueltas.
+          En MJ sabemos lo frustrante que es no conseguir esa camiseta que tanto te gusta, tener que pagar fortunas por la de tu equipo favorito o buscar durante años una retro.
         </p>
-        <ul class="about-section__proof" aria-label="Criterios de selección">
-          <li>Temporada visible</li>
-          <li>Talle confirmado</li>
-          <li>Stock chico</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="site-shell home-section trust-section">
-      <SectionHeader
-        title="Consultá con confianza"
-        copy="Antes de reservar, resolvemos lo que importa: talle, estado, precio, envío y forma de pago."
-        variant="compact"
-      />
-
-      <div class="trust-grid">
-        <TrustBlock title="Stock por talle" copy="No vendemos a ciegas. Cada ficha separa disponibilidad real por talle cargado." />
-        <TrustBlock title="Link directo por camiseta" copy="Cada ficha abre WhatsApp con el modelo cargado para no explicar de cero." />
-        <TrustBlock title="Envío coordinado" copy="Vemos ubicación, tiempos y costo según la camiseta elegida." />
-        <TrustBlock title="Medidas antes de separar" copy="Si dudás con el talle, revisamos medidas y detalles por mensaje." />
+        <p>Contamos con stock permanente de algunos modelos y, si no lo tenemos, podemos traerlo a pedido.</p>
+        <p>Trabajamos con líneas Premium y revisamos cada producto para ofrecer buena calidad al mejor valor posible.</p>
       </div>
     </section>
 
     <section class="site-shell home-section faq-section">
       <SectionHeader
         title="Preguntas antes de escribir"
-        copy="Lo básico para llegar a WhatsApp con todo más claro."
+        copy="Lo que suele importar antes de reservar una camiseta."
         variant="compact"
       />
       <FAQBlock />
@@ -192,11 +173,11 @@ const editorialCategories = [
 
     <section class="site-shell home-section final-cta" aria-labelledby="final-cta-title">
       <div>
-        <p class="final-cta__label">Consulta directa</p>
-        <h2 id="final-cta-title">¿Viste una camiseta para separar?</h2>
-        <p>Abrí la ficha de la camiseta y escribinos desde ahí para confirmar talle, precio y envío.</p>
+        <p class="final-cta__label">¿Buscás un modelo?</p>
+        <h2 id="final-cta-title">¿No encontraste la camiseta que buscás?</h2>
+        <p>Escribinos por WhatsApp. Contanos el club, la temporada y el talle que buscás; vemos si podemos conseguirla para vos.</p>
       </div>
-      <a class="button button--with-mark" href={contactHref} target={contactTarget} rel={contactRel}><span>Escribir por WhatsApp</span><span aria-hidden="true">↗</span></a>
+      <a class="button button--with-mark" href={contactHref} target={contactTarget} rel={contactRel}><span>Consultar un modelo</span><span aria-hidden="true">↗</span></a>
     </section>
   </main>
 </BaseLayout>
