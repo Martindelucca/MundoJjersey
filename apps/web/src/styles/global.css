@@ -154,8 +154,6 @@ a:focus-visible {
   width: 2.55rem;
   height: 2.55rem;
   place-items: center;
-  border-radius: 0.8rem;
-  background: color-mix(in srgb, var(--color-ink), transparent 10%);
   color: var(--color-ink);
   font-size: 0.78rem;
   letter-spacing: -0.03em;
@@ -1703,9 +1701,6 @@ h1,
   width: 2.45rem;
   height: 2.45rem;
   place-items: center;
-  border-radius: 0.65rem;
-  background: var(--color-gold);
-  padding: 0.38rem;
 }
 
 .site-footer__mark img {
@@ -2091,7 +2086,6 @@ h1,
   .site-header__mark {
     width: 2.25rem;
     height: 2.25rem;
-    border-radius: 0.68rem;
   }
 
   .site-header__brand-copy {
