@@ -36,7 +36,8 @@ const [
   readProjectFile('apps/web/src/pages/index.astro'),
   readProjectFile('apps/web/src/pages/catalogo.astro'),
   readProjectFile('apps/web/src/pages/producto/[slug].astro'),
-  readProjectFile('apps/web/src/pages/catalogo/[category].astro')
+  readProjectFile('apps/web/src/pages/catalogo/[category].astro'),
+  readProjectFile('apps/web/src/pages/catalogo/[category]/[collection].astro')
 ]);
 
 assert.match(product, /## Register/);
@@ -111,6 +112,7 @@ assert.match(siteHeader, /Ver cat[aá]logo/);
 
 assert.match(siteFooter, /id="contacto"/);
 assert.match(siteFooter, /WhatsApp/);
+assert.match(siteFooter, /Conjuntos/);
 assert.doesNotMatch(siteFooter.toLocaleLowerCase('es-AR'), /checkout|carrito/);
 
 assert.match(sectionHeader, /interface Props/);
@@ -172,16 +174,66 @@ assert.match(home, /category-grid--drop/);
 assert.doesNotMatch(home, /label=\{`0\$\{index \+ 1\}`\}/);
 assert.doesNotMatch(home, /Foto de los dueños de Mundo JJersey pendiente/);
 assert.doesNotMatch(home, /role="img"/);
+assert.match(home, /import aboutImage from '\.\.\/\.\.\/fotos\/nosotros\.JPEG'/);
+assert.match(home, /<Image\s+src=\{aboutImage\}\s+alt="Los amigos detrás de Mundo JJersey cuando eran chicos\."\s+loading="lazy"\s+decoding="async"\s*\/>/);
+assert.match(home, /líneas Premium/);
+assert.doesNotMatch(home, /about-section__portrait/);
+assert.doesNotMatch(home, /<span>Mundo JJersey<\/span>/);
+assert.doesNotMatch(home, /trust-block|about-section__trust/);
 
-assert.match(catalog, /<ul class="catalog-chips"/);
-assert.doesNotMatch(catalog, /<nav class="catalog-chips"/);
-assert.match(catalog, /catalogCategories/);
-assert.match(catalog, /catalog-hero__facts/);
+const aboutCopy = home.match(/<div class="about-section__copy">(?<content>[\s\S]*?)<\/div>/)?.groups?.content ?? '';
+assert.equal((aboutCopy.match(/<p>/g) ?? []).length, 3, 'About copy must have exactly three paragraphs.');
+assert.match(aboutCopy, /Somos Mundo JJersey, amigos de toda la vida\. Creamos este proyecto para compartir nuestra selección de camisetas actuales y retro de colección\./);
+assert.match(aboutCopy, /Sabemos lo difícil que es encontrar esa camiseta que buscás\. Tenemos algunos modelos en stock y también traemos camisetas a pedido\./);
+assert.match(aboutCopy, /Trabajamos con líneas Premium y revisamos cada camiseta antes de sumarla al catálogo\./);
+assert.match(css, /\.about-section__media\s*{(?<body>[^}]*)aspect-ratio:\s*4\s*\/\s*3/);
+assert.match(css, /\.about-section__media img\s*{(?<body>[^}]*)object-fit:\s*contain/);
+assert.doesNotMatch(css, /about-section__portrait/);
+
+const mobileGarmentRoutes = css.match(/@media \(max-width: 780px\)\s*{(?<body>[\s\S]*?)\n}\n\n@media \(max-width: 359px\)/)?.groups?.body ?? '';
+const mobileGarmentRoutesRule = mobileGarmentRoutes.match(/\.garment-routes\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const mobileGarmentRoutesRow = mobileGarmentRoutes.match(/\.garment-routes div\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const garmentRoutesFocusRule = css.match(/\.garment-routes a:focus-visible\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(mobileGarmentRoutesRule, /border:\s*0/);
+assert.match(mobileGarmentRoutesRule, /border-block:\s*1px solid/);
+assert.doesNotMatch(mobileGarmentRoutesRule, /border-(?:left|right):/);
+assert.match(mobileGarmentRoutesRule, /min-width:\s*0/);
+assert.match(mobileGarmentRoutesRule, /max-width:\s*100%/);
+assert.match(mobileGarmentRoutesRow, /flex-wrap:\s*nowrap/);
+assert.match(mobileGarmentRoutesRow, /min-width:\s*0/);
+assert.match(mobileGarmentRoutesRow, /max-width:\s*100%/);
+assert.match(mobileGarmentRoutesRow, /overflow-x:\s*auto/);
+assert.match(mobileGarmentRoutes, /\.garment-routes a\s*{(?<body>[^}]*)min-height:\s*44px/);
+assert.match(mobileGarmentRoutes, /\.garment-routes a\s*{(?<body>[^}]*)white-space:\s*nowrap/);
+assert.match(mobileGarmentRoutes, /\.garment-routes a\s*{(?<body>[^}]*)flex:\s*0 0 auto/);
+assert.match(garmentRoutesFocusRule, /box-shadow:\s*[\s\S]*?inset\s+0\s+0\s+0\s+2px\s+var\(--color-gold-soft\)/);
+assert.match(garmentRoutesFocusRule, /inset\s+0\s+0\s+0\s+4px\s+var\(--color-ink\)/);
+
+const categoryCatalog = pages[3];
+const collectionCatalog = pages[4];
+assert.match(catalog, /CatalogCategoryNavigation/);
+assert.match(catalog, /activeSlug="catalogo"/);
+assert.doesNotMatch(catalog, /<ul class="catalog-chips"/);
+assert.match(catalog, /catalog-hero--compact/);
+assert.doesNotMatch(catalog, /catalog-hero__actions/);
+assert.doesNotMatch(catalog, /catalog-hero__facts/);
+assert.doesNotMatch(catalog, /hero__stamp/);
+assert.match(catalog, /Escribir por WhatsApp/);
+assert.match(categoryCatalog, /catalog-hero--compact/);
+assert.match(collectionCatalog, /catalog-hero--compact/);
+
+for (const filteredCatalog of [categoryCatalog, collectionCatalog]) {
+  assert.doesNotMatch(filteredCatalog, /catalog-hero__actions/);
+  assert.doesNotMatch(filteredCatalog, /catalog-hero__facts/);
+  assert.match(filteredCatalog, /Escribir por WhatsApp/);
+}
 
 assert.match(productDetail, /Te respondemos por disponibilidad, talle y env[ií]o\./);
 assert.match(productDetail, /localhost|127\.0\.0\.1/);
 assert.match(productDetail, /product-detail__sizes/);
 assert.match(productDetail, /product-detail__sheet/);
+assert.doesNotMatch(productDetail, /product-detail__confirm/);
+assert.doesNotMatch(css, /product-detail__confirm/);
 
 const productCardHover = css.match(/\.product-card:hover\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.match(productCardHover, /transform:/);

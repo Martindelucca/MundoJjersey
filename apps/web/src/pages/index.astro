@@ -3,9 +3,11 @@ import CategoryTile from '../components/CategoryTile.astro';
 import FAQBlock from '../components/FAQBlock.astro';
 import ProductCard from '../components/ProductCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
+import { Image } from 'astro:assets';
 import heroPosterImage from '../../fotos/HERO1.jpg';
 import camperasImage from '../../fotos/camperas.jpg';
 import clubesImage from '../../fotos/clubes2.jpg';
+import aboutImage from '../../fotos/nosotros.JPEG';
 import retroImage from '../../fotos/retro.jpg';
 import seleccionesImage from '../../fotos/selecciones.jpg';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -27,7 +29,7 @@ const editorialCategories = [
     title: 'Clubes',
     label: 'identidad de tribuna',
     copy: 'Camisetas de clubes con temporada, color y presencia para usar fuera de la cancha.',
-    href: '/catalogo/camisetas',
+    href: '/catalogo/camisetas/clubes',
     imageSrc: clubesImage.src,
     imageAlt: 'Camiseta retro de Bayer Leverkusen colgada en un estudio',
     cue: 'Ver clubes',
@@ -39,7 +41,7 @@ const editorialCategories = [
     title: 'Selecciones',
     label: 'mundial y calle',
     copy: 'Piezas de selección para quienes buscan fútbol reconocible sin caer en uniforme común.',
-    href: '/catalogo/camisetas',
+    href: '/catalogo/camisetas/selecciones',
     imageSrc: seleccionesImage.src,
     imageAlt: 'Camiseta de Argentina colgada en una percha',
     cue: 'Ver selecciones',
@@ -50,7 +52,7 @@ const editorialCategories = [
     title: 'Retro',
     label: 'temporadas con historia',
     copy: 'Diseños que remiten a una época, una camiseta titular o una suplente difícil de olvidar.',
-    href: '/catalogo/camisetas',
+    href: '/catalogo/camisetas/retro',
     imageSrc: retroImage.src,
     imageAlt: 'Camiseta retro presentada como pieza de archivo',
     cue: 'Ver retro',
@@ -146,19 +148,23 @@ const editorialCategories = [
     </section>
 
     <section id="sobre-nosotros" class="site-shell home-section about-section" aria-labelledby="about-title">
-      <div class="about-section__portrait">
-        <span>Mundo JJersey</span>
+      <div class="about-section__media">
+        <Image
+          src={aboutImage}
+          alt="Los amigos detrás de Mundo JJersey cuando eran chicos."
+          loading="lazy"
+          decoding="async"
+        />
       </div>
       <div class="about-section__copy">
         <h2 id="about-title">Sobre nosotros</h2>
         <p>
-          Somos Mundo JJersey: amigos de toda la vida que decidimos emprender con la venta de indumentaria deportiva, especializados en camisetas de fútbol actuales y retro de colección.
+          Somos Mundo JJersey, amigos de toda la vida. Creamos este proyecto para compartir nuestra selección de camisetas actuales y retro de colección.
         </p>
         <p>
-          En MJ sabemos lo frustrante que es no conseguir esa camiseta que tanto te gusta, tener que pagar fortunas por la de tu equipo favorito o buscar durante años una retro.
+          Sabemos lo difícil que es encontrar esa camiseta que buscás. Tenemos algunos modelos en stock y también traemos camisetas a pedido.
         </p>
-        <p>Contamos con stock permanente de algunos modelos y, si no lo tenemos, podemos traerlo a pedido.</p>
-        <p>Trabajamos con líneas Premium y revisamos cada producto para ofrecer buena calidad al mejor valor posible.</p>
+        <p>Trabajamos con líneas Premium y revisamos cada camiseta antes de sumarla al catálogo.</p>
       </div>
     </section>
 

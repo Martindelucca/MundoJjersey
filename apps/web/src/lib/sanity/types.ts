@@ -9,7 +9,8 @@ export interface SanityImage {
   alt?: string;
 }
 
-export type ProductCategory = 'shirt' | 'jacket' | 'shorts';
+export type ProductCategory = 'shirt' | 'jacket' | 'shorts' | 'set';
+export type EditorialTag = 'club' | 'selection' | 'retro';
 
 export interface ProductVariant {
   size: string;
@@ -36,6 +37,7 @@ export interface ProductSummary {
   slug: string;
   price: number;
   category: ProductCategory;
+  editorialTags?: EditorialTag[];
   brand: string;
   variants?: ProductVariant[];
   season?: string;

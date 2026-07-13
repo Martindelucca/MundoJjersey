@@ -1,6 +1,6 @@
 # Mundo JJersey
 
-Catálogo administrable para camisetas, camperas y shorts de fútbol. El sitio no incluye carrito ni pagos: cada producto deriva consultas a WhatsApp.
+Catálogo administrable para camisetas, camperas, shorts y conjuntos completos de fútbol. El sitio no incluye carrito ni pagos: cada producto deriva consultas a WhatsApp.
 
 ## Stack
 
@@ -63,8 +63,12 @@ Assets pendientes para producción:
 ```txt
 /catalogo
 /catalogo/camisetas
+/catalogo/camisetas/clubes
+/catalogo/camisetas/selecciones
+/catalogo/camisetas/retro
 /catalogo/camperas
 /catalogo/shorts
+/catalogo/conjuntos
 /producto/[slug]
 ```
 
@@ -80,4 +84,4 @@ Para que las cargas en Sanity actualicen el sitio estático sin intervención de
 
 ## Migración de productos existentes
 
-Si ya hay productos cargados con el modelo anterior (`stock` y `sizes`), completá el nuevo campo `variants` en Sanity antes de publicar cambios. El frontend calcula disponibilidad únicamente desde `variants`.
+Cada producto usa `variants` como fuente única de stock. Los conjuntos completos tienen foto, precio y stock propios por talle; no comparten stock con camperas sueltas.

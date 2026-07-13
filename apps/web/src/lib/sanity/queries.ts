@@ -1,49 +1,32 @@
-export const productsQuery = `*[_type == "product"] | order(isFeatured desc, _createdAt desc) {
+const productProjection = `
   _id,
   title,
   "slug": slug.current,
   price,
   category,
+  editorialTags,
   brand,
   variants[]{size, stock},
   season,
   "image": images[0],
   team->{name, "slug": slug.current, country, badge},
   league->{name, "slug": slug.current, country, logo}
-}`;
+`;
 
-export const productsByCategoryQuery = `*[_type == "product" && category == $category] | order(isFeatured desc, _createdAt desc) {
-  _id,
-  title,
-  "slug": slug.current,
-  price,
-  category,
-  brand,
-  variants[]{size, stock},
-  season,
-  "image": images[0],
-  team->{name, "slug": slug.current, country, badge},
-  league->{name, "slug": slug.current, country, logo}
-}`;
+export const productsQuery = `*[_type == "product"] | order(isFeatured desc, _createdAt desc) {${productProjection}}`;
+
+export const productsByCategoryQuery = `*[_type == "product" && category == $category] | order(isFeatured desc, _createdAt desc) {${productProjection}}`;
+
+export const productsByCategoryAndEditorialTagQuery = `*[_type == "product" && category == $category && $editorialTag in editorialTags] | order(isFeatured desc, _createdAt desc) {${productProjection}}`;
 
 export const productSlugsQuery = `*[_type == "product" && defined(slug.current)] {
   "slug": slug.current
 }`;
 
 export const productBySlugQuery = `*[_type == "product" && slug.current == $slug][0] {
-  _id,
-  title,
-  "slug": slug.current,
-  price,
-  category,
-  brand,
-  variants[]{size, stock},
-  season,
+  ${productProjection},
   description,
-  images,
-  "image": images[0],
-  team->{name, "slug": slug.current, country, badge},
-  league->{name, "slug": slug.current, country, logo}
+  images
 }`;
 
 export const siteSettingsQuery = `*[_type == "siteSettings"][0] {

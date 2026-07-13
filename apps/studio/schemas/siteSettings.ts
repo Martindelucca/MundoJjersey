@@ -30,7 +30,7 @@ export const siteSettings = defineType({
       type: 'text',
       rows: 2,
       description: 'Opcional. Podés usar {productTitle}, {category} y {productUrl}. Si queda vacío, la web usa un mensaje automático por producto.',
-      initialValue: 'Hola, quiero consultar por esta {category}: {productTitle}. ¿Sigue disponible para separar? {productUrl}'
+      initialValue: 'Hola, quiero consultar por {productTitle}. Categoría: {category}. ¿Sigue disponible para separar? {productUrl}'
     }),
     defineField({
       name: 'instagramUrl',

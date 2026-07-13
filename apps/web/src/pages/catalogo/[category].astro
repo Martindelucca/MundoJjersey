@@ -1,5 +1,7 @@
 ---
+import CatalogCategoryNavigation from '../../components/CatalogCategoryNavigation.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import ShirtCollectionNavigation from '../../components/ShirtCollectionNavigation.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { catalogCategories, getCatalogCategoryBySlug } from '../../lib/catalog/categories';
 import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
@@ -28,25 +30,11 @@ const contactRel = siteContact.whatsappUrl ? 'noreferrer' : undefined;
   canonicalPath={`/catalogo/${categorySlug}`}
 >
   <main id="contenido-principal" class="site-shell catalog-page">
-    <section class="catalog-hero" aria-labelledby="catalog-category-title">
-      <p class="hero__stamp">Catálogo por categoría</p>
+    <section class="catalog-hero catalog-hero--compact" aria-labelledby="catalog-category-title">
       <h1 id="catalog-category-title">{category?.title}</h1>
       <p>{category?.description}</p>
-      <div class="catalog-hero__actions">
-        <a class="button" href={contactHref} target={contactTarget} rel={contactRel}>Consultar tanda</a>
-        <span>Entrá a una ficha para escribir con esa camiseta cargada, o preguntá si no ves tu equipo.</span>
-      </div>
-      <dl class="catalog-hero__facts" aria-label="Datos de la categoría">
-        <div><dt>Categoría</dt><dd>{category?.plural}</dd></div>
-        <div><dt>Estado</dt><dd>nuevo</dd></div>
-        <div><dt>Salida</dt><dd>consulta directa</dd></div>
-      </dl>
-      <ul class="catalog-chips" aria-label="Categorías del catálogo">
-        <li><a href="/catalogo">Todo</a></li>
-        {catalogCategories.map((item) => (
-          <li><a aria-current={item.slug === categorySlug ? 'page' : undefined} href={`/catalogo/${item.slug}`}>{item.plural}</a></li>
-        ))}
-      </ul>
+      <CatalogCategoryNavigation activeSlug={categorySlug} />
+      {category?.value === 'shirt' && <ShirtCollectionNavigation />}
     </section>
 
     {products.length > 0 ? (
@@ -56,7 +44,7 @@ const contactRel = siteContact.whatsappUrl ? 'noreferrer' : undefined;
     ) : (
       <section class="empty-state" aria-live="polite">
         <h2>{category?.plural} en preparación.</h2>
-        <p>Cuando haya stock listo de esta categoría, va a aparecer acá. También podés escribirnos si buscás un club, selección o temporada puntual.</p>
+        <p>Cuando haya disponibilidad en esta categoría, va a aparecer acá. También podés escribirnos si buscás un club, selección o temporada puntual.</p>
         <a class="button" href={contactHref} target={contactTarget} rel={contactRel}>Escribir por WhatsApp</a>
       </section>
     )}

@@ -25,6 +25,10 @@
 - [ ] Cada producto tiene variants.
 - [ ] No hay talles duplicados.
 - [ ] El stock total refleja la tanda real.
+- [ ] Cada conjunto tiene una foto completa de campera y pantalón.
+- [ ] Cada conjunto tiene precio y variants propios.
+- [ ] El stock del conjunto refleja únicamente las unidades completas disponibles.
+- [ ] No hay productos de categoría pantalón.
 
 ## Validación local
 

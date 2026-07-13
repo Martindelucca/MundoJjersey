@@ -33,6 +33,14 @@ export const catalogCategories: CatalogCategory[] = [
     plural: 'Shorts',
     title: 'Shorts de fútbol',
     description: 'Shorts de fútbol nuevos para completar conjuntos o usar fútbol todos los días.'
+  },
+  {
+    value: 'set',
+    slug: 'conjuntos',
+    singular: 'Conjunto',
+    plural: 'Conjuntos',
+    title: 'Conjuntos de fútbol',
+    description: 'Conjuntos completos de campera y pantalón, con foto, precio y stock propio por talle.'
   }
 ];
 

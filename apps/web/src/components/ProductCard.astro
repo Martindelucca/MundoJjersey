@@ -2,7 +2,7 @@
 import { getImageUrl } from '../lib/sanity/image';
 import type { ProductSummary } from '../lib/sanity/types';
 import { getProductCategoryLabel } from '../lib/catalog/categories';
-import { getAvailableSizes, getTotalStock, isAvailable as hasAvailableStock } from '../lib/catalog/availability';
+import { getProductAvailability } from '../lib/catalog/availability';
 
 interface Props {
   product: ProductSummary;
@@ -10,18 +10,18 @@ interface Props {
 
 const { product } = Astro.props;
 const imageUrl = getImageUrl(product.image, 640);
-const variants = product.variants || [];
-const totalStock = getTotalStock(variants);
-const isAvailable = hasAvailableStock(variants);
-const availableSizes = getAvailableSizes(variants);
-const stockLabel = isAvailable ? 'Disponible' : 'Sin stock';
+const availability = getProductAvailability(product);
+const availableSizes = availability.sizes.filter((size) => size.available).map((size) => size.size);
+const stockLabel = availability.available ? 'Disponible' : 'Sin stock';
 const categoryLabel = getProductCategoryLabel(product.category);
 const teamLabel = product.team?.name || 'Equipo a confirmar';
 const seasonLabel = product.season || 'Tanda actual';
 const sizesPreview = availableSizes.length > 0
   ? `Talles ${availableSizes.slice(0, 4).join(' / ')}${availableSizes.length > 4 ? ' +' : ''}`
   : 'Consultar reposición';
-const stockText = isAvailable ? `${totalStock} en tanda` : 'Sin stock · preguntá reposición';
+const stockText = availability.available
+  ? `${availability.totalStock} en tanda`
+  : 'Sin stock · preguntá reposición';
 const price = new Intl.NumberFormat('es-AR', {
   style: 'currency',
   currency: 'ARS',
@@ -31,7 +31,7 @@ const price = new Intl.NumberFormat('es-AR', {
 
 <article class="product-card">
   <a class="product-card__media" href={`/producto/${product.slug}`} aria-label={`Ver ${product.title}`}>
-    <span class={isAvailable ? 'product-card__badge' : 'product-card__badge product-card__badge--empty'}>
+    <span class={availability.available ? 'product-card__badge' : 'product-card__badge product-card__badge--empty'}>
       {stockLabel}
     </span>
     <span class="product-card__season">{seasonLabel}</span>
@@ -47,11 +47,12 @@ const price = new Intl.NumberFormat('es-AR', {
       <span>{categoryLabel}</span>
       <span>{teamLabel} · {seasonLabel}</span>
     </div>
+    <p class="product-card__identity">{teamLabel} · {seasonLabel}</p>
     <p class="product-card__meta">{categoryLabel} · {sizesPreview}</p>
     <h2><a href={`/producto/${product.slug}`}>{product.title}</a></h2>
     <div class="product-card__details">
       <p class="product-card__price">{price}</p>
-      <p class={isAvailable ? 'product-card__stock' : 'product-card__stock product-card__stock--empty'}>
+      <p class={availability.available ? 'product-card__stock' : 'product-card__stock product-card__stock--empty'}>
         {stockText}
       </p>
     </div>

@@ -1,0 +1,19 @@
+---
+import { editorialCollections, type EditorialCollection } from '../lib/catalog/editorial-collections';
+
+interface Props {
+  activeCollectionSlug?: EditorialCollection['slug'];
+}
+
+const { activeCollectionSlug } = Astro.props;
+---
+
+<nav class="catalog-navigation catalog-navigation--collections" aria-label="Colecciones de camisetas">
+  <p class="catalog-navigation__label">Colecciones de camisetas</p>
+  <ul class="catalog-chips">
+    <li><a aria-current={activeCollectionSlug === undefined ? 'page' : undefined} href="/catalogo/camisetas">Todas</a></li>
+    {editorialCollections.map((collection) => (
+      <li><a aria-current={collection.slug === activeCollectionSlug ? 'page' : undefined} href={`/catalogo/camisetas/${collection.slug}`}>{collection.navigationLabel}</a></li>
+    ))}
+  </ul>
+</nav>

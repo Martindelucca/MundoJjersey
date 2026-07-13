@@ -57,11 +57,37 @@ export const product = defineType({
         list: [
           { title: 'Camiseta', value: 'shirt' },
           { title: 'Campera', value: 'jacket' },
-          { title: 'Short', value: 'shorts' }
+          { title: 'Short', value: 'shorts' },
+          { title: 'Conjunto completo', value: 'set' }
         ],
         layout: 'radio'
       },
       validation: (Rule) => Rule.required()
+    }),
+    defineField({
+      name: 'editorialTags',
+      title: 'Colecciones editoriales',
+      type: 'array',
+      description: 'Podés seleccionar más de una colección para mostrar este producto en sus rutas editoriales.',
+      of: [{ type: 'string' }],
+      options: {
+        list: [
+          { title: 'Clubes', value: 'club' },
+          { title: 'Selecciones', value: 'selection' },
+          { title: 'Retro', value: 'retro' }
+        ],
+        layout: 'grid'
+      },
+      validation: (Rule) =>
+        Rule.unique().custom((editorialTags) => {
+          if (!editorialTags) {
+            return true;
+          }
+
+          return editorialTags.every((tag) => ['club', 'selection', 'retro'].includes(tag))
+            ? true
+            : 'Las colecciones editoriales solo pueden ser Clubes, Selecciones o Retro.';
+        })
     }),
     defineField({
       name: 'brand',
@@ -93,7 +119,7 @@ export const product = defineType({
       name: 'variants',
       title: 'Talles y stock',
       type: 'array',
-      description: 'Fuente única de stock del sitio. Cargá un ítem por talle y actualizá el número cuando se separa o vende una camiseta.',
+      description: 'Fuente única de stock por talle para cada producto, incluidos los conjuntos completos.',
       of: [
         {
           type: 'object',

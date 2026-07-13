@@ -3,7 +3,7 @@ import ProductCard from '../../components/ProductCard.astro';
 import WhatsAppButton from '../../components/WhatsAppButton.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProductCategoryLabel } from '../../lib/catalog/categories';
-import { getTotalStock, isAvailable as hasAvailableStock } from '../../lib/catalog/availability';
+import { getProductAvailability } from '../../lib/catalog/availability';
 import { getImageUrl } from '../../lib/sanity/image';
 import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
 import { productBySlugQuery, productSlugsQuery, productsQuery, siteSettingsQuery } from '../../lib/sanity/queries';
@@ -38,9 +38,7 @@ const price = product
       maximumFractionDigits: 0
     }).format(product.price)
   : '';
-const variants = product?.variants || [];
-const totalStock = getTotalStock(variants);
-const isAvailable = hasAvailableStock(variants);
+const availability = product ? getProductAvailability(product) : { available: false, sizes: [], totalStock: null };
 const categoryLabel = product ? getProductCategoryLabel(product.category) : 'Producto';
 const imageUrl = getImageUrl(product?.image, 960);
 const imageAlt = product?.image?.alt || product?.title || 'Producto de fútbol';
@@ -91,8 +89,10 @@ const relatedProducts = product
 
             <div class="product-detail__commerce" aria-label="Precio y disponibilidad">
               <p class="product-detail__price">{price}</p>
-              <p class={isAvailable ? 'stock-label' : 'stock-label stock-label--empty'}>
-                {isAvailable ? `${totalStock} en tanda` : 'Sin stock'}
+              <p class={availability.available ? 'stock-label' : 'stock-label stock-label--empty'}>
+                {availability.available
+                  ? `${availability.totalStock} en tanda`
+                  : 'Sin stock'}
               </p>
             </div>
 
@@ -114,10 +114,10 @@ const relatedProducts = product
             <div class="product-detail__sizes" aria-label="Talles y stock">
               <p>Talles y stock</p>
               <ul>
-                {variants.map((variant) => (
-                  <li class={variant.stock > 0 ? '' : 'is-empty'}>
-                    <span>{variant.size}</span>
-                    <small>{variant.stock > 0 ? `${variant.stock} disp.` : 'sin stock'}</small>
+                {availability.sizes.map((size) => (
+                  <li class={size.available ? '' : 'is-empty'}>
+                    <span>{size.size}</span>
+                    <small>{size.available ? 'disp.' : 'sin stock'}</small>
                   </li>
                 ))}
               </ul>
@@ -126,12 +126,7 @@ const relatedProducts = product
             {product.description && <p class="product-detail__description">{product.description}</p>}
 
             <div class="product-detail__cta">
-              <WhatsAppButton href={whatsappUrl} available={isAvailable} />
-              <ul class="product-detail__confirm" aria-label="Qué confirmamos por WhatsApp">
-                <li>Talle y medidas</li>
-                <li>Estado de la camiseta</li>
-                <li>Envío y forma de pago</li>
-              </ul>
+              <WhatsAppButton href={whatsappUrl} available={availability.available} />
               <p class="product-detail__trust">Te respondemos por disponibilidad, talle y envío.</p>
             </div>
           </div>

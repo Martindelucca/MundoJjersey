@@ -1,19 +1,123 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import {
   catalogCategories,
   getCatalogCategoryBySlug,
   getCatalogCategoryByValue
 } from '../src/lib/catalog/categories.ts';
-import { getAvailableSizes, getTotalStock, isAvailable } from '../src/lib/catalog/availability.ts';
+import {
+  editorialCollections,
+  getEditorialCollectionBySlug
+} from '../src/lib/catalog/editorial-collections.ts';
+import {
+  getAvailableSizes,
+  getProductAvailability,
+  getTotalStock,
+  isAvailable
+} from '../src/lib/catalog/availability.ts';
+import { productsByCategoryAndEditorialTagQuery } from '../src/lib/sanity/queries.ts';
 
 assert.deepEqual(
   catalogCategories.map((category) => category.slug),
-  ['camisetas', 'camperas', 'shorts']
+  ['camisetas', 'camperas', 'shorts', 'conjuntos']
 );
 
 assert.equal(getCatalogCategoryBySlug('camperas')?.value, 'jacket');
+assert.equal(getCatalogCategoryBySlug('pantalones'), undefined);
+assert.equal(getCatalogCategoryByValue('set')?.plural, 'Conjuntos');
 assert.equal(getCatalogCategoryByValue('shorts')?.plural, 'Shorts');
 assert.equal(getCatalogCategoryBySlug('botines'), undefined);
+
+assert.deepEqual(
+  editorialCollections.map((collection) => collection.slug),
+  ['clubes', 'selecciones', 'retro']
+);
+assert.equal(getEditorialCollectionBySlug('clubes')?.editorialTag, 'club');
+assert.equal(getEditorialCollectionBySlug('selecciones')?.editorialTag, 'selection');
+assert.equal(getEditorialCollectionBySlug('retro')?.editorialTag, 'retro');
+assert.equal(getEditorialCollectionBySlug('actuales'), undefined);
+assert.match(productsByCategoryAndEditorialTagQuery, /category == \$category/);
+assert.match(productsByCategoryAndEditorialTagQuery, /\$editorialTag in editorialTags/);
+assert.match(productsByCategoryAndEditorialTagQuery, /order\(isFeatured desc, _createdAt desc\)/);
+
+const rootDir = resolve(import.meta.dirname, '../../..');
+const home = await readFile(resolve(rootDir, 'apps/web/src/pages/index.astro'), 'utf8');
+const rootCatalog = await readFile(resolve(rootDir, 'apps/web/src/pages/catalogo.astro'), 'utf8');
+const categoryRoute = await readFile(resolve(rootDir, 'apps/web/src/pages/catalogo/[category].astro'), 'utf8');
+const collectionRoute = await readFile(resolve(rootDir, 'apps/web/src/pages/catalogo/[category]/[collection].astro'), 'utf8');
+const shirtCollectionNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/ShirtCollectionNavigation.astro'), 'utf8');
+const catalogCategoryNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/CatalogCategoryNavigation.astro'), 'utf8');
+const globalStyles = await readFile(resolve(rootDir, 'apps/web/src/styles/global.css'), 'utf8');
+
+for (const slug of ['clubes', 'selecciones', 'retro']) {
+  assert.match(home, new RegExp(`href: '/catalogo/camisetas/${slug}'`));
+  assert.match(collectionRoute, new RegExp(`collection: collection.slug`));
+}
+
+assert.doesNotMatch(home, /href: '\/catalogo\/camisetas'/);
+assert.match(home, /href: '\/catalogo\/camperas'/);
+assert.match(collectionRoute, /params: \{ category: 'camisetas', collection: collection.slug \}/);
+
+assert.match(categoryRoute, /<CatalogCategoryNavigation activeSlug=\{categorySlug\} \/>/);
+assert.match(collectionRoute, /<CatalogCategoryNavigation activeSlug=\{categorySlug\} \/>/);
+assert.match(rootCatalog, /<CatalogCategoryNavigation activeSlug="catalogo" \/>/);
+assert.doesNotMatch(rootCatalog, /<ul class="catalog-chips"/);
+assert.match(rootCatalog, /catalog-hero catalog-hero--compact/);
+assert.doesNotMatch(rootCatalog, /catalog-hero__actions/);
+assert.doesNotMatch(rootCatalog, /catalog-hero__facts/);
+assert.doesNotMatch(rootCatalog, /hero__stamp/);
+assert.match(rootCatalog, /Escribir por WhatsApp/);
+assert.match(categoryRoute, /category\?\.value === 'shirt' && <ShirtCollectionNavigation \/>/);
+assert.match(collectionRoute, /<ShirtCollectionNavigation activeCollectionSlug=\{collection\?\.slug\} \/>/);
+assert.match(categoryRoute, /catalog-hero catalog-hero--compact/);
+assert.match(collectionRoute, /catalog-hero catalog-hero--compact/);
+
+for (const filteredRoute of [categoryRoute, collectionRoute]) {
+  assert.doesNotMatch(filteredRoute, /catalog-hero__actions/);
+  assert.doesNotMatch(filteredRoute, /catalog-hero__facts/);
+  assert.doesNotMatch(filteredRoute, /hero__stamp/);
+  assert.match(filteredRoute, /Escribir por WhatsApp/);
+}
+assert.match(catalogCategoryNavigation, /aria-label="Categorías de prendas"/);
+assert.match(shirtCollectionNavigation, /aria-label="Colecciones de camisetas"/);
+assert.match(shirtCollectionNavigation, />Todas<\/a>/);
+assert.match(shirtCollectionNavigation, /href="\/catalogo\/camisetas"/);
+assert.match(shirtCollectionNavigation, /activeCollectionSlug === undefined \? 'page' : undefined/);
+assert.doesNotMatch(shirtCollectionNavigation, /<script/);
+
+assert.ok(shirtCollectionNavigation.includes('href={`/catalogo/camisetas/${collection.slug}`}'));
+assert.match(shirtCollectionNavigation, /collection.slug === activeCollectionSlug \? 'page' : undefined/);
+
+for (const [slug, label] of [['clubes', 'Clubes'], ['selecciones', 'Selecciones'], ['retro', 'Retro']]) {
+  assert.equal(editorialCollections.find((collection) => collection.slug === slug)?.navigationLabel, label);
+}
+
+assert.match(globalStyles, /\.catalog-chips \{[\s\S]*?flex-wrap: wrap/);
+assert.match(globalStyles, /\.catalog-chips a \{[\s\S]*?min-height: 44px/);
+assert.match(globalStyles, /\.catalog-hero--compact/);
+const mobileStyles = globalStyles.slice(globalStyles.indexOf('@media (max-width: 780px)'), globalStyles.indexOf('@media (max-width: 359px)'));
+assert.match(mobileStyles, /\.catalog-chips \{[\s\S]*?flex-wrap: nowrap/);
+assert.match(mobileStyles, /\.catalog-chips \{[\s\S]*?overflow-x: auto/);
+assert.match(mobileStyles, /\.catalog-chips \{[\s\S]*?max-width: 100%/);
+assert.match(mobileStyles, /\.catalog-chips li \{[\s\S]*?flex: 0 0 auto/);
+assert.match(mobileStyles, /\.product-grid \{[\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+assert.match(globalStyles, /@media \(max-width: 359px\) \{[\s\S]*?\.product-grid \{[\s\S]*?grid-template-columns: 1fr/);
+assert.match(mobileStyles, /\.product-card__media \{[\s\S]*?min-height: 0;[\s\S]*?aspect-ratio: 4 \/ 5/);
+assert.match(mobileStyles, /\.product-card__season,[\s\S]*?\.product-card__ticket \{[\s\S]*?display: none/);
+assert.match(mobileStyles, /\.product-card__identity \{[\s\S]*?display: block/);
+assert.match(mobileStyles, /\.product-card__meta,[\s\S]*?\.product-card__stock \{[\s\S]*?font-size: 0.75rem/);
+const productCard = await readFile(resolve(rootDir, 'apps/web/src/components/ProductCard.astro'), 'utf8');
+assert.match(productCard, /<h2><a href=\{`\/producto\/\$\{product\.slug\}`\}>\{product\.title\}<\/a><\/h2>/);
+assert.match(productCard, /product-card__price/);
+assert.match(productCard, /product-card__stock/);
+assert.match(productCard, /sizesPreview/);
+assert.match(productCard, /product-card__ticket/);
+assert.match(productCard, /<p class="product-card__identity">\{teamLabel\} · \{seasonLabel\}<\/p>/);
+assert.match(globalStyles, /\.catalog-chips a:focus-visible \{[\s\S]*?box-shadow:[\s\S]*?inset 0 0 0 2px var\(--color-white\),[\s\S]*?inset 0 0 0 4px var\(--color-ink\)/);
+const collectionNavigationRule = globalStyles.match(/\.catalog-navigation--collections\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(collectionNavigationRule, /border-top:/);
+assert.doesNotMatch(collectionNavigationRule, /border-left|border-right/);
 
 const variants = [
   { size: 'S', stock: 0 },
@@ -26,4 +130,17 @@ assert.equal(isAvailable(variants), true);
 assert.deepEqual(getAvailableSizes(variants), ['M', 'L']);
 assert.equal(isAvailable([{ size: 'XL', stock: 0 }]), false);
 
-console.log('Catalog helpers validated.');
+assert.deepEqual(
+  getProductAvailability({
+    _id: 'set-1',
+    title: 'Conjunto River',
+    slug: 'conjunto-river',
+    price: 100,
+    category: 'set',
+    brand: 'Adidas',
+    variants: [{ size: 'M', stock: 1 }, { size: 'L', stock: 0 }]
+  }),
+  { available: true, totalStock: 1, sizes: [{ size: 'M', available: true }, { size: 'L', available: false }] }
+);
+
+console.log('Catalog helpers and navigation validated.');

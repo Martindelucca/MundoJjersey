@@ -1,0 +1,60 @@
+---
+import CatalogCategoryNavigation from '../../../components/CatalogCategoryNavigation.astro';
+import ProductCard from '../../../components/ProductCard.astro';
+import ShirtCollectionNavigation from '../../../components/ShirtCollectionNavigation.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCatalogCategoryBySlug } from '../../../lib/catalog/categories';
+import { editorialCollections, getEditorialCollectionBySlug } from '../../../lib/catalog/editorial-collections';
+import { hasSanityConfig, sanityClient } from '../../../lib/sanity/client';
+import { productsByCategoryAndEditorialTagQuery } from '../../../lib/sanity/queries';
+import type { ProductSummary } from '../../../lib/sanity/types';
+import { getSiteContact } from '../../../lib/site-contact';
+
+export function getStaticPaths() {
+  return editorialCollections.map((collection) => ({
+    params: { category: 'camisetas', collection: collection.slug }
+  }));
+}
+
+const categorySlug = Astro.params.category || '';
+const collectionSlug = Astro.params.collection || '';
+const category = getCatalogCategoryBySlug(categorySlug);
+const collection = getEditorialCollectionBySlug(collectionSlug);
+const products = hasSanityConfig && category?.value === 'shirt' && collection
+  ? await sanityClient.fetch<ProductSummary[]>(productsByCategoryAndEditorialTagQuery, {
+      category: category.value,
+      editorialTag: collection.editorialTag
+    })
+  : [];
+const siteContact = await getSiteContact();
+const contactHref = siteContact.whatsappUrl || '#contacto';
+const contactTarget = siteContact.whatsappUrl ? '_blank' : undefined;
+const contactRel = siteContact.whatsappUrl ? 'noreferrer' : undefined;
+---
+
+<BaseLayout
+  title={`${collection?.title || 'Camisetas'} | Mundo JJersey`}
+  description={collection?.description || 'Camisetas de fútbol disponibles para consultar por WhatsApp.'}
+  canonicalPath={`/catalogo/${categorySlug}/${collectionSlug}`}
+>
+  <main id="contenido-principal" class="site-shell catalog-page">
+    <section class="catalog-hero catalog-hero--compact" aria-labelledby="catalog-collection-title">
+      <h1 id="catalog-collection-title">{collection?.title}</h1>
+      <p>{collection?.description}</p>
+      <CatalogCategoryNavigation activeSlug={categorySlug} />
+      <ShirtCollectionNavigation activeCollectionSlug={collection?.slug} />
+    </section>
+
+    {products.length > 0 ? (
+      <section class="product-grid" aria-label={collection?.title}>
+        {products.map((product) => <ProductCard product={product} />)}
+      </section>
+    ) : (
+      <section class="empty-state" aria-live="polite">
+        <h2>{collection?.title} en preparación.</h2>
+        <p>Cuando haya disponibilidad en esta colección, va a aparecer acá. También podés escribirnos si buscás un club, selección o temporada puntual.</p>
+        <a class="button" href={contactHref} target={contactTarget} rel={contactRel}>Escribir por WhatsApp</a>
+      </section>
+    )}
+  </main>
+</BaseLayout>

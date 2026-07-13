@@ -31,6 +31,15 @@ Comando:
 npm --workspace @mundo-jjersey/web run content:check
 ```
 
+## El conjunto aparece sin disponibilidad
+
+Revisar:
+
+1. El conjunto está publicado.
+2. El campo `variants` tiene el talle consultado.
+3. Ese talle tiene stock mayor que 0.
+4. El stock cargado representa unidades completas de campera y pantalón.
+
 ## WhatsApp no abre
 
 Revisar:

@@ -41,7 +41,7 @@ export function buildWhatsAppUrl({
     return '';
   }
 
-  const fallbackTemplate = 'Hola, quiero consultar por esta {category}: {productTitle}. ¿Sigue disponible para separar?';
+  const fallbackTemplate = 'Hola, quiero consultar por {productTitle}. Categoría: {category}. ¿Sigue disponible para separar?';
   const template = messageTemplate || fallbackTemplate;
   const message = template
     .replaceAll('{productTitle}', productTitle)
@@ -50,7 +50,7 @@ export function buildWhatsAppUrl({
 
   const messageLines = [message];
 
-  if (productUrl && !messageTemplate?.includes('{productUrl}')) {
+  if (productUrl && !template.includes('{productUrl}')) {
     messageLines.push(productUrl);
   }
 

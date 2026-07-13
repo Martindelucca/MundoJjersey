@@ -13,7 +13,16 @@ const url = buildWhatsAppUrl({
 
 assert.equal(
   url,
-  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20esta%20Camiseta%3A%20Camiseta%20Boca%20Juniors%201998.%20%C2%BFSigue%20disponible%20para%20separar%3F%0Ahttps%3A%2F%2Fmundojjersey.com%2Fproducto%2Fboca-1998'
+  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20Camiseta%20Boca%20Juniors%201998.%20Categor%C3%ADa%3A%20Camiseta.%20%C2%BFSigue%20disponible%20para%20separar%3F%0Ahttps%3A%2F%2Fmundojjersey.com%2Fproducto%2Fboca-1998'
+);
+
+assert.equal(
+  buildWhatsAppUrl({
+    phoneNumber: '+54 9 11 1234-5678',
+    productTitle: 'Conjunto River 2026',
+    productCategory: 'Conjunto completo'
+  }),
+  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20Conjunto%20River%202026.%20Categor%C3%ADa%3A%20Conjunto%20completo.%20%C2%BFSigue%20disponible%20para%20separar%3F'
 );
 
 const templatedUrl = buildWhatsAppUrl({

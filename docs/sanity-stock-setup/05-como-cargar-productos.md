@@ -23,12 +23,12 @@ Crear primero los equipos en Sanity, porque cada producto requiere un equipo.
 5. Subir al menos una imagen.
 6. Completar `Texto alternativo` de cada imagen.
 7. Completar `Precio`.
-8. Elegir `Categoría`: Camiseta, Campera o Short.
+8. Elegir `Categoría`: Camiseta, Campera, Short o Conjunto completo.
 9. Completar `Marca`.
 10. Seleccionar `Equipo`.
 11. Completar `Liga` si aplica.
 12. Completar `Temporada` si se conoce.
-13. Cargar `Talles y stock`.
+13. Cargar `Talles y stock` para cada producto, incluidos los conjuntos completos.
 14. Completar descripción si hace falta.
 15. Marcar `Destacado` solo si debe aparecer primero.
 16. Publicar.
@@ -57,8 +57,20 @@ Reglas:
 4. Publicar.
 5. Esperar rebuild del sitio.
 
+## Cargar un conjunto
+
+1. Crear el producto de categoría `Conjunto completo`.
+2. Usar un título que identifique el equipo y la temporada.
+3. Subir una foto donde se vean las dos prendas completas.
+4. Cargar el precio del conjunto.
+5. Cargar `Talles y stock` propios del conjunto.
+
+El conjunto aparece disponible según su stock propio. Si se vende un conjunto talle M, bajar el stock M del producto conjunto antes de publicar. Las camperas sueltas y los conjuntos se cargan como inventario independiente.
+
 ## Link de WhatsApp por producto
 
 Cada ficha de producto tiene un botón de WhatsApp. El mensaje sale con el producto cargado automáticamente.
+
+La ficha de un conjunto usa el mismo mensaje de consulta que los demás productos. La disponibilidad siempre se confirma por WhatsApp antes de separar.
 
 Para que incluya link real del producto, `PUBLIC_SITE_URL` debe estar configurado con el dominio final.

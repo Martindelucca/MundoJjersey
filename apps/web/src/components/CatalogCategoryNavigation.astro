@@ -1,0 +1,19 @@
+---
+import { catalogCategories } from '../lib/catalog/categories';
+
+interface Props {
+  activeSlug: string;
+}
+
+const { activeSlug } = Astro.props;
+---
+
+<nav class="catalog-navigation catalog-navigation--categories" aria-label="Categorías de prendas">
+  <p class="catalog-navigation__label">Categorías de prendas</p>
+  <ul class="catalog-chips">
+    <li><a aria-current={activeSlug === 'catalogo' ? 'page' : undefined} href="/catalogo">Todo</a></li>
+    {catalogCategories.map((category) => (
+      <li><a aria-current={category.slug === activeSlug ? 'page' : undefined} href={`/catalogo/${category.slug}`}>{category.plural}</a></li>
+    ))}
+  </ul>
+</nav>

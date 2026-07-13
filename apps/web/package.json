@@ -10,10 +10,11 @@
     "check": "astro check",
     "test": "node --experimental-strip-types scripts/test-whatsapp.mjs",
     "test:catalog": "node --experimental-strip-types scripts/test-catalog.mjs",
+    "test:content": "node scripts/test-content-readiness.mjs",
     "test:design": "node scripts/validate-design.mjs",
     "sanity:check": "node scripts/check-sanity-connection.mjs",
     "content:check": "node scripts/check-content-readiness.mjs",
-    "ready": "npm run check && npm run test && npm run test:catalog && npm run test:design && npm run sanity:check && npm run content:check"
+    "ready": "npm run check && npm run test && npm run test:catalog && npm run test:content && npm run test:design && npm run sanity:check && npm run content:check"
   },
   "dependencies": {
     "@astrojs/check": "0.9.4",
