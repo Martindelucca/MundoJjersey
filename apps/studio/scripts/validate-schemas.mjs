@@ -60,6 +60,40 @@ assert.deepEqual(
 );
 assert.equal(editorialTagsField.type, 'array');
 assert.equal(editorialTagsField.of[0].type, 'string');
+assert.deepEqual(
+  product.groups.map(({ name, title, default: isDefault }) => ({ name, title, default: isDefault })),
+  [
+    { name: 'producto', title: 'Producto', default: true },
+    { name: 'fotos', title: 'Fotos', default: undefined },
+    { name: 'precioStock', title: 'Precio y stock', default: undefined },
+    { name: 'coleccionesPublicacion', title: 'Colecciones y publicación', default: undefined }
+  ]
+);
+assert.deepEqual(
+  product.fields.map(({ name, group }) => ({ name, group })),
+  [
+    { name: 'title', group: 'producto' },
+    { name: 'slug', group: 'producto' },
+    { name: 'category', group: 'producto' },
+    { name: 'brand', group: 'producto' },
+    { name: 'team', group: 'producto' },
+    { name: 'league', group: 'producto' },
+    { name: 'season', group: 'producto' },
+    { name: 'images', group: 'fotos' },
+    { name: 'price', group: 'precioStock' },
+    { name: 'variants', group: 'precioStock' },
+    { name: 'editorialTags', group: 'coleccionesPublicacion' },
+    { name: 'description', group: 'coleccionesPublicacion' },
+    { name: 'isFeatured', group: 'coleccionesPublicacion' }
+  ]
+);
+assert.match(imagesField.description, /4:5/);
+assert.match(imagesField.description, /foto original\/de origen/);
+assert.match(imagesField.description, /1600 px de alto/);
+assert.match(imageAltField.description, /Camiseta Argentina titular 2026, frente completo/);
+assert.match(product.fields.find((field) => field.name === 'league').description, /Opcional/);
+assert.match(product.fields.find((field) => field.name === 'isFeatured').description, /No significa que sea el producto más nuevo/);
+assert.match(editorialTagsField.description, /Selecciones \+ Retro/);
 const editorialTagsValidation = [];
 const editorialTagsRule = {
   unique() {
@@ -75,17 +109,37 @@ const editorialTagsRule = {
     return this;
   }
 };
-const validateEditorialTags = (editorialTags) =>
-  editorialTagsValidation.map((validation) => validation(editorialTags)).find((result) => result !== true) ?? true;
+const validateEditorialTags = (editorialTags, category) =>
+  editorialTagsValidation
+    .map((validation) => validation(editorialTags, { document: { category } }))
+    .find((result) => result !== true) ?? true;
 
 editorialTagsField.validation(editorialTagsRule);
 
-assert.equal(validateEditorialTags(undefined), true, 'Editorial tags should remain optional');
-assert.equal(validateEditorialTags(['club', 'selection', 'retro']), true);
-assert.match(validateEditorialTags(['club', 'club']), /unique/);
+assert.equal(validateEditorialTags(['club'], 'shirt'), true, 'A shirt can use Clubes as its primary tag');
+assert.equal(validateEditorialTags(['selection', 'retro'], 'shirt'), true, 'A shirt can use Selecciones + Retro');
+assert.match(validateEditorialTags(['retro'], 'shirt'), /Clubes o Selecciones/);
+assert.match(validateEditorialTags(undefined, 'shirt'), /Clubes o Selecciones/);
+assert.equal(validateEditorialTags(undefined, 'jacket'), true, 'Editorial tags should remain optional for non-shirts');
+assert.match(validateEditorialTags(['club', 'club'], 'shirt'), /unique/);
 assert.match(
-  validateEditorialTags(['club', 'invalid']),
+  validateEditorialTags(['club', 'invalid'], 'shirt'),
   /solo pueden ser Clubes, Selecciones o Retro/
+);
+assert.deepEqual(
+  product.preview.prepare({
+    title: 'Camiseta Argentina 2026',
+    category: 'shirt',
+    team: 'Argentina',
+    season: '2026',
+    variants: [{ stock: 2 }, { stock: 1 }]
+  }),
+  { title: 'Camiseta Argentina 2026', subtitle: 'Camiseta · Argentina · 2026 · 3 en stock', media: undefined }
+);
+assert.equal(
+  product.preview.prepare({ category: 'jacket', variants: [{ stock: -1 }] }).subtitle,
+  'Campera · 0 en stock',
+  'Preview should safely omit optional team and season.'
 );
 assert.equal(productFields.has('bundleComponents'), false, 'Products should not include bundle components');
 assert.match(whatsappMessageField.description, /\{productTitle\}/);

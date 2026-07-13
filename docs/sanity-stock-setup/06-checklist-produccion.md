@@ -24,6 +24,8 @@
 - [ ] Cada producto tiene equipo.
 - [ ] Cada producto tiene variants.
 - [ ] No hay talles duplicados.
+- [ ] Cada camiseta tiene `Clubes` o `Selecciones` como colección editorial principal; `Retro` no se usa solo.
+- [ ] Las colecciones editoriales no tienen tags duplicados ni valores fuera de Clubes, Selecciones o Retro.
 - [ ] El stock total refleja la tanda real.
 - [ ] Cada conjunto tiene una foto completa de campera y pantalón.
 - [ ] Cada conjunto tiene precio y variants propios.

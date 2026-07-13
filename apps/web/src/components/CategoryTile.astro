@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+
 interface Props {
   title: string;
   copy: string;
@@ -6,7 +8,7 @@ interface Props {
   label?: string;
   tone?: 'primary' | 'secondary' | 'quiet';
   featured?: boolean;
-  imageSrc?: string;
+  imageSrc?: ImageMetadata;
   imageAlt?: string;
   cue?: string;
   variant?: 'poster' | 'archive' | 'fresh';
@@ -34,7 +36,7 @@ const className = [
 ---
 
 <a class={className} href={href}>
-  {imageSrc ? <img class="category-tile__image" src={imageSrc} alt={imageAlt} loading="lazy" /> : null}
+  {imageSrc ? <Image class="category-tile__image" src={imageSrc} alt={imageAlt} loading="lazy" decoding="async" widths={[320, 480, 640, 960]} sizes="(max-width: 780px) 100vw, 50vw" /> : null}
   {label ? <span class="category-tile__label">{label}</span> : null}
   <span class="category-tile__title">{title}</span>
   <span class="category-tile__copy">{copy}</span>

@@ -2,24 +2,29 @@
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { getSiteContact } from '../lib/site-contact';
+import { buildSiteStructuredData, serializeJsonLd, type JsonLd } from '../lib/seo';
+import { isSafeExternalUrl, parseSiteOrigin } from '../lib/site-origin';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
   canonicalPath?: string;
+  structuredData?: JsonLd;
 }
 
 const {
   title = 'Mundo JJersey',
   description = 'Catálogo de ropa de fútbol nueva seleccionada.',
-  canonicalPath = Astro.url.pathname
+  canonicalPath = Astro.url.pathname,
+  structuredData
 } = Astro.props;
 
-const siteUrl = import.meta.env.PUBLIC_SITE_URL || Astro.url.origin;
-const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
-const ogImageUrl = new URL('/og.svg', siteUrl).toString();
+const siteOrigin = parseSiteOrigin(import.meta.env.PUBLIC_SITE_URL)?.origin || Astro.url.origin;
+const canonicalUrl = new URL(canonicalPath, siteOrigin).toString();
+const ogImageUrl = new URL('/og.png', siteOrigin).toString();
 const siteContact = await getSiteContact();
+const siteStructuredData = buildSiteStructuredData(siteOrigin, isSafeExternalUrl(siteContact.instagramUrl) ? siteContact.instagramUrl : undefined);
 ---
 
 <!doctype html>
@@ -28,8 +33,13 @@ const siteContact = await getSiteContact();
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0B1F3A" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -43,6 +53,8 @@ const siteContact = await getSiteContact();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <script is:inline type="application/ld+json" set:html={serializeJsonLd(siteStructuredData)}></script>
+    {structuredData && <script is:inline type="application/ld+json" set:html={serializeJsonLd(structuredData)}></script>}
     <title>{title}</title>
   </head>
   <body>

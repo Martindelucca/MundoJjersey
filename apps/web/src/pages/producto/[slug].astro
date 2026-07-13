@@ -4,7 +4,11 @@ import WhatsAppButton from '../../components/WhatsAppButton.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProductCategoryLabel } from '../../lib/catalog/categories';
 import { getProductAvailability } from '../../lib/catalog/availability';
-import { getImageUrl } from '../../lib/sanity/image';
+import { formatProductMetadata } from '../../lib/catalog/product-metadata';
+import { getRelatedProducts } from '../../lib/catalog/related-products';
+import { getImageSrcSet, getImageUrl } from '../../lib/sanity/image';
+import { buildProductStructuredData } from '../../lib/seo';
+import { parseSiteOrigin } from '../../lib/site-origin';
 import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
 import { productBySlugQuery, productSlugsQuery, productsQuery, siteSettingsQuery } from '../../lib/sanity/queries';
 import type { ProductDetail, ProductSummary, SiteSettings } from '../../lib/sanity/types';
@@ -40,12 +44,17 @@ const price = product
   : '';
 const availability = product ? getProductAvailability(product) : { available: false, sizes: [], totalStock: null };
 const categoryLabel = product ? getProductCategoryLabel(product.category) : 'Producto';
+const productMetadata = product
+  ? formatProductMetadata(product.brand, product.team?.name, product.season)
+  : '';
 const imageUrl = getImageUrl(product?.image, 960);
+const imageSrcSet = getImageSrcSet(product?.image, [640, 960, 1280, 1600]);
 const imageAlt = product?.image?.alt || product?.title || 'Producto de fútbol';
 const whatsappNumber = settings?.whatsappNumber || import.meta.env.PUBLIC_WHATSAPP_NUMBER || '';
-const siteUrl = import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
-const isLocalSiteUrl = siteUrl ? /localhost|127\.0\.0\.1/.test(siteUrl) : false;
-const productUrl = product && siteUrl && !isLocalSiteUrl ? `${siteUrl}/producto/${product.slug}` : undefined;
+const siteOrigin = parseSiteOrigin(import.meta.env.PUBLIC_SITE_URL);
+const productUrl = product && siteOrigin && !siteOrigin.isLocal
+  ? new URL(`/producto/${product.slug}`, `${siteOrigin.origin}/`).toString()
+  : undefined;
 const whatsappUrl = product
   ? buildWhatsAppUrl({
       phoneNumber: whatsappNumber,
@@ -56,13 +65,24 @@ const whatsappUrl = product
     })
   : '';
 const relatedProducts = product
-  ? products.filter((relatedProduct) => relatedProduct._id !== product._id).slice(0, 3)
+  ? getRelatedProducts(product, products)
   : [];
+const canonicalProductUrl = productUrl;
+const productStructuredData = product && canonicalProductUrl
+  ? buildProductStructuredData(product, {
+      url: canonicalProductUrl,
+      imageUrl: imageUrl || undefined,
+      category: categoryLabel,
+      available: availability.available
+    })
+  : undefined;
 ---
 
 <BaseLayout
   title={product ? `${product.title} | Mundo JJersey` : 'Producto no encontrado | Mundo JJersey'}
   description={product?.description || 'Detalle de producto disponible para consultar por WhatsApp.'}
+  canonicalPath={product ? `/producto/${product.slug}` : undefined}
+  structuredData={productStructuredData}
 >
   <main id="contenido-principal" class="site-shell product-detail-page">
     <nav class="breadcrumbs" aria-label="Migas de pan">
@@ -77,14 +97,14 @@ const relatedProducts = product
       <>
         <section class="product-detail" aria-labelledby="product-title">
           <div class="product-detail__media">
-            {imageUrl ? <img src={imageUrl} alt={imageAlt} /> : <span class="product-detail__image-placeholder">Imagen pendiente</span>}
+            {imageUrl ? <img src={imageUrl} srcset={imageSrcSet} sizes="(max-width: 780px) 100vw, 50vw" alt={imageAlt} loading="eager" fetchpriority="high" decoding="async" /> : <span class="product-detail__image-placeholder">Imagen pendiente</span>}
           </div>
 
           <div class="product-detail__content product-detail__sheet">
             <div class="product-detail__header">
               <p class="product-detail__kicker">{categoryLabel}</p>
-              <p class="product-detail__meta">{product.brand}{product.team?.name ? ` · ${product.team.name}` : ''}</p>
               <h1 id="product-title">{product.title}</h1>
+              {productMetadata && <p class="product-detail__meta">{productMetadata}</p>}
             </div>
 
             <div class="product-detail__commerce" aria-label="Precio y disponibilidad">
@@ -95,21 +115,6 @@ const relatedProducts = product
                   : 'Sin stock'}
               </p>
             </div>
-
-            <dl class="product-detail__facts">
-              <dt>Categoría</dt>
-              <dd>{categoryLabel}</dd>
-              <dt>Marca</dt>
-              <dd>{product.brand}</dd>
-              {product.season && (
-                <>
-                  <dt>Temporada</dt>
-                  <dd>{product.season}</dd>
-                </>
-              )}
-              <dt>Equipo</dt>
-              <dd>{product.team?.name || 'Consultanos'}</dd>
-            </dl>
 
             <div class="product-detail__sizes" aria-label="Talles y stock">
               <p>Talles y stock</p>
@@ -123,12 +128,12 @@ const relatedProducts = product
               </ul>
             </div>
 
-            {product.description && <p class="product-detail__description">{product.description}</p>}
-
             <div class="product-detail__cta">
-              <WhatsAppButton href={whatsappUrl} available={availability.available} />
-              <p class="product-detail__trust">Te respondemos por disponibilidad, talle y envío.</p>
+              <WhatsAppButton href={whatsappUrl} available={availability.available} productLabel={product.title} />
+              <p class="product-detail__trust">El mensaje incluye este producto. Te respondemos por disponibilidad, talle y envío.</p>
             </div>
+
+            {product.description && <p class="product-detail__description">{product.description}</p>}
           </div>
         </section>
 
@@ -139,7 +144,7 @@ const relatedProducts = product
               <h2 id="related-products-title">Más del perchero</h2>
             </div>
             <div class="product-grid">
-              {relatedProducts.map((relatedProduct) => <ProductCard product={relatedProduct} />)}
+              {relatedProducts.map((relatedProduct) => <ProductCard product={relatedProduct} headingLevel="h3" />)}
             </div>
           </section>
         )}

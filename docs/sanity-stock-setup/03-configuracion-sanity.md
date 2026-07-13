@@ -43,7 +43,7 @@ Para carga de productos, usar rol `Editor`. Evitar `Administrator` salvo para qu
 
 En Sanity Studio:
 
-1. Abrir `Configuración del sitio`.
+1. Abrir `Configuración interna del sitio`.
 2. Completar título y descripción.
 3. Completar `Número de WhatsApp` en formato internacional, por ejemplo `5491112345678`.
 4. Opcional: completar Instagram.

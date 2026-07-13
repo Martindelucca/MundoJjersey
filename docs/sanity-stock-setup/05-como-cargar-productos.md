@@ -18,20 +18,14 @@ Crear primero los equipos en Sanity, porque cada producto requiere un equipo.
 
 1. Ir a `Productos`.
 2. Crear documento nuevo.
-3. Completar `Título`.
-4. Generar `Slug`.
-5. Subir al menos una imagen.
-6. Completar `Texto alternativo` de cada imagen.
-7. Completar `Precio`.
-8. Elegir `Categoría`: Camiseta, Campera, Short o Conjunto completo.
-9. Completar `Marca`.
-10. Seleccionar `Equipo`.
-11. Completar `Liga` si aplica.
-12. Completar `Temporada` si se conoce.
-13. Cargar `Talles y stock` para cada producto, incluidos los conjuntos completos.
-14. Completar descripción si hace falta.
-15. Marcar `Destacado` solo si debe aparecer primero.
-16. Publicar.
+3. En la pestaña `Producto`, completar `Título`, generar `Slug`, elegir `Categoría`, completar `Marca`, seleccionar `Equipo`, completar `Liga` si aplica y `Temporada` si se conoce. La liga es opcional.
+4. En `Fotos`, subir al menos una foto original clara, vertical 4:5, con el producto completo y buena luz. Evitar capturas y fotos comprimidas por WhatsApp; se recomiendan al menos 1600 px de alto.
+5. Completar `Texto alternativo` de cada imagen, por ejemplo: `Camiseta Argentina titular 2026, frente completo`.
+6. En `Precio y stock`, completar `Precio` y cargar `Talles y stock` para cada producto, incluidos los conjuntos completos.
+7. En `Colecciones y publicación`, para cada camiseta elegir `Clubes` o `Selecciones`; `Retro` puede acompañar a cualquiera de esas opciones. Para otros productos las colecciones son opcionales.
+8. Completar la descripción si hace falta.
+9. Marcar `Destacado` solo si debe aparecer antes que otros productos en catálogo e Inicio; no indica que sea el más nuevo.
+10. Publicar.
 
 ## Cargar stock por talle
 

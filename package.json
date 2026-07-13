@@ -13,8 +13,8 @@
     "build:web": "npm --workspace @mundo-jjersey/web run build",
     "build:studio": "npm --workspace @mundo-jjersey/studio run build",
     "check": "npm --workspace @mundo-jjersey/web run check",
-    "test": "npm --workspace @mundo-jjersey/studio run test && npm --workspace @mundo-jjersey/web run test && npm --workspace @mundo-jjersey/web run test:catalog && npm --workspace @mundo-jjersey/web run test:design",
-    "ready": "npm run check && npm test && npm --workspace @mundo-jjersey/web run test:content && npm --workspace @mundo-jjersey/web run sanity:check && npm --workspace @mundo-jjersey/web run content:check && npm run build:web && npm run build:studio"
+    "test": "npm --workspace @mundo-jjersey/studio run test && npm --workspace @mundo-jjersey/web run test && npm --workspace @mundo-jjersey/web run test:catalog && npm --workspace @mundo-jjersey/web run test:design && npm --workspace @mundo-jjersey/web run test:seo",
+    "ready": "npm --workspace @mundo-jjersey/web run test:release -- --origin-only && npm run check && npm test && npm --workspace @mundo-jjersey/web run test:content && npm --workspace @mundo-jjersey/web run sanity:check && npm --workspace @mundo-jjersey/web run content:check && npm run build:web && npm --workspace @mundo-jjersey/web run test:release && npm run build:studio"
   },
   "engines": {
     "node": ">=20.0.0"

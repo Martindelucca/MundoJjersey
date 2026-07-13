@@ -51,19 +51,7 @@ body::before {
     radial-gradient(circle at 30% 10%, color-mix(in srgb, var(--color-gold), transparent 92%), transparent 18rem);
   background-size: 84px 84px, 84px 84px, 100% 100%;
   content: "";
-  opacity: 0.18;
-  pointer-events: none;
-}
-
-body::after {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  background-image:
-    repeating-radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--color-white), transparent 90%) 0 1px, transparent 1px 5px);
-  content: "";
-  mix-blend-mode: soft-light;
-  opacity: 0.12;
+  opacity: 0.08;
   pointer-events: none;
 }
 
@@ -246,7 +234,7 @@ a:focus-visible {
 .site-footer__links a:hover {
   background: transparent;
   color: var(--color-gold-soft);
-  transform: translateY(-1px) skewX(-3deg);
+  transform: translateY(-1px);
 }
 
 .site-header__nav a[aria-current="page"] {
@@ -299,7 +287,6 @@ a:focus-visible {
   position: relative;
   background: var(--color-gold);
   color: var(--color-ink);
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-gold), transparent 82%);
   text-transform: uppercase;
   letter-spacing: 0.02em;
   overflow: hidden;
@@ -434,6 +421,7 @@ a:focus-visible {
 }
 
 .hero__poster img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -642,9 +630,14 @@ h1,
 }
 
 .empty-state--home h2 {
+  color: var(--color-text-dark);
   font-size: clamp(1.8rem, 4vw, 3.25rem);
   line-height: 1;
   letter-spacing: -0.04em;
+}
+
+.empty-state--home p {
+  color: var(--color-muted-light);
 }
 
 .home-section--categories {
@@ -719,7 +712,7 @@ h1,
 }
 
 .category-tile--image:hover .category-tile__image {
-  transform: scale(1.035);
+  transform: scale(1.02);
 }
 
 .category-tile--archive::after {
@@ -777,21 +770,9 @@ h1,
   font-weight: 950;
 }
 
-.category-tile::before {
-  position: absolute;
-  inset: 1rem 1rem auto auto;
-  width: 4.4rem;
-  height: 2.15rem;
-  border: 1px solid color-mix(in srgb, var(--color-gold-soft), transparent 35%);
-  border-radius: 0.25rem;
-  content: "";
-  opacity: 0.7;
-  transform: rotate(4deg);
-}
-
 .category-tile:hover {
   border-color: var(--color-gold-soft);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .category-tile:active {
@@ -1163,13 +1144,12 @@ h1,
   border-radius: 0.85rem;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--color-white), var(--color-cream) 52%), var(--color-cream));
-  box-shadow: 0 16px 38px color-mix(in srgb, var(--color-ink), transparent 82%);
   color: var(--color-text-dark);
   transition: transform 180ms var(--ease-out);
 }
 
 .product-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-2px);
 }
 
 .product-card__media {
@@ -1287,7 +1267,7 @@ h1,
   text-transform: none;
 }
 
-.product-card__body h2 {
+.product-card__body :is(h2, h3) {
   margin: 0;
   font-size: clamp(1.3rem, 2.4vw, 1.65rem);
   line-height: 1;
@@ -1356,9 +1336,8 @@ h1,
   max-width: 680px;
   padding: clamp(1.5rem, 4vw, 2.25rem);
   border: 1px solid color-mix(in srgb, var(--color-gold-soft), transparent 46%);
-  border-radius: 1.5rem;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--color-blue), transparent 10%), color-mix(in srgb, var(--color-ink), transparent 8%));
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--color-blue), var(--color-ink) 58%);
   color: var(--color-white);
 }
 
@@ -1417,13 +1396,12 @@ h1,
     linear-gradient(145deg, color-mix(in srgb, var(--color-blue), var(--color-ink) 18%), var(--color-ink));
   color: var(--color-cream);
   font-weight: 800;
-  box-shadow: 0 24px 60px color-mix(in srgb, var(--color-ink), transparent 66%);
 }
 
 .product-detail__media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .product-detail__image-placeholder {
@@ -1447,7 +1425,6 @@ h1,
   background:
     linear-gradient(180deg, var(--color-cream), color-mix(in srgb, var(--color-white), var(--color-cream) 46%));
   color: var(--color-ink);
-  box-shadow: 0 20px 48px color-mix(in srgb, var(--color-ink), transparent 82%);
 }
 
 .product-detail__sheet {
@@ -1518,22 +1495,6 @@ h1,
   font-size: clamp(1.85rem, 3.5vw, 2.6rem);
   font-weight: 950;
   letter-spacing: -0.04em;
-}
-
-.product-detail__facts {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 0.7rem 1rem;
-  margin: 0;
-}
-
-.product-detail__facts dt {
-  color: var(--color-muted-light);
-  font-weight: 700;
-}
-
-.product-detail__facts dd {
-  margin: 0;
 }
 
 .stock-label {
@@ -1614,17 +1575,16 @@ h1,
 }
 
 .whatsapp-button {
-  display: grid;
+  display: flex;
   width: 100%;
   min-height: 56px;
-  align-content: center;
-  gap: 0.18rem;
+  align-items: center;
+  justify-content: space-between;
   border-radius: 0.45rem;
   background: var(--color-gold);
   color: var(--color-ink);
-  padding: 0.95rem 1.25rem;
+  padding: 0.65rem 0.75rem 0.65rem 1.25rem;
   font-weight: 950;
-  text-align: center;
   text-decoration: none;
   transition:
     opacity 180ms var(--ease-out),
@@ -1647,13 +1607,24 @@ h1,
 }
 
 .whatsapp-button__label {
+  min-width: 0;
   font-size: 1.02rem;
+  white-space: nowrap;
 }
 
-.whatsapp-button__hint {
-  font-size: 0.82rem;
-  font-weight: 800;
-  opacity: 0.78;
+.whatsapp-button__mark {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink), transparent 88%);
+  transition: transform 220ms var(--ease-out);
+}
+
+.whatsapp-button:hover .whatsapp-button__mark {
+  transform: translate(2px, -2px);
 }
 
 .product-detail__trust {
@@ -1837,6 +1808,18 @@ h1,
 }
 
 @media (max-width: 780px) {
+  body::before {
+    display: none;
+  }
+
+  .home-section {
+    padding-block: clamp(3.3rem, 8vw, 4.5rem);
+  }
+
+  .home-section--arrivals {
+    padding-top: clamp(2.8rem, 7vw, 3.6rem);
+  }
+
   .catalog-page {
     gap: 2rem;
     padding-block: 2rem 2.75rem;
@@ -1926,10 +1909,10 @@ h1,
 
   .product-card__body {
     gap: 0.45rem;
-    padding: 0.7rem;
+    padding: 0.9rem 0.7rem 0.7rem;
   }
 
-  .product-card__body h2 {
+  .product-card__body :is(h2, h3) {
     overflow-wrap: anywhere;
     font-size: 1rem;
     line-height: 1.08;
@@ -1975,7 +1958,7 @@ h1,
   }
 
   .hero {
-    min-height: calc(100svh - 4.5rem);
+    min-height: auto;
     align-content: center;
     padding: clamp(2rem, 7vw, 2.75rem) 0 clamp(1.5rem, 6vw, 2.25rem);
     background:
@@ -1991,7 +1974,7 @@ h1,
     display: block;
     order: 2;
     width: min(100%, 38rem);
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 16 / 9;
     margin: clamp(1.65rem, 6vw, 2.25rem) auto 0;
     border-block: 1px solid color-mix(in srgb, var(--color-gold-soft), transparent 68%);
     border-radius: 0;
@@ -2001,8 +1984,7 @@ h1,
 
   .hero__poster::after {
     background:
-      linear-gradient(180deg, transparent 46%, color-mix(in srgb, var(--color-ink), transparent 64%) 100%),
-      linear-gradient(90deg, color-mix(in srgb, var(--color-ink), transparent 88%), transparent 35%);
+      linear-gradient(180deg, transparent 56%, color-mix(in srgb, var(--color-ink), transparent 82%) 100%);
   }
 
   .hero__poster img {
@@ -2210,7 +2192,7 @@ h1,
     border: 1px solid color-mix(in srgb, var(--color-gold-soft), transparent 54%);
     border-radius: 0.95rem;
     background: color-mix(in srgb, var(--color-ink), transparent 2%);
-    box-shadow: 0 22px 52px color-mix(in srgb, var(--color-ink), transparent 26%);
+    box-shadow: 0 4px 8px color-mix(in srgb, var(--color-ink), transparent 26%);
   }
 
   .site-header__menu-panel a {
@@ -2252,11 +2234,8 @@ h1,
   }
 
   .product-detail__content {
-    padding: 1.25rem;
-  }
-
-  .product-detail__facts {
-    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    padding: 1rem;
   }
 
   .site-footer__inner {
@@ -2330,6 +2309,14 @@ h1,
   .product-grid {
     grid-template-columns: 1fr;
   }
+
+  .whatsapp-button {
+    padding-inline: 0.65rem;
+  }
+
+  .whatsapp-button__label {
+    font-size: 0.9rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2347,6 +2334,14 @@ h1,
   :where(a, button, .button, .category-tile, .product-card, .whatsapp-button, .site-footer__contact-link):hover,
   :where(a, button, .button, .category-tile, .product-card, .whatsapp-button, .site-footer__contact-link):active {
     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .button--with-mark:hover span:last-child,
+  .category-tile--image:hover .category-tile__image,
+  .whatsapp-button:hover .whatsapp-button__mark,
+  .whatsapp-button:active .whatsapp-button__mark,
+  .site-footer__mobile-navigation[open] summary::after {
     transform: none !important;
   }
 }

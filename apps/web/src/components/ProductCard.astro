@@ -1,15 +1,17 @@
 ---
-import { getImageUrl } from '../lib/sanity/image';
+import { getImageSrcSet, getImageUrl } from '../lib/sanity/image';
 import type { ProductSummary } from '../lib/sanity/types';
 import { getProductCategoryLabel } from '../lib/catalog/categories';
 import { getProductAvailability } from '../lib/catalog/availability';
 
 interface Props {
   product: ProductSummary;
+  headingLevel?: 'h2' | 'h3';
 }
 
-const { product } = Astro.props;
+const { product, headingLevel = 'h2' } = Astro.props;
 const imageUrl = getImageUrl(product.image, 640);
+const imageSrcSet = getImageSrcSet(product.image, [320, 480, 640, 960, 1280]);
 const availability = getProductAvailability(product);
 const availableSizes = availability.sizes.filter((size) => size.available).map((size) => size.size);
 const stockLabel = availability.available ? 'Disponible' : 'Sin stock';
@@ -36,7 +38,7 @@ const price = new Intl.NumberFormat('es-AR', {
     </span>
     <span class="product-card__season">{seasonLabel}</span>
     {imageUrl ? (
-      <img src={imageUrl} alt={product.image?.alt || product.title} loading="lazy" />
+      <img src={imageUrl} srcset={imageSrcSet} sizes="(max-width: 359px) 100vw, (max-width: 780px) 50vw, (max-width: 1119px) 50vw, 547px" alt={product.image?.alt || product.title} loading="lazy" decoding="async" />
     ) : (
       <span class="product-card__placeholder" aria-hidden="true"><span>MJJ</span><small>Imagen pendiente</small></span>
     )}
@@ -49,7 +51,11 @@ const price = new Intl.NumberFormat('es-AR', {
     </div>
     <p class="product-card__identity">{teamLabel} · {seasonLabel}</p>
     <p class="product-card__meta">{categoryLabel} · {sizesPreview}</p>
-    <h2><a href={`/producto/${product.slug}`}>{product.title}</a></h2>
+    {headingLevel === 'h3' ? (
+      <h3><a href={`/producto/${product.slug}`}>{product.title}</a></h3>
+    ) : (
+      <h2><a href={`/producto/${product.slug}`}>{product.title}</a></h2>
+    )}
     <div class="product-card__details">
       <p class="product-card__price">{price}</p>
       <p class={availability.available ? 'product-card__stock' : 'product-card__stock product-card__stock--empty'}>

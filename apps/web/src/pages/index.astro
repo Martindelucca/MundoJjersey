@@ -4,7 +4,7 @@ import FAQBlock from '../components/FAQBlock.astro';
 import ProductCard from '../components/ProductCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import { Image } from 'astro:assets';
-import heroPosterImage from '../../fotos/HERO1.jpg';
+import heroImage from '../../fotos/HERODESKTOP.svg';
 import camperasImage from '../../fotos/camperas.jpg';
 import clubesImage from '../../fotos/clubes2.jpg';
 import aboutImage from '../../fotos/nosotros.JPEG';
@@ -30,7 +30,7 @@ const editorialCategories = [
     label: 'identidad de tribuna',
     copy: 'Camisetas de clubes con temporada, color y presencia para usar fuera de la cancha.',
     href: '/catalogo/camisetas/clubes',
-    imageSrc: clubesImage.src,
+    imageSrc: clubesImage,
     imageAlt: 'Camiseta retro de Bayer Leverkusen colgada en un estudio',
     cue: 'Ver clubes',
     variant: 'poster' as const,
@@ -42,7 +42,7 @@ const editorialCategories = [
     label: 'mundial y calle',
     copy: 'Piezas de selección para quienes buscan fútbol reconocible sin caer en uniforme común.',
     href: '/catalogo/camisetas/selecciones',
-    imageSrc: seleccionesImage.src,
+    imageSrc: seleccionesImage,
     imageAlt: 'Camiseta de Argentina colgada en una percha',
     cue: 'Ver selecciones',
     variant: 'fresh' as const,
@@ -53,7 +53,7 @@ const editorialCategories = [
     label: 'temporadas con historia',
     copy: 'Diseños que remiten a una época, una camiseta titular o una suplente difícil de olvidar.',
     href: '/catalogo/camisetas/retro',
-    imageSrc: retroImage.src,
+    imageSrc: retroImage,
     imageAlt: 'Camiseta retro presentada como pieza de archivo',
     cue: 'Ver retro',
     variant: 'archive' as const,
@@ -64,7 +64,7 @@ const editorialCategories = [
     label: 'abrigo de cancha',
     copy: 'Abrigo con identidad de cancha para usar todos los días.',
     href: '/catalogo/camperas',
-    imageSrc: camperasImage.src,
+    imageSrc: camperasImage,
     imageAlt: 'Campera de fútbol colgada en una percha',
     cue: 'Ver camperas',
     variant: 'poster' as const,
@@ -80,7 +80,7 @@ const editorialCategories = [
   <main id="contenido-principal">
     <section class="hero drop-scene" aria-labelledby="home-title">
       <div class="hero__poster" aria-hidden="true">
-        <img src={heroPosterImage.src} alt="" loading="eager" />
+        <Image src={heroImage} alt="" loading="eager" decoding="async" fetchpriority="high" />
       </div>
       <div class="site-shell hero__inner drop-scene__inner">
         <div class="drop-scene__copy">
@@ -103,7 +103,7 @@ const editorialCategories = [
 
       {products.length > 0 ? (
         <div class="product-grid product-grid--home">
-          {products.map((product) => <ProductCard product={product} />)}
+          {products.map((product) => <ProductCard product={product} headingLevel="h3" />)}
         </div>
       ) : (
         <div class="empty-state empty-state--home" aria-live="polite">

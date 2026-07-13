@@ -22,7 +22,7 @@ Estas tareas requieren acceso a Sanity, Vercel o cuentas externas.
 ## 3. Contenido inicial
 
 1. Entrar a Sanity Studio.
-2. Crear `Configuración del sitio`.
+2. Crear `Configuración interna del sitio`.
 3. Cargar WhatsApp.
 4. Cargar equipos.
 5. Cargar productos.

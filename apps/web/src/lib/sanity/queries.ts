@@ -19,7 +19,7 @@ export const productsByCategoryQuery = `*[_type == "product" && category == $cat
 
 export const productsByCategoryAndEditorialTagQuery = `*[_type == "product" && category == $category && $editorialTag in editorialTags] | order(isFeatured desc, _createdAt desc) {${productProjection}}`;
 
-export const productSlugsQuery = `*[_type == "product" && defined(slug.current)] {
+export const productSlugsQuery = `*[_type == "product" && !(_id in path("drafts.**")) && defined(slug.current)] {
   "slug": slug.current
 }`;
 

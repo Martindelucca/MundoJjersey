@@ -9,8 +9,9 @@ Guía operativa para dejar Mundo JJersey funcionando con productos y stock carga
 3. Configurar Sanity con `03-configuracion-sanity.md`.
 4. Configurar Vercel con `04-configuracion-vercel.md`.
 5. Cargar productos siguiendo `05-como-cargar-productos.md`.
-6. Antes de publicar o compartir el sitio, pasar `06-checklist-produccion.md`.
-7. Si algo falla, revisar `07-solucion-problemas.md`.
+6. Para acceso y carga de productos por parte del cliente, seguir `08-guia-cliente-productos.md`.
+7. Antes de publicar o compartir el sitio, pasar `06-checklist-produccion.md`.
+8. Si algo falla, revisar `07-solucion-problemas.md`.
 
 ## Fuente única de stock
 

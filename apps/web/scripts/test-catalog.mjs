@@ -16,6 +16,8 @@ import {
   getTotalStock,
   isAvailable
 } from '../src/lib/catalog/availability.ts';
+import { formatProductMetadata } from '../src/lib/catalog/product-metadata.ts';
+import { getRelatedProducts } from '../src/lib/catalog/related-products.ts';
 import { productsByCategoryAndEditorialTagQuery } from '../src/lib/sanity/queries.ts';
 
 assert.deepEqual(
@@ -46,6 +48,7 @@ const home = await readFile(resolve(rootDir, 'apps/web/src/pages/index.astro'), 
 const rootCatalog = await readFile(resolve(rootDir, 'apps/web/src/pages/catalogo.astro'), 'utf8');
 const categoryRoute = await readFile(resolve(rootDir, 'apps/web/src/pages/catalogo/[category].astro'), 'utf8');
 const collectionRoute = await readFile(resolve(rootDir, 'apps/web/src/pages/catalogo/[category]/[collection].astro'), 'utf8');
+const productDetail = await readFile(resolve(rootDir, 'apps/web/src/pages/producto/[slug].astro'), 'utf8');
 const shirtCollectionNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/ShirtCollectionNavigation.astro'), 'utf8');
 const catalogCategoryNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/CatalogCategoryNavigation.astro'), 'utf8');
 const globalStyles = await readFile(resolve(rootDir, 'apps/web/src/styles/global.css'), 'utf8');
@@ -107,6 +110,10 @@ assert.match(mobileStyles, /\.product-card__media \{[\s\S]*?min-height: 0;[\s\S]
 assert.match(mobileStyles, /\.product-card__season,[\s\S]*?\.product-card__ticket \{[\s\S]*?display: none/);
 assert.match(mobileStyles, /\.product-card__identity \{[\s\S]*?display: block/);
 assert.match(mobileStyles, /\.product-card__meta,[\s\S]*?\.product-card__stock \{[\s\S]*?font-size: 0.75rem/);
+const compactProductHeadingRule = mobileStyles.match(/\.product-card__body :is\(h2, h3\)\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(compactProductHeadingRule, /font-size:\s*1rem/);
+assert.match(compactProductHeadingRule, /line-height:\s*1\.08/);
+assert.match(compactProductHeadingRule, /overflow-wrap:\s*anywhere/);
 const productCard = await readFile(resolve(rootDir, 'apps/web/src/components/ProductCard.astro'), 'utf8');
 assert.match(productCard, /<h2><a href=\{`\/producto\/\$\{product\.slug\}`\}>\{product\.title\}<\/a><\/h2>/);
 assert.match(productCard, /product-card__price/);
@@ -114,6 +121,24 @@ assert.match(productCard, /product-card__stock/);
 assert.match(productCard, /sizesPreview/);
 assert.match(productCard, /product-card__ticket/);
 assert.match(productCard, /<p class="product-card__identity">\{teamLabel\} · \{seasonLabel\}<\/p>/);
+assert.match(productCard, /headingLevel\?: 'h2' \| 'h3'/);
+assert.match(productCard, /const \{ product, headingLevel = 'h2' \} = Astro\.props/);
+assert.match(productCard, /headingLevel === 'h3'/);
+assert.match(home, /<ProductCard product=\{product\} headingLevel="h3" \/>/);
+assert.match(productDetail, /<ProductCard product=\{relatedProduct\} headingLevel="h3" \/>/);
+for (const catalogPage of [rootCatalog, categoryRoute, collectionRoute]) {
+  assert.match(catalogPage, /<ProductCard product=\{product\} \/>/);
+}
+assert.match(productDetail, /formatProductMetadata\(product\.brand, product\.team\?\.name, product\.season\)/);
+assert.equal(formatProductMetadata('Marca'), 'Marca');
+assert.equal(formatProductMetadata('', '', ''), '');
+assert.equal(formatProductMetadata('', 'Equipo', ''), 'Equipo');
+assert.equal(formatProductMetadata('  ', '\t', '\n'), '');
+assert.equal(formatProductMetadata('Marca', '  ', '\t'), 'Marca');
+assert.equal(formatProductMetadata('  Marca  ', ' Equipo ', ' 2026 '), 'Marca · Equipo · 2026');
+assert.equal(formatProductMetadata('Marca', 'Equipo'), 'Marca · Equipo');
+assert.equal(formatProductMetadata('Marca', undefined, '2026'), 'Marca · 2026');
+assert.equal(formatProductMetadata('Marca', 'Equipo', '2026'), 'Marca · Equipo · 2026');
 assert.match(globalStyles, /\.catalog-chips a:focus-visible \{[\s\S]*?box-shadow:[\s\S]*?inset 0 0 0 2px var\(--color-white\),[\s\S]*?inset 0 0 0 4px var\(--color-ink\)/);
 const collectionNavigationRule = globalStyles.match(/\.catalog-navigation--collections\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.match(collectionNavigationRule, /border-top:/);
@@ -141,6 +166,70 @@ assert.deepEqual(
     variants: [{ size: 'M', stock: 1 }, { size: 'L', stock: 0 }]
   }),
   { available: true, totalStock: 1, sizes: [{ size: 'M', available: true }, { size: 'L', available: false }] }
+);
+
+const currentProduct = {
+  _id: 'current',
+  title: 'Camiseta actual',
+  slug: 'actual',
+  price: 100,
+  category: 'shirt',
+  editorialTags: ['club'],
+  brand: 'Marca',
+  team: { slug: 'river' }
+};
+const sameTeam = { ...currentProduct, _id: 'same-team', slug: 'same-team', category: 'jacket' };
+const sameCategoryAndTag = { ...currentProduct, _id: 'same-category-tag', slug: 'same-category-tag', team: { slug: 'boca' } };
+const sameCategory = { ...currentProduct, _id: 'same-category', slug: 'same-category', editorialTags: ['retro'], team: { slug: 'boca' } };
+const sharedTag = { ...currentProduct, _id: 'shared-tag', slug: 'shared-tag', category: 'jacket', team: { slug: 'boca' } };
+const fallbackFirst = { ...currentProduct, _id: 'fallback-first', slug: 'fallback-first', category: 'jacket', editorialTags: ['retro'], team: { slug: 'boca' } };
+const fallbackSecond = { ...fallbackFirst, _id: 'fallback-second', slug: 'fallback-second' };
+
+assert.deepEqual(
+  getRelatedProducts(currentProduct, [currentProduct, fallbackFirst, sameCategory, sharedTag, sameTeam, sameCategoryAndTag]).map((product) => product._id),
+  ['same-team', 'same-category-tag', 'same-category']
+);
+assert.deepEqual(
+  getRelatedProducts(currentProduct, [currentProduct, fallbackSecond, fallbackFirst]).map((product) => product._id),
+  ['fallback-second', 'fallback-first']
+);
+assert.deepEqual(
+  getRelatedProducts(currentProduct, [currentProduct, sameTeam]).map((product) => product._id),
+  ['same-team'],
+  'The current product must never appear in related products.'
+);
+
+const productWithoutTeamOrTags = {
+  ...currentProduct,
+  _id: 'without-team-or-tags',
+  slug: 'without-team-or-tags',
+  team: undefined,
+  editorialTags: undefined
+};
+const sameCategoryWithoutTeamOrTags = {
+  ...productWithoutTeamOrTags,
+  _id: 'same-category-without-team-or-tags',
+  slug: 'same-category-without-team-or-tags'
+};
+
+assert.deepEqual(
+  getRelatedProducts(productWithoutTeamOrTags, [sameCategoryWithoutTeamOrTags]).map((product) => product._id),
+  ['same-category-without-team-or-tags'],
+  'Related products must handle missing team and editorialTags.'
+);
+
+const equalScoreFirst = { ...sameCategory, _id: 'equal-score-first', slug: 'equal-score-first' };
+const equalScoreSecond = { ...sameCategory, _id: 'equal-score-second', slug: 'equal-score-second' };
+
+assert.deepEqual(
+  getRelatedProducts(currentProduct, [equalScoreSecond, equalScoreFirst]).map((product) => product._id),
+  ['equal-score-second', 'equal-score-first'],
+  'Equal positive scores must retain the original query order.'
+);
+assert.deepEqual(
+  getRelatedProducts(currentProduct, [sameTeam]).map((product) => product._id),
+  ['same-team'],
+  'Related products must return fewer than three candidates when fewer exist.'
 );
 
 console.log('Catalog helpers and navigation validated.');

@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { buildGeneralWhatsAppUrl, buildWhatsAppUrl, normalizeWhatsAppNumber } from '../src/lib/whatsapp.ts';
 
 assert.equal(normalizeWhatsAppNumber('+54 9 11 1234-5678'), '5491112345678');
@@ -49,5 +51,15 @@ assert.equal(
 );
 
 assert.equal(buildGeneralWhatsAppUrl({ phoneNumber: '' }), '');
+
+const whatsappButton = await readFile(resolve(import.meta.dirname, '../src/components/WhatsAppButton.astro'), 'utf8');
+assert.match(whatsappButton, /productLabel\?: string/);
+assert.match(whatsappButton, /Consultar \$\{productLabel\} por WhatsApp/);
+assert.match(whatsappButton, /Consultar disponibilidad de \$\{productLabel\} por WhatsApp/);
+assert.match(whatsappButton, /available \? 'Consultar por WhatsApp' : 'Consultar disponibilidad'/);
+assert.match(whatsappButton, /class="whatsapp-button__mark" aria-hidden="true">↗/);
+assert.match(whatsappButton, /\{href \? \(/);
+assert.match(whatsappButton, /<p class="contact-unavailable">WhatsApp no está configurado todavía\.<\/p>/);
+assert.doesNotMatch(whatsappButton, /whatsapp-button__hint/);
 
 console.log('WhatsApp helpers validated.');

@@ -32,7 +32,7 @@ function isCurrentLink(href: string): boolean {
   <div class="site-header__inner site-shell">
     <a class="site-header__brand" href="/" aria-label="Mundo JJersey inicio">
       <span class="site-header__mark" aria-hidden="true">
-        <img src="/brand-mark.svg" alt="" loading="eager" />
+        <img src="/brand-mark.png" alt="" width="512" height="512" loading="eager" />
       </span>
       <span class="site-header__brand-copy">
         <span>Mundo JJersey</span>
@@ -65,3 +65,32 @@ function isCurrentLink(href: string): boolean {
     </details>
   </div>
 </header>
+
+<script>
+  document.querySelectorAll<HTMLDetailsElement>('.site-header__menu').forEach((menu) => {
+    menu.addEventListener('click', (event) => {
+      const link = (event.target as Element).closest('a');
+
+      if (link && menu.contains(link)) {
+        menu.removeAttribute('open');
+      }
+    });
+
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') {
+      return;
+    }
+
+    const openMenus = [...document.querySelectorAll<HTMLDetailsElement>('.site-header__menu[open]')];
+
+    if (openMenus.length === 0) {
+      return;
+    }
+
+    const focusedMenu = openMenus.find((menu) => menu.contains(document.activeElement));
+    openMenus.forEach((menu) => menu.removeAttribute('open'));
+    (focusedMenu ?? openMenus[0]).querySelector('summary')?.focus();
+  });
+</script>
