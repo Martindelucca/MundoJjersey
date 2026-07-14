@@ -1,0 +1,136 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "orchestrator",
+  "model": "openai/gpt-5.6-terra",
+
+  "agent": {
+    "orchestrator": {
+      "description": "Analiza tareas complejas, diseña el plan y delega toda implementación.",
+      "mode": "primary",
+      "model": "openai/gpt-5.6-terra",
+      "reasoningEffort": "high",
+      "textVerbosity": "low",
+      "steps": 12,
+
+      "prompt": "Inspecciona únicamente el contexto necesario. Identifica riesgos, archivos afectados y criterios de aceptación. Si la solicitud requiere modificar archivos, delega siempre la implementación al builder, incluso cuando sea una tarea pequeña. Resuelve directamente sólo análisis y consultas que no requieran cambios. Usa reviewer después de cambios sensibles y deep-debugger sólo para problemas críticos o persistentes.",
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "lsp": "allow",
+        "edit": "deny",
+
+        "bash": {
+          "*": "deny",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow"
+        },
+
+        "task": {
+          "*": "deny",
+          "repo-scout": "allow",
+          "builder": "allow",
+          "reviewer": "allow",
+          "deep-debugger": "allow"
+        }
+      }
+    },
+
+    "builder": {
+      "description": "Implementa tareas, modifica archivos y ejecuta validaciones.",
+      "mode": "all",
+      "model": "openai/gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "textVerbosity": "low",
+      "steps": 24,
+
+      "prompt": "Implementa la tarea solicitada directamente en esta sesión. Si existen criterios suficientes, modifica los archivos ahora: no pospongas el trabajo a otra sesión ni entregues únicamente un plan. Respeta la arquitectura existente, evita refactors no solicitados, ejecuta las validaciones relevantes y devuelve un resumen breve con archivos modificados, pruebas realizadas y problemas pendientes.",
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "lsp": "allow",
+        "edit": "allow",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "repo-scout": {
+      "description": "Explora el repositorio y localiza archivos, símbolos y dependencias.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "textVerbosity": "low",
+      "steps": 8,
+
+      "prompt": "Localiza únicamente los archivos, símbolos y dependencias relevantes. Devuelve rutas, referencias y un resumen conciso. No modifiques archivos.",
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "lsp": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "task": "deny"
+      }
+    },
+
+    "reviewer": {
+      "description": "Revisa cambios buscando errores, regresiones y pruebas faltantes.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-terra",
+      "reasoningEffort": "high",
+      "textVerbosity": "low",
+      "steps": 10,
+
+      "prompt": "Revisa el diff y los criterios de aceptación. Prioriza errores funcionales, seguridad, pérdida de datos, regresiones y pruebas faltantes. No modifiques archivos.",
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "lsp": "allow",
+        "edit": "deny",
+
+        "bash": {
+          "*": "deny",
+          "git status*": "allow",
+          "git diff*": "allow"
+        },
+
+        "task": "deny"
+      }
+    },
+
+    "deep-debugger": {
+      "description": "Investiga problemas críticos, arquitectónicos o persistentes.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-sol",
+      "reasoningEffort": "xhigh",
+      "textVerbosity": "low",
+      "steps": 16,
+
+      "prompt": "Investiga la causa raíz usando código, logs y pruebas. Entrega una explicación verificable y una estrategia de corrección para que builder la implemente. No modifiques archivos.",
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "lsp": "allow",
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      }
+    }
+  }
+}

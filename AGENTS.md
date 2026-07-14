@@ -63,3 +63,12 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+## 5. Project Memory
+
+Before making project changes, read:
+
+- `MEMORY.md` for persistent product, design, code, and deployment context.
+- `IMPLEMENTATION_PLAN.md` for current status, active bug, validation commands, and next steps.
+
+Use a Plan → Act → Verify loop. Keep state on disk when it matters across sessions.

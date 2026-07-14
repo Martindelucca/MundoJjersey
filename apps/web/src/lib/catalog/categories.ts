@@ -16,7 +16,7 @@ export const catalogCategories: CatalogCategory[] = [
     singular: 'Camiseta',
     plural: 'Camisetas',
     title: 'Camisetas de fútbol',
-    description: 'Camisetas nuevas de clubes y selecciones seleccionadas por identidad, diseño y uso real.'
+    description: 'Camisetas nuevas de clubes y selecciones elegidas por su diseño, su historia y lo que representan.'
   },
   {
     value: 'jacket',

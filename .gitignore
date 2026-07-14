@@ -8,3 +8,6 @@ dist/
 .env.*.local
 npm-debug.log*
 *.tsbuildinfo
+
+# Generated design critiques
+.impeccable/
