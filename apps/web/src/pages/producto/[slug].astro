@@ -1,12 +1,14 @@
 ---
 import ProductCard from '../../components/ProductCard.astro';
+import ProductGallery from '../../components/ProductGallery.astro';
 import WhatsAppButton from '../../components/WhatsAppButton.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProductCategoryLabel } from '../../lib/catalog/categories';
 import { getProductAvailability } from '../../lib/catalog/availability';
 import { formatProductMetadata } from '../../lib/catalog/product-metadata';
 import { getRelatedProducts } from '../../lib/catalog/related-products';
-import { getImageSrcSet, getImageUrl } from '../../lib/sanity/image';
+import { getImageUrl } from '../../lib/sanity/image';
+import { getProductImages } from '../../lib/sanity/product-images';
 import { buildProductStructuredData } from '../../lib/seo';
 import { parseSiteOrigin } from '../../lib/site-origin';
 import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
@@ -47,9 +49,8 @@ const categoryLabel = product ? getProductCategoryLabel(product.category) : 'Pro
 const productMetadata = product
   ? formatProductMetadata(product.brand, product.team?.name, product.season)
   : '';
-const imageUrl = getImageUrl(product?.image, 960);
-const imageSrcSet = getImageSrcSet(product?.image, [640, 960, 1280, 1600]);
-const imageAlt = product?.image?.alt || product?.title || 'Producto de fútbol';
+const productImages = getProductImages(product?.images, product?.image);
+const imageUrl = getImageUrl(productImages[0], 1200);
 const whatsappNumber = settings?.whatsappNumber || import.meta.env.PUBLIC_WHATSAPP_NUMBER || '';
 const siteOrigin = parseSiteOrigin(import.meta.env.PUBLIC_SITE_URL);
 const productUrl = product && siteOrigin && !siteOrigin.isLocal
@@ -82,6 +83,7 @@ const productStructuredData = product && canonicalProductUrl
   title={product ? `${product.title} | Mundo JJersey` : 'Producto no encontrado | Mundo JJersey'}
   description={product?.description || 'Detalle de producto disponible para consultar por WhatsApp.'}
   canonicalPath={product ? `/producto/${product.slug}` : undefined}
+  openGraphImageUrl={canonicalProductUrl ? imageUrl || undefined : undefined}
   structuredData={productStructuredData}
 >
   <main id="contenido-principal" class="site-shell product-detail-page">
@@ -97,7 +99,7 @@ const productStructuredData = product && canonicalProductUrl
       <>
         <section class="product-detail" aria-labelledby="product-title">
           <div class="product-detail__media">
-            {imageUrl ? <img src={imageUrl} srcset={imageSrcSet} sizes="(max-width: 780px) 100vw, 50vw" alt={imageAlt} loading="eager" fetchpriority="high" decoding="async" /> : <span class="product-detail__image-placeholder">Imagen pendiente</span>}
+            <ProductGallery images={product.images} image={product.image} productTitle={product.title} />
           </div>
 
           <div class="product-detail__content product-detail__sheet">

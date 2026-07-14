@@ -1,8 +1,8 @@
 ---
 import { getImageSrcSet, getImageUrl } from '../lib/sanity/image';
 import type { ProductSummary } from '../lib/sanity/types';
-import { getProductCategoryLabel } from '../lib/catalog/categories';
 import { getProductAvailability } from '../lib/catalog/availability';
+import { formatProductMetadata } from '../lib/catalog/product-metadata';
 
 interface Props {
   product: ProductSummary;
@@ -15,15 +15,10 @@ const imageSrcSet = getImageSrcSet(product.image, [320, 480, 640, 960, 1280]);
 const availability = getProductAvailability(product);
 const availableSizes = availability.sizes.filter((size) => size.available).map((size) => size.size);
 const stockLabel = availability.available ? 'Disponible' : 'Sin stock';
-const categoryLabel = getProductCategoryLabel(product.category);
-const teamLabel = product.team?.name || 'Equipo a confirmar';
-const seasonLabel = product.season || 'Tanda actual';
+const identity = formatProductMetadata(product.brand, product.team?.name, product.season);
 const sizesPreview = availableSizes.length > 0
   ? `Talles ${availableSizes.slice(0, 4).join(' / ')}${availableSizes.length > 4 ? ' +' : ''}`
-  : 'Consultar reposición';
-const stockText = availability.available
-  ? `${availability.totalStock} en tanda`
-  : 'Sin stock · preguntá reposición';
+  : 'Consultar disponibilidad';
 const price = new Intl.NumberFormat('es-AR', {
   style: 'currency',
   currency: 'ARS',
@@ -36,7 +31,6 @@ const price = new Intl.NumberFormat('es-AR', {
     <span class={availability.available ? 'product-card__badge' : 'product-card__badge product-card__badge--empty'}>
       {stockLabel}
     </span>
-    <span class="product-card__season">{seasonLabel}</span>
     {imageUrl ? (
       <img src={imageUrl} srcset={imageSrcSet} sizes="(max-width: 359px) 100vw, (max-width: 780px) 50vw, (max-width: 1119px) 50vw, 547px" alt={product.image?.alt || product.title} loading="lazy" decoding="async" />
     ) : (
@@ -44,13 +38,7 @@ const price = new Intl.NumberFormat('es-AR', {
     )}
   </a>
   <div class="product-card__body">
-    <div class="product-card__ticket" aria-label="Datos rápidos del producto">
-      <span>{product.brand}</span>
-      <span>{categoryLabel}</span>
-      <span>{teamLabel} · {seasonLabel}</span>
-    </div>
-    <p class="product-card__identity">{teamLabel} · {seasonLabel}</p>
-    <p class="product-card__meta">{categoryLabel} · {sizesPreview}</p>
+    {identity && <p class="product-card__identity">{identity}</p>}
     {headingLevel === 'h3' ? (
       <h3><a href={`/producto/${product.slug}`}>{product.title}</a></h3>
     ) : (
@@ -58,9 +46,7 @@ const price = new Intl.NumberFormat('es-AR', {
     )}
     <div class="product-card__details">
       <p class="product-card__price">{price}</p>
-      <p class={availability.available ? 'product-card__stock' : 'product-card__stock product-card__stock--empty'}>
-        {stockText}
-      </p>
+      <p class="product-card__sizes">{sizesPreview}</p>
     </div>
   </div>
 </article>

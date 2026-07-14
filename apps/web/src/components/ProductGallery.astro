@@ -1,0 +1,96 @@
+---
+import { getImageSrcSet, getImageUrl } from '../lib/sanity/image';
+import { getProductImages } from '../lib/sanity/product-images';
+import type { SanityImage } from '../lib/sanity/types';
+
+interface Props {
+  images?: SanityImage[];
+  image?: SanityImage;
+  productTitle: string;
+}
+
+const { images, image, productTitle } = Astro.props;
+const productImages = getProductImages(images, image);
+const initialImage = productImages[0];
+const initialImageUrl = getImageUrl(initialImage, 1200);
+const initialImageSrcSet = getImageSrcSet(initialImage, [640, 960, 1200, 1600]);
+const initialImageAlt = initialImage?.alt || productTitle;
+---
+
+<div class="product-gallery" data-product-gallery>
+  <div class="product-gallery__main">
+    {initialImageUrl ? (
+      <img
+        data-product-gallery-main
+        src={initialImageUrl}
+        srcset={initialImageSrcSet}
+        sizes="(max-width: 780px) 100vw, 50vw"
+        alt={initialImageAlt}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    ) : (
+      <span class="product-detail__image-placeholder">Imagen pendiente</span>
+    )}
+  </div>
+
+  {productImages.length > 1 && (
+    <div class="product-gallery__thumbnails" aria-label="Imágenes del producto">
+      {productImages.map((productImage, index) => {
+        const imageUrl = getImageUrl(productImage, 1200);
+        const imageSrcSet = getImageSrcSet(productImage, [640, 960, 1200, 1600]);
+        const thumbnailUrl = getImageUrl(productImage, 160);
+        const thumbnailSrcSet = getImageSrcSet(productImage, [80, 120, 160, 240]);
+        const imageAlt = productImage.alt || `${productTitle}, imagen ${index + 1}`;
+
+        return (
+          <a
+            class="product-gallery__thumbnail"
+            href={imageUrl}
+            aria-label={`Ver imagen ${index + 1}: ${imageAlt}`}
+            aria-current={index === 0 ? 'true' : undefined}
+            data-product-gallery-thumbnail
+            data-src={imageUrl}
+            data-srcset={imageSrcSet}
+            data-alt={imageAlt}
+          >
+            <img src={thumbnailUrl} srcset={thumbnailSrcSet} sizes="80px" alt={imageAlt} loading="lazy" decoding="async" />
+          </a>
+        );
+      })}
+    </div>
+  )}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-product-gallery]').forEach((gallery) => {
+    const mainImage = gallery.querySelector<HTMLImageElement>('[data-product-gallery-main]');
+    const thumbnails = gallery.querySelectorAll<HTMLAnchorElement>('[data-product-gallery-thumbnail]');
+
+    if (!mainImage) return;
+
+    thumbnails.forEach((thumbnail) => {
+      thumbnail.addEventListener('click', (event) => {
+        event.preventDefault();
+        mainImage.src = thumbnail.dataset.src || mainImage.src;
+        mainImage.srcset = thumbnail.dataset.srcset || '';
+        mainImage.alt = thumbnail.dataset.alt || mainImage.alt;
+        thumbnails.forEach((item) => {
+          if (item === thumbnail) {
+            item.setAttribute('aria-current', 'true');
+          } else {
+            item.removeAttribute('aria-current');
+          }
+        });
+      });
+
+      thumbnail.addEventListener('keydown', (event) => {
+        if (event.key === ' ') {
+          event.preventDefault();
+          thumbnail.click();
+        }
+      });
+    });
+  });
+</script>

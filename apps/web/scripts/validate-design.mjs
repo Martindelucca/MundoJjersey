@@ -61,6 +61,7 @@ const [
   sectionHeader,
   categoryTile,
   productCard,
+  productGallery,
   whatsappButton,
   faqBlock,
   ...pages
@@ -74,6 +75,7 @@ const [
   readProjectFile('apps/web/src/components/SectionHeader.astro'),
   readProjectFile('apps/web/src/components/CategoryTile.astro'),
   readProjectFile('apps/web/src/components/ProductCard.astro'),
+  readProjectFile('apps/web/src/components/ProductGallery.astro'),
   readProjectFile('apps/web/src/components/WhatsAppButton.astro'),
   readProjectFile('apps/web/src/components/FAQBlock.astro'),
   readProjectFile('apps/web/src/pages/index.astro'),
@@ -125,7 +127,7 @@ assert.doesNotMatch(css, /buying-flow/);
 assert.match(css, /category-grid--drop/);
 assert.match(css, /category-tile--image/);
 assert.match(css, /final-cta/);
-assert.match(css, /product-card__ticket/);
+assert.match(css, /product-card__identity/);
 assert.match(css, /product-detail__sheet/);
 
 const skipLinkRule = css.match(/\.skip-link\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
@@ -220,9 +222,10 @@ assert.match(categoryTile, /category-tile--image/);
 assert.match(categoryTile, /<a class=\{className\}/);
 
 assert.match(productCard, /product-card__badge/);
-assert.match(productCard, /product-card__ticket/);
+assert.match(productCard, /product-card__identity/);
 assert.match(productCard, /Disponible/);
 assert.match(productCard, /Sin stock/);
+assert.doesNotMatch(productCard, /product-card__ticket|product-card__season|Equipo a confirmar|Tanda actual/);
 assert.doesNotMatch(productCard, /Nuevo ingreso/);
 assert.match(productCard, /headingLevel\?: 'h2' \| 'h3'/);
 assert.match(productCard, /headingLevel === 'h3'/);
@@ -230,6 +233,12 @@ const productHeadingRule = css.match(/\.product-card__body :is\(h2, h3\)\s*\{(?<
 assert.match(productHeadingRule, /font-size:\s*clamp\(1\.3rem, 2\.4vw, 1\.65rem\)/);
 assert.match(productHeadingRule, /line-height:\s*1/);
 assert.match(productHeadingRule, /text-wrap:\s*balance/);
+
+assert.match(productGallery, /href=\{imageUrl\}/);
+assert.match(productGallery, /aria-current=\{index === 0 \? 'true' : undefined\}/);
+assert.doesNotMatch(productGallery, /aria-pressed|<noscript/);
+assert.match(productGallery, /event\.preventDefault\(\)/);
+assert.match(productGallery, /event\.key === ' '/);
 
 assert.match(whatsappButton, /rel="noreferrer"/);
 assert.match(whatsappButton, /aria-label/);
@@ -361,6 +370,7 @@ assert.match(productDetail, /El mensaje incluye este producto\. Te respondemos p
 assert.match(productDetail, /parseSiteOrigin\(import\.meta\.env\.PUBLIC_SITE_URL\)/);
 assert.match(productDetail, /product-detail__sizes/);
 assert.match(productDetail, /product-detail__sheet/);
+assert.match(productDetail, /<ProductGallery images=\{product\.images\} image=\{product\.image\} productTitle=\{product\.title\} \/>/);
 assert.match(productDetail, /getRelatedProducts/);
 assert.match(productDetail, /<ProductCard product=\{relatedProduct\} headingLevel="h3" \/>/);
 assert.doesNotMatch(productDetail, /product-detail__confirm/);
@@ -393,7 +403,11 @@ assert.match(reducedMotionRule, /\.whatsapp-button:hover \.whatsapp-button__mark
 assert.match(reducedMotionRule, /\.button--with-mark:hover span:last-child,[\s\S]*?\.category-tile--image:hover \.category-tile__image,[\s\S]*?\.whatsapp-button:hover \.whatsapp-button__mark/);
 assert.doesNotMatch(css, /\.product-detail__cta\s*{[^}]*position:\s*(?:sticky|fixed)/);
 assert.doesNotMatch(css, /\.whatsapp-button\s*{[^}]*position:\s*(?:sticky|fixed)/);
-assert.match(css, /\.product-detail__media img\s*{(?<body>[^}]*)object-fit:\s*contain/);
+assert.match(css, /\.product-gallery__main img\s*{(?<body>[^}]*)object-fit:\s*contain/);
+const productGalleryThumbnailsRule = css.match(/\.product-gallery__thumbnails\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(productGalleryThumbnailsRule, /max-height:\s*calc\(100dvh - 3rem\)/);
+assert.match(productGalleryThumbnailsRule, /overflow-y:\s*auto/);
+assert.match(css, /\.product-gallery__thumbnail\s*{(?<body>[^}]*)min-width:\s*44px/);
 assert.match(css, /\.product-card__media img\s*{(?<body>[^}]*)object-fit:\s*cover/);
 
 const productCardHover = css.match(/\.product-card:hover\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
@@ -415,7 +429,6 @@ assert.doesNotMatch(productDetailContentRule, /box-shadow/);
 assert.doesNotMatch(headerCtaRule, /box-shadow/);
 assert.doesNotMatch(css, /\.category-tile::before/);
 assert.match(css, /\.product-card__badge/);
-assert.match(css, /\.product-card__season/);
 assert.match(css, /\.stock-label/);
 assert.match(css, /\.final-cta\s*{(?<body>[\s\S]*?)background:\s*[\s\S]*?linear-gradient/);
 assert.match(css, /\.category-tile--image:hover \.category-tile__image\s*{(?<body>[^}]*)transform:\s*scale\(1\.02\)/);

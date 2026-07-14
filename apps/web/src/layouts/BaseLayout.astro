@@ -10,6 +10,7 @@ interface Props {
   title?: string;
   description?: string;
   canonicalPath?: string;
+  openGraphImageUrl?: string;
   structuredData?: JsonLd;
 }
 
@@ -17,12 +18,13 @@ const {
   title = 'Mundo JJersey',
   description = 'Catálogo de ropa de fútbol nueva seleccionada.',
   canonicalPath = Astro.url.pathname,
+  openGraphImageUrl,
   structuredData
 } = Astro.props;
 
 const siteOrigin = parseSiteOrigin(import.meta.env.PUBLIC_SITE_URL)?.origin || Astro.url.origin;
 const canonicalUrl = new URL(canonicalPath, siteOrigin).toString();
-const ogImageUrl = new URL('/og.png', siteOrigin).toString();
+const ogImageUrl = openGraphImageUrl || new URL('/og.png', siteOrigin).toString();
 const siteContact = await getSiteContact();
 const siteStructuredData = buildSiteStructuredData(siteOrigin, isSafeExternalUrl(siteContact.instagramUrl) ? siteContact.instagramUrl : undefined);
 ---
