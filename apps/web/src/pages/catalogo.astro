@@ -2,14 +2,12 @@
 import CatalogCategoryNavigation from '../components/CatalogCategoryNavigation.astro';
 import ProductCard from '../components/ProductCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { hasSanityConfig, sanityClient } from '../lib/sanity/client';
+import { fetchPublic } from '../lib/sanity/client';
 import { productsQuery } from '../lib/sanity/queries';
 import type { ProductSummary } from '../lib/sanity/types';
 import { getSiteContact } from '../lib/site-contact';
 
-const products = hasSanityConfig
-  ? await sanityClient.fetch<ProductSummary[]>(productsQuery)
-  : [];
+const products = await fetchPublic<ProductSummary[]>(productsQuery, []);
 const siteContact = await getSiteContact();
 const contactHref = siteContact.whatsappUrl || '#contacto';
 const contactTarget = siteContact.whatsappUrl ? '_blank' : undefined;

@@ -5,7 +5,7 @@ import ShirtCollectionNavigation from '../../../components/ShirtCollectionNaviga
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCatalogCategoryBySlug } from '../../../lib/catalog/categories';
 import { editorialCollections, getEditorialCollectionBySlug } from '../../../lib/catalog/editorial-collections';
-import { hasSanityConfig, sanityClient } from '../../../lib/sanity/client';
+import { fetchPublic } from '../../../lib/sanity/client';
 import { productsByCategoryAndEditorialTagQuery } from '../../../lib/sanity/queries';
 import type { ProductSummary } from '../../../lib/sanity/types';
 import { getSiteContact } from '../../../lib/site-contact';
@@ -20,8 +20,8 @@ const categorySlug = Astro.params.category || '';
 const collectionSlug = Astro.params.collection || '';
 const category = getCatalogCategoryBySlug(categorySlug);
 const collection = getEditorialCollectionBySlug(collectionSlug);
-const products = hasSanityConfig && category?.value === 'shirt' && collection
-  ? await sanityClient.fetch<ProductSummary[]>(productsByCategoryAndEditorialTagQuery, {
+const products = category?.value === 'shirt' && collection
+  ? await fetchPublic<ProductSummary[]>(productsByCategoryAndEditorialTagQuery, [], {
       category: category.value,
       editorialTag: collection.editorialTag
     })

@@ -19,7 +19,12 @@ import {
 import { formatProductMetadata } from '../src/lib/catalog/product-metadata.ts';
 import { getRelatedProducts } from '../src/lib/catalog/related-products.ts';
 import { getProductImages } from '../src/lib/sanity/product-images.ts';
-import { productsByCategoryAndEditorialTagQuery } from '../src/lib/sanity/queries.ts';
+import {
+  productBySlugQuery,
+  productsByCategoryAndEditorialTagQuery,
+  productsByCategoryQuery,
+  productsQuery
+} from '../src/lib/sanity/queries.ts';
 
 assert.deepEqual(
   catalogCategories.map((category) => category.slug),
@@ -43,6 +48,11 @@ assert.equal(getEditorialCollectionBySlug('actuales'), undefined);
 assert.match(productsByCategoryAndEditorialTagQuery, /category == \$category/);
 assert.match(productsByCategoryAndEditorialTagQuery, /\$editorialTag in editorialTags/);
 assert.match(productsByCategoryAndEditorialTagQuery, /order\(isFeatured desc, _createdAt desc\)/);
+for (const query of [productsQuery, productsByCategoryQuery, productsByCategoryAndEditorialTagQuery]) {
+  assert.match(query, /!\(_id in path\("drafts\.\*\*"\)\)/);
+  assert.match(query, /defined\(slug\.current\)/);
+}
+assert.match(productBySlugQuery, /!\(_id in path\("drafts\.\*\*"\)\)/);
 
 const rootDir = resolve(import.meta.dirname, '../../..');
 const home = await readFile(resolve(rootDir, 'apps/web/src/pages/index.astro'), 'utf8');
@@ -54,6 +64,8 @@ const productGallery = await readFile(resolve(rootDir, 'apps/web/src/components/
 const shirtCollectionNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/ShirtCollectionNavigation.astro'), 'utf8');
 const catalogCategoryNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/CatalogCategoryNavigation.astro'), 'utf8');
 const globalStyles = await readFile(resolve(rootDir, 'apps/web/src/styles/global.css'), 'utf8');
+const sanityClient = await readFile(resolve(rootDir, 'apps/web/src/lib/sanity/client.ts'), 'utf8');
+const siteContact = await readFile(resolve(rootDir, 'apps/web/src/lib/site-contact.ts'), 'utf8');
 
 for (const slug of ['clubes', 'selecciones', 'retro']) {
   assert.match(home, new RegExp(`href: '/catalogo/camisetas/${slug}'`));
@@ -63,6 +75,15 @@ for (const slug of ['clubes', 'selecciones', 'retro']) {
 assert.doesNotMatch(home, /href: '\/catalogo\/camisetas'/);
 assert.match(home, /href: '\/catalogo\/camperas'/);
 assert.match(collectionRoute, /params: \{ category: 'camisetas', collection: collection.slug \}/);
+assert.match(sanityClient, /export async function fetchPublic<T>/);
+assert.match(sanityClient, /if \(!hasSanityConfig\) \{\s*return fallback/);
+assert.match(sanityClient, /catch \{\s*return fallback/);
+assert.match(siteContact, /fetchPublic<SiteSettings \| null>\(siteSettingsQuery, null\)/);
+for (const publicRoute of [home, rootCatalog, categoryRoute, collectionRoute, productDetail]) {
+  assert.match(publicRoute, /fetchPublic/);
+  assert.doesNotMatch(publicRoute, /sanityClient\.fetch/);
+}
+assert.match(productDetail, /fetchPublic<Array<\{ slug\?: string \}>>\(productSlugsQuery, \[\]\)/);
 
 assert.match(categoryRoute, /<CatalogCategoryNavigation activeSlug=\{categorySlug\} \/>/);
 assert.match(collectionRoute, /<CatalogCategoryNavigation activeSlug=\{categorySlug\} \/>/);
@@ -90,6 +111,8 @@ assert.match(shirtCollectionNavigation, />Todas<\/a>/);
 assert.match(shirtCollectionNavigation, /href="\/catalogo\/camisetas"/);
 assert.match(shirtCollectionNavigation, /activeCollectionSlug === undefined \? 'page' : undefined/);
 assert.doesNotMatch(shirtCollectionNavigation, /<script/);
+assert.match(catalogCategoryNavigation, /catalog-navigation__scroll-hint/);
+assert.match(shirtCollectionNavigation, /catalog-navigation__scroll-hint/);
 
 assert.ok(shirtCollectionNavigation.includes('href={`/catalogo/camisetas/${collection.slug}`}'));
 assert.match(shirtCollectionNavigation, /collection.slug === activeCollectionSlug \? 'page' : undefined/);
@@ -101,11 +124,22 @@ for (const [slug, label] of [['clubes', 'Clubes'], ['selecciones', 'Selecciones'
 assert.match(globalStyles, /\.catalog-chips \{[\s\S]*?flex-wrap: wrap/);
 assert.match(globalStyles, /\.catalog-chips a \{[\s\S]*?min-height: 44px/);
 assert.match(globalStyles, /\.catalog-hero--compact/);
+const scrollHintBaseRule = globalStyles.match(/\.catalog-navigation__scroll-hint\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(scrollHintBaseRule, /display:\s*none/);
+const intermediateStyles = globalStyles.slice(globalStyles.indexOf('@media (min-width: 781px) and (max-width: 1100px)'), globalStyles.indexOf('@media (max-width: 780px)'));
+assert.match(intermediateStyles, /\.catalog-page \{[\s\S]*?padding-block: 3\.25rem 4rem/);
+assert.match(intermediateStyles, /\.catalog-hero--compact h1 \{[\s\S]*?font-size: clamp\(3\.5rem, 7vw, 4\.5rem\)/);
 const mobileStyles = globalStyles.slice(globalStyles.indexOf('@media (max-width: 780px)'), globalStyles.indexOf('@media (max-width: 359px)'));
 assert.match(mobileStyles, /\.catalog-chips \{[\s\S]*?flex-wrap: nowrap/);
 assert.match(mobileStyles, /\.catalog-chips \{[\s\S]*?overflow-x: auto/);
 assert.match(mobileStyles, /\.catalog-chips \{[\s\S]*?max-width: 100%/);
+assert.match(mobileStyles, /\.catalog-chips \{[\s\S]*?scrollbar-width: none/);
+assert.match(mobileStyles, /\.catalog-chips::\-webkit-scrollbar,[\s\S]*?\.garment-routes div::\-webkit-scrollbar \{[\s\S]*?display: none/);
 assert.match(mobileStyles, /\.catalog-chips li \{[\s\S]*?flex: 0 0 auto/);
+const mobileScrollHintRule = mobileStyles.match(/\.catalog-navigation__scroll-hint\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(mobileScrollHintRule, /display:\s*grid/);
+assert.match(mobileScrollHintRule, /min-height:\s*44px/);
+assert.match(mobileScrollHintRule, /pointer-events:\s*none/);
 assert.match(mobileStyles, /\.product-grid \{[\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
 assert.match(globalStyles, /@media \(max-width: 359px\) \{[\s\S]*?\.product-grid \{[\s\S]*?grid-template-columns: 1fr/);
 assert.match(mobileStyles, /\.product-card__media \{[\s\S]*?min-height: 0;[\s\S]*?aspect-ratio: 4 \/ 5/);

@@ -1,4 +1,4 @@
-import { createClient } from '@sanity/client';
+import { createClient, type QueryParams } from '@sanity/client';
 
 const projectId = import.meta.env.SANITY_PROJECT_ID;
 const dataset = import.meta.env.SANITY_DATASET || 'production';
@@ -15,3 +15,17 @@ export const sanityClient = createClient({
   useCdn: readToken ? false : useCdn,
   token: readToken || undefined
 });
+
+export async function fetchPublic<T>(query: string, fallback: T, params?: QueryParams): Promise<T> {
+  if (!hasSanityConfig) {
+    return fallback;
+  }
+
+  try {
+    return params
+      ? await sanityClient.fetch<T>(query, params)
+      : await sanityClient.fetch<T>(query);
+  } catch {
+    return fallback;
+  }
+}

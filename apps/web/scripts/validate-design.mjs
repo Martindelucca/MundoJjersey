@@ -236,6 +236,10 @@ assert.match(productHeadingRule, /text-wrap:\s*balance/);
 
 assert.match(productGallery, /href=\{imageUrl\}/);
 assert.match(productGallery, /aria-current=\{index === 0 \? 'true' : undefined\}/);
+assert.match(productGallery, /data-product-gallery-thumbnail-image/);
+assert.match(productGallery, /image\.complete && image\.naturalWidth > 0/);
+assert.match(productGallery, /thumbnail\.classList\.add\('is-loading'\)/);
+assert.match(productGallery, /thumbnail\.classList\.add\('is-loaded'\)/);
 assert.doesNotMatch(productGallery, /aria-pressed|<noscript/);
 assert.match(productGallery, /event\.preventDefault\(\)/);
 assert.match(productGallery, /event\.key === ' '/);
@@ -261,7 +265,7 @@ const productDetail = pages[2];
 assert.match(home, /import ProductCard/);
 assert.match(home, /import CategoryTile/);
 assert.match(home, /import FAQBlock/);
-assert.match(home, /hasSanityConfig/);
+assert.match(home, /fetchPublic/);
 assert.match(home, /productsQuery/);
 assert.match(home, /slice\(0, 4\)/);
 assert.match(home, /<ProductCard product=\{product\} headingLevel="h3" \/>/);
@@ -285,7 +289,7 @@ assert.match(desktopHeroOverlayRule, /linear-gradient\(90deg/);
 assert.match(desktopHeroImageRule, /object-fit:\s*cover/);
 assert.match(desktopHeroImageRule, /object-position:\s*54% center/);
 assert.match(css, /\.hero__poster img\s*{(?<body>[^}]*)display:\s*block/);
-const mobileHeroStyles = css.match(/@media \(max-width: 780px\)\s*{(?<body>[\s\S]*?)\n}\n\n@media \(max-width: 359px\)/)?.groups?.body ?? '';
+const mobileHeroStyles = css.match(/@media \(max-width: 780px\)\s*{(?<body>[\s\S]*?)\r?\n}\r?\n\r?\n@media \(max-width: 359px\)/)?.groups?.body ?? '';
 const mobileHeroRule = mobileHeroStyles.match(/\.hero\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 const mobileHeroPosterRule = mobileHeroStyles.match(/\.hero__poster\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.match(mobileHeroRule, /min-height:\s*auto/);
@@ -324,7 +328,7 @@ assert.match(css, /\.about-section__media\s*{(?<body>[^}]*)aspect-ratio:\s*4\s*\
 assert.match(css, /\.about-section__media img\s*{(?<body>[^}]*)object-fit:\s*contain/);
 assert.doesNotMatch(css, /about-section__portrait/);
 
-const mobileGarmentRoutes = css.match(/@media \(max-width: 780px\)\s*{(?<body>[\s\S]*?)\n}\n\n@media \(max-width: 359px\)/)?.groups?.body ?? '';
+const mobileGarmentRoutes = css.match(/@media \(max-width: 780px\)\s*{(?<body>[\s\S]*?)\r?\n}\r?\n\r?\n@media \(max-width: 359px\)/)?.groups?.body ?? '';
 const mobileGarmentRoutesRule = mobileGarmentRoutes.match(/\.garment-routes\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 const mobileGarmentRoutesRow = mobileGarmentRoutes.match(/\.garment-routes div\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 const mobileProductCardBodyRule = mobileGarmentRoutes.match(/\.product-card__body\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
@@ -344,6 +348,9 @@ assert.match(mobileGarmentRoutes, /\.garment-routes a\s*{(?<body>[^}]*)flex:\s*0
 assert.match(mobileProductCardBodyRule, /padding:\s*0\.9rem 0\.7rem 0\.7rem/);
 assert.match(garmentRoutesFocusRule, /box-shadow:\s*[\s\S]*?inset\s+0\s+0\s+0\s+2px\s+var\(--color-gold-soft\)/);
 assert.match(garmentRoutesFocusRule, /inset\s+0\s+0\s+0\s+4px\s+var\(--color-ink\)/);
+const garmentRoutesRule = css.match(/\.garment-routes a\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(garmentRoutesRule, /transition:\s*transform 140ms var\(--ease-out\), opacity 140ms var\(--ease-out\)/);
+assert.doesNotMatch(garmentRoutesRule, /background-color|color 180ms|transition:\s*all/);
 
 const categoryCatalog = pages[3];
 const collectionCatalog = pages[4];
@@ -408,6 +415,9 @@ const productGalleryThumbnailsRule = css.match(/\.product-gallery__thumbnails\s*
 assert.match(productGalleryThumbnailsRule, /max-height:\s*calc\(100dvh - 3rem\)/);
 assert.match(productGalleryThumbnailsRule, /overflow-y:\s*auto/);
 assert.match(css, /\.product-gallery__thumbnail\s*{(?<body>[^}]*)min-width:\s*44px/);
+assert.match(css, /\.product-gallery__thumbnail::after\s*{(?<body>[^}]*)content:\s*'MJ'/);
+assert.match(css, /\.product-gallery__thumbnail::after\s*{(?<body>[^}]*)pointer-events:\s*none/);
+assert.match(css, /\.product-gallery__thumbnail\.is-loading img\s*{(?<body>[^}]*)opacity:\s*0/);
 assert.match(css, /\.product-card__media img\s*{(?<body>[^}]*)object-fit:\s*cover/);
 
 const productCardHover = css.match(/\.product-card:hover\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
@@ -415,7 +425,14 @@ assert.match(productCardHover, /transform:\s*translateY\(-2px\)/);
 assert.doesNotMatch(productCardHover, /background|border-color|color\s*:|box-shadow/);
 
 const catalogChipRule = css.match(/\.catalog-chips (?:span|li)\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
-assert.doesNotMatch(catalogChipRule, /cursor:\s*pointer|transition:|transform:/);
+assert.doesNotMatch(catalogChipRule, /cursor:\s*pointer/);
+assert.match(catalogChipRule, /transition:\s*transform 140ms var\(--ease-out\)/);
+assert.doesNotMatch(css, /transition:\s*all\b/);
+assert.match(css, /@media \(hover: hover\) and \(pointer: fine\)\s*{[\s\S]*?\.product-card:hover/);
+assert.match(css, /\.faq-block__item\[open\] summary::after\s*{(?<body>[^}]*)transform:\s*rotate\(45deg\)/);
+const faqIndicatorRule = css.match(/\.faq-block__item summary::after\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.doesNotMatch(faqIndicatorRule, /transition:/);
+assert.doesNotMatch(css, /@starting-style/);
 
 const productCardRule = css.match(/\.product-card\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.doesNotMatch(productCardRule, /background-color 180ms|border-color 180ms|color 180ms|box-shadow 180ms/);
@@ -431,7 +448,10 @@ assert.doesNotMatch(css, /\.category-tile::before/);
 assert.match(css, /\.product-card__badge/);
 assert.match(css, /\.stock-label/);
 assert.match(css, /\.final-cta\s*{(?<body>[\s\S]*?)background:\s*[\s\S]*?linear-gradient/);
-assert.match(css, /\.category-tile--image:hover \.category-tile__image\s*{(?<body>[^}]*)transform:\s*scale\(1\.02\)/);
+const categoryTileRule = css.match(/\.category-tile\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(categoryTileRule, /transition:\s*transform 180ms var\(--ease-out\)/);
+assert.doesNotMatch(categoryTileRule, /border-color 180ms|background-color 180ms/);
+assert.match(css, /@media \(hover: hover\) and \(pointer: fine\)\s*{[\s\S]*?\.category-tile--image:hover \.category-tile__image\s*{(?<body>[^}]*)transform:\s*scale\(1\.02\)/);
 assert.doesNotMatch(css, /skewX\(/);
 
 const globalTextureRule = css.match(/body::before\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
@@ -439,7 +459,7 @@ assert.match(globalTextureRule, /position:\s*fixed/);
 assert.match(globalTextureRule, /inset:\s*0/);
 assert.match(globalTextureRule, /pointer-events:\s*none/);
 assert.match(globalTextureRule, /opacity:\s*0\.08/);
-const mobileRule = css.match(/@media \(max-width: 780px\)\s*{(?<body>[\s\S]*?)\n}\n\n@media \(max-width: 359px\)/)?.groups?.body ?? '';
+const mobileRule = mobileHeroStyles;
 assert.match(mobileRule, /body::before\s*{(?<body>[^}]*)display:\s*none/);
 assert.match(mobileRule, /\.home-section\s*{(?<body>[^}]*)padding-block:\s*clamp\(3\.3rem/);
 assert.match(mobileRule, /\.home-section--arrivals\s*{(?<body>[^}]*)padding-top:\s*clamp\(2\.8rem/);
