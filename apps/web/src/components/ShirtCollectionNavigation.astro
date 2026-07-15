@@ -16,4 +16,5 @@ const { activeCollectionSlug } = Astro.props;
       <li><a aria-current={collection.slug === activeCollectionSlug ? 'page' : undefined} href={`/catalogo/camisetas/${collection.slug}`}>{collection.navigationLabel}</a></li>
     ))}
   </ul>
+  <span class="catalog-navigation__scroll-hint" aria-hidden="true">→</span>
 </nav>

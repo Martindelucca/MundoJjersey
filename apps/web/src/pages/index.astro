@@ -12,14 +12,12 @@ import retroImage from '../../fotos/retro.jpg';
 import seleccionesImage from '../../fotos/selecciones.jpg';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { catalogCategories } from '../lib/catalog/categories';
-import { hasSanityConfig, sanityClient } from '../lib/sanity/client';
+import { fetchPublic } from '../lib/sanity/client';
 import { productsQuery } from '../lib/sanity/queries';
 import type { ProductSummary } from '../lib/sanity/types';
 import { getSiteContact } from '../lib/site-contact';
 
-const products = hasSanityConfig
-  ? (await sanityClient.fetch<ProductSummary[]>(productsQuery)).slice(0, 4)
-  : [];
+const products = (await fetchPublic<ProductSummary[]>(productsQuery, [])).slice(0, 4);
 const siteContact = await getSiteContact();
 const contactHref = siteContact.whatsappUrl || '#contacto';
 const contactTarget = siteContact.whatsappUrl ? '_blank' : undefined;

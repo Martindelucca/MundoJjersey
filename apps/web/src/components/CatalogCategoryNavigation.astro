@@ -16,4 +16,5 @@ const { activeSlug } = Astro.props;
       <li><a aria-current={category.slug === activeSlug ? 'page' : undefined} href={`/catalogo/${category.slug}`}>{category.plural}</a></li>
     ))}
   </ul>
+  <span class="catalog-navigation__scroll-hint" aria-hidden="true">→</span>
 </nav>

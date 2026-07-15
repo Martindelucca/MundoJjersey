@@ -11,17 +11,13 @@ import { getImageUrl } from '../../lib/sanity/image';
 import { getProductImages } from '../../lib/sanity/product-images';
 import { buildProductStructuredData } from '../../lib/seo';
 import { parseSiteOrigin } from '../../lib/site-origin';
-import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
+import { fetchPublic } from '../../lib/sanity/client';
 import { productBySlugQuery, productSlugsQuery, productsQuery, siteSettingsQuery } from '../../lib/sanity/queries';
 import type { ProductDetail, ProductSummary, SiteSettings } from '../../lib/sanity/types';
 import { buildWhatsAppUrl } from '../../lib/whatsapp';
 
 export async function getStaticPaths() {
-  if (!hasSanityConfig) {
-    return [];
-  }
-
-  const slugs = await sanityClient.fetch<Array<{ slug?: string }>>(productSlugsQuery);
+  const slugs = await fetchPublic<Array<{ slug?: string }>>(productSlugsQuery, []);
 
   return slugs
     .filter(({ slug }) => Boolean(slug))
@@ -29,13 +25,11 @@ export async function getStaticPaths() {
 }
 
 const slug = Astro.params.slug || '';
-const [product, settings, products] = hasSanityConfig
-  ? await Promise.all([
-      sanityClient.fetch<ProductDetail | null>(productBySlugQuery, { slug }),
-      sanityClient.fetch<SiteSettings | null>(siteSettingsQuery),
-      sanityClient.fetch<ProductSummary[]>(productsQuery)
-    ])
-  : [null, null, [] as ProductSummary[]];
+const [product, settings, products] = await Promise.all([
+  fetchPublic<ProductDetail | null>(productBySlugQuery, null, { slug }),
+  fetchPublic<SiteSettings | null>(siteSettingsQuery, null),
+  fetchPublic<ProductSummary[]>(productsQuery, [])
+]);
 
 const price = product
   ? new Intl.NumberFormat('es-AR', {

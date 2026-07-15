@@ -135,7 +135,11 @@ assert.match(gallery, /getImageUrl\(productImage, 1200\)/);
 assert.match(sanityImageHelper, /auto\('format'\)/, 'Gallery URLs use the existing auto-format Sanity helper.');
 
 const rootPackage = await readFile(resolve(rootDir, 'package.json'), 'utf8');
+const ogImage = await readFile(resolve(rootDir, 'apps/web/public/og.png'));
 assert.match(rootPackage, /"ready": ".*test:release -- --origin-only.*test:release/);
+assert.equal(ogImage.toString('ascii', 1, 4), 'PNG', 'public/og.png must be a PNG file.');
+assert.equal(ogImage.readUInt32BE(16), 1200, 'public/og.png width must be 1200.');
+assert.equal(ogImage.readUInt32BE(20), 630, 'public/og.png height must be 630.');
 
 for (const invalidOrigin of [
   'http://localhost:4321',

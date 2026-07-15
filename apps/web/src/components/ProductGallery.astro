@@ -55,7 +55,7 @@ const initialImageAlt = initialImage?.alt || productTitle;
             data-srcset={imageSrcSet}
             data-alt={imageAlt}
           >
-            <img src={thumbnailUrl} srcset={thumbnailSrcSet} sizes="80px" alt={imageAlt} loading="lazy" decoding="async" />
+            <img data-product-gallery-thumbnail-image src={thumbnailUrl} srcset={thumbnailSrcSet} sizes="80px" alt={imageAlt} loading="lazy" decoding="async" />
           </a>
         );
       })}
@@ -69,6 +69,24 @@ const initialImageAlt = initialImage?.alt || productTitle;
     const thumbnails = gallery.querySelectorAll<HTMLAnchorElement>('[data-product-gallery-thumbnail]');
 
     if (!mainImage) return;
+
+    thumbnails.forEach((thumbnail) => {
+      const image = thumbnail.querySelector<HTMLImageElement>('[data-product-gallery-thumbnail-image]');
+
+      if (!image) return;
+
+      const markLoaded = () => {
+        thumbnail.classList.remove('is-loading');
+        thumbnail.classList.add('is-loaded');
+      };
+
+      if (image.complete && image.naturalWidth > 0) {
+        markLoaded();
+      } else {
+        thumbnail.classList.add('is-loading');
+        image.addEventListener('load', markLoaded, { once: true });
+      }
+    });
 
     thumbnails.forEach((thumbnail) => {
       thumbnail.addEventListener('click', (event) => {

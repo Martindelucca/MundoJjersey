@@ -4,7 +4,7 @@ import ProductCard from '../../components/ProductCard.astro';
 import ShirtCollectionNavigation from '../../components/ShirtCollectionNavigation.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { catalogCategories, getCatalogCategoryBySlug } from '../../lib/catalog/categories';
-import { hasSanityConfig, sanityClient } from '../../lib/sanity/client';
+import { fetchPublic } from '../../lib/sanity/client';
 import { productsByCategoryQuery } from '../../lib/sanity/queries';
 import type { ProductSummary } from '../../lib/sanity/types';
 import { getSiteContact } from '../../lib/site-contact';
@@ -15,8 +15,8 @@ export function getStaticPaths() {
 
 const categorySlug = Astro.params.category || '';
 const category = getCatalogCategoryBySlug(categorySlug);
-const products = hasSanityConfig && category
-  ? await sanityClient.fetch<ProductSummary[]>(productsByCategoryQuery, { category: category.value })
+const products = category
+  ? await fetchPublic<ProductSummary[]>(productsByCategoryQuery, [], { category: category.value })
   : [];
 const siteContact = await getSiteContact();
 const contactHref = siteContact.whatsappUrl || '#contacto';
