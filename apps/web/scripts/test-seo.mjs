@@ -63,7 +63,7 @@ const productSchema = buildProductStructuredData({
   url: 'https://mundo.example.com/producto/camiseta-segura',
   imageUrl: 'https://cdn.sanity.io/image.jpg',
   category: 'Camiseta',
-  available: true
+  availabilityStatus: 'inStock'
 });
 assert.equal(productSchema['@type'], 'Product');
 assert.equal(productSchema.url, 'https://mundo.example.com/producto/camiseta-segura');
@@ -74,12 +74,16 @@ assert.equal(productSchema.offers.availability, 'https://schema.org/InStock');
 
 const sparseProductSchema = buildProductStructuredData({
   _id: 'product-2', title: 'Sin opcionales', slug: 'sin-opcionales', price: 1, category: 'shirt', brand: ' '
-}, { url: 'https://mundo.example.com/producto/sin-opcionales', available: false });
+}, { url: 'https://mundo.example.com/producto/sin-opcionales', availabilityStatus: 'outOfStock' });
 assert.equal(sparseProductSchema.image, undefined);
 assert.equal(sparseProductSchema.description, undefined);
 assert.equal(sparseProductSchema.brand, undefined);
 assert.equal(sparseProductSchema.category, undefined);
 assert.equal(sparseProductSchema.offers.availability, 'https://schema.org/OutOfStock');
+const onRequestProductSchema = buildProductStructuredData({
+  _id: 'product-3', title: 'A pedido', slug: 'a-pedido', price: 2, category: 'shirt', brand: 'Adidas'
+}, { url: 'https://mundo.example.com/producto/a-pedido', availabilityStatus: 'onRequest' });
+assert.equal(onRequestProductSchema.offers.availability, 'https://schema.org/BackOrder');
 
 const rootDir = resolve(import.meta.dirname, '../../..');
 const sitemapRoute = await readFile(resolve(rootDir, 'apps/web/src/pages/sitemap.xml.ts'), 'utf8');
@@ -108,6 +112,7 @@ assert.match(layout, /serializeJsonLd/);
 assert.match(layout, /buildSiteStructuredData/);
 assert.match(layout, /\/og\.png/);
 assert.match(detail, /buildProductStructuredData/);
+assert.match(detail, /availabilityStatus: availability\.status/);
 assert.match(detail, /parseSiteOrigin\(import\.meta\.env\.PUBLIC_SITE_URL\)/);
 assert.match(detail, /!siteOrigin\.isLocal/);
 assert.match(detail, /structuredData=\{productStructuredData\}/);

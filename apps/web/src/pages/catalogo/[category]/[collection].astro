@@ -1,6 +1,6 @@
 ---
 import CatalogCategoryNavigation from '../../../components/CatalogCategoryNavigation.astro';
-import ProductCard from '../../../components/ProductCard.astro';
+import CatalogProductGroups from '../../../components/CatalogProductGroups.astro';
 import ShirtCollectionNavigation from '../../../components/ShirtCollectionNavigation.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCatalogCategoryBySlug } from '../../../lib/catalog/categories';
@@ -9,6 +9,7 @@ import { fetchPublic } from '../../../lib/sanity/client';
 import { productsByCategoryAndEditorialTagQuery } from '../../../lib/sanity/queries';
 import type { ProductSummary } from '../../../lib/sanity/types';
 import { getSiteContact } from '../../../lib/site-contact';
+import { groupProductsByAvailability } from '../../../lib/catalog/availability';
 
 export function getStaticPaths() {
   return editorialCollections.map((collection) => ({
@@ -26,6 +27,8 @@ const products = category?.value === 'shirt' && collection
       editorialTag: collection.editorialTag
     })
   : [];
+const productGroups = groupProductsByAvailability(products);
+const hasVisibleProducts = productGroups.inStock.length + productGroups.onRequest.length > 0;
 const siteContact = await getSiteContact();
 const contactHref = siteContact.whatsappUrl || '#contacto';
 const contactTarget = siteContact.whatsappUrl ? '_blank' : undefined;
@@ -45,10 +48,8 @@ const contactRel = siteContact.whatsappUrl ? 'noreferrer' : undefined;
       <ShirtCollectionNavigation activeCollectionSlug={collection?.slug} />
     </section>
 
-    {products.length > 0 ? (
-      <section class="product-grid" aria-label={collection?.title}>
-        {products.map((product) => <ProductCard product={product} />)}
-      </section>
+    {hasVisibleProducts ? (
+      <CatalogProductGroups {...productGroups} />
     ) : (
       <section class="empty-state" aria-live="polite">
         <h2>{collection?.title} en preparación.</h2>

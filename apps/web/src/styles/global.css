@@ -1162,6 +1162,22 @@ h1,
   gap: clamp(1rem, 2.5vw, 1.6rem);
 }
 
+.catalog-product-group {
+  display: grid;
+  gap: 1rem;
+}
+
+.catalog-product-group + .catalog-product-group {
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.catalog-product-group > h2 {
+  margin: 0;
+  color: var(--color-white);
+  font-size: clamp(1.5rem, 3vw, 2.15rem);
+  letter-spacing: -0.03em;
+}
+
 .product-card {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--color-gold-soft), transparent 48%);
@@ -1175,6 +1191,7 @@ h1,
 .product-card__media {
   position: relative;
   display: grid;
+  overflow: hidden;
   min-height: clamp(310px, 36vw, 430px);
   place-items: center;
   background:
@@ -1214,6 +1231,12 @@ h1,
   border-color: color-mix(in srgb, var(--color-danger), var(--color-white) 22%);
   background: var(--color-white);
   color: var(--color-danger);
+}
+
+.product-card__badge--on-request {
+  border-color: color-mix(in srgb, var(--color-blue), var(--color-white) 36%);
+  background: var(--color-blue);
+  color: var(--color-white);
 }
 
 .product-card__media img {
@@ -1574,6 +1597,23 @@ h1,
 .stock-label--empty {
   border-color: color-mix(in srgb, var(--color-danger), transparent 60%);
   background: color-mix(in srgb, var(--color-danger), var(--color-white) 92%);
+}
+
+.stock-label--on-request {
+  border-color: color-mix(in srgb, var(--color-blue), transparent 52%);
+  background: var(--color-blue);
+  color: var(--color-white);
+}
+
+.product-detail__on-request {
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--color-blue), transparent 64%);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--color-blue), var(--color-white) 94%);
+  color: var(--color-muted-light);
+  padding: 0.75rem 0.85rem;
+  font-weight: 800;
+  line-height: 1.55;
 }
 
 .product-detail__sizes {
@@ -1982,6 +2022,16 @@ h1,
     aspect-ratio: 4 / 5;
   }
 
+  .product-card__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+  }
+
   .product-card__media::after {
     inset: auto 0.7rem 0.7rem;
   }
@@ -2001,13 +2051,13 @@ h1,
 
   .product-card__body :is(h2, h3) {
     overflow-wrap: anywhere;
-    font-size: 1rem;
-    line-height: 1.08;
+    font-size: 1.12rem;
+    line-height: 1.04;
   }
 
   .product-card__identity,
   .product-card__sizes {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     line-height: 1.35;
     overflow-wrap: anywhere;
   }
@@ -2020,7 +2070,7 @@ h1,
   }
 
   .product-card__price {
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.1;
     overflow-wrap: anywhere;
   }

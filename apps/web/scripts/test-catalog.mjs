@@ -14,6 +14,7 @@ import {
   getAvailableSizes,
   getProductAvailability,
   getTotalStock,
+  groupProductsByAvailability,
   isAvailable
 } from '../src/lib/catalog/availability.ts';
 import { formatProductMetadata } from '../src/lib/catalog/product-metadata.ts';
@@ -53,6 +54,7 @@ for (const query of [productsQuery, productsByCategoryQuery, productsByCategoryA
   assert.match(query, /defined\(slug\.current\)/);
 }
 assert.match(productBySlugQuery, /!\(_id in path\("drafts\.\*\*"\)\)/);
+assert.match(productsQuery, /saleMode/);
 
 const rootDir = resolve(import.meta.dirname, '../../..');
 const home = await readFile(resolve(rootDir, 'apps/web/src/pages/index.astro'), 'utf8');
@@ -61,6 +63,7 @@ const categoryRoute = await readFile(resolve(rootDir, 'apps/web/src/pages/catalo
 const collectionRoute = await readFile(resolve(rootDir, 'apps/web/src/pages/catalogo/[category]/[collection].astro'), 'utf8');
 const productDetail = await readFile(resolve(rootDir, 'apps/web/src/pages/producto/[slug].astro'), 'utf8');
 const productGallery = await readFile(resolve(rootDir, 'apps/web/src/components/ProductGallery.astro'), 'utf8');
+const catalogProductGroups = await readFile(resolve(rootDir, 'apps/web/src/components/CatalogProductGroups.astro'), 'utf8');
 const shirtCollectionNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/ShirtCollectionNavigation.astro'), 'utf8');
 const catalogCategoryNavigation = await readFile(resolve(rootDir, 'apps/web/src/components/CatalogCategoryNavigation.astro'), 'utf8');
 const globalStyles = await readFile(resolve(rootDir, 'apps/web/src/styles/global.css'), 'utf8');
@@ -143,28 +146,45 @@ assert.match(mobileScrollHintRule, /pointer-events:\s*none/);
 assert.match(mobileStyles, /\.product-grid \{[\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
 assert.match(globalStyles, /@media \(max-width: 359px\) \{[\s\S]*?\.product-grid \{[\s\S]*?grid-template-columns: 1fr/);
 assert.match(mobileStyles, /\.product-card__media \{[\s\S]*?min-height: 0;[\s\S]*?aspect-ratio: 4 \/ 5/);
-assert.match(mobileStyles, /\.product-card__identity,[\s\S]*?\.product-card__sizes \{[\s\S]*?font-size: 0.75rem/);
+const mobileProductMediaRule = mobileStyles.match(/\.product-card__media\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const mobileProductImageRule = mobileStyles.match(/\.product-card__media img\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(mobileProductMediaRule, /aspect-ratio:\s*4 \/ 5/);
+assert.match(globalStyles, /\.product-card__media\s*\{[^}]*position:\s*relative;[^}]*display:\s*grid;[^}]*overflow:\s*hidden/);
+assert.match(mobileProductImageRule, /position:\s*absolute/);
+assert.match(mobileProductImageRule, /inset:\s*0/);
+assert.match(mobileProductImageRule, /object-fit:\s*contain/);
+assert.match(mobileStyles, /\.product-card__identity,[\s\S]*?\.product-card__sizes \{[\s\S]*?font-size: 0.72rem/);
 const compactProductHeadingRule = mobileStyles.match(/\.product-card__body :is\(h2, h3\)\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
-assert.match(compactProductHeadingRule, /font-size:\s*1rem/);
-assert.match(compactProductHeadingRule, /line-height:\s*1\.08/);
+assert.match(compactProductHeadingRule, /font-size:\s*1\.12rem/);
+assert.match(compactProductHeadingRule, /line-height:\s*1\.04/);
 assert.match(compactProductHeadingRule, /overflow-wrap:\s*anywhere/);
 const productCard = await readFile(resolve(rootDir, 'apps/web/src/components/ProductCard.astro'), 'utf8');
 assert.match(productCard, /<h2><a href=\{`\/producto\/\$\{product\.slug\}`\}>\{product\.title\}<\/a><\/h2>/);
 assert.match(productCard, /product-card__price/);
 assert.match(productCard, /product-card__sizes/);
 assert.match(productCard, /sizesPreview/);
+assert.match(productCard, /availableSizes\.length === 1 \? 'Talle' : 'Talles'/);
 assert.match(productCard, /formatProductMetadata\(product\.brand, product\.team\?\.name, product\.season\)/);
 assert.match(productCard, /\{identity && <p class="product-card__identity">\{identity\}<\/p>\}/);
 assert.doesNotMatch(productCard, /Equipo a confirmar|Tanda actual|product-card__ticket|product-card__season|totalStock/);
 assert.match(productCard, /Consultar disponibilidad/);
+assert.match(productCard, /onRequest: 'A pedido'/);
+assert.match(productCard, /Talle a consultar/);
+assert.match(productCard, /product-card__badge--on-request/);
 assert.match(productCard, /headingLevel\?: 'h2' \| 'h3'/);
 assert.match(productCard, /const \{ product, headingLevel = 'h2' \} = Astro\.props/);
 assert.match(productCard, /headingLevel === 'h3'/);
 assert.match(home, /<ProductCard product=\{product\} headingLevel="h3" \/>/);
 assert.match(productDetail, /<ProductCard product=\{relatedProduct\} headingLevel="h3" \/>/);
 for (const catalogPage of [rootCatalog, categoryRoute, collectionRoute]) {
-  assert.match(catalogPage, /<ProductCard product=\{product\} \/>/);
+  assert.match(catalogPage, /groupProductsByAvailability\(products\)/);
+  assert.match(catalogPage, /<CatalogProductGroups \{\.\.\.productGroups\} \/>/);
 }
+assert.ok(catalogProductGroups.indexOf('En stock') < catalogProductGroups.indexOf('A pedido'));
+assert.match(catalogProductGroups, /inStock\.length > 0/);
+assert.match(catalogProductGroups, /onRequest\.length > 0/);
+assert.match(catalogProductGroups, /<ProductCard product=\{product\} \/>/);
+assert.match(home, /getProductAvailability\(product\)\.status === 'inStock'/);
 assert.match(productDetail, /formatProductMetadata\(product\.brand, product\.team\?\.name, product\.season\)/);
 assert.match(productDetail, /<ProductGallery images=\{product\.images\} image=\{product\.image\} productTitle=\{product\.title\} \/>/);
 assert.match(productGallery, /href=\{imageUrl\}/);
@@ -224,8 +244,43 @@ assert.deepEqual(
     brand: 'Adidas',
     variants: [{ size: 'M', stock: 1 }, { size: 'L', stock: 0 }]
   }),
-  { available: true, totalStock: 1, sizes: [{ size: 'M', available: true }, { size: 'L', available: false }] }
+  { status: 'inStock', available: true, totalStock: 1, sizes: [{ size: 'M', available: true }, { size: 'L', available: false }] }
 );
+assert.equal(
+  getProductAvailability({
+    _id: 'legacy-out',
+    title: 'Legacy agotado',
+    slug: 'legacy-out',
+    price: 100,
+    category: 'shirt',
+    brand: 'Adidas',
+    variants: [{ size: 'M', stock: 0 }]
+  }).status,
+  'outOfStock'
+);
+assert.deepEqual(
+  getProductAvailability({
+    _id: 'request',
+    title: 'A pedido',
+    slug: 'request',
+    price: 100,
+    category: 'shirt',
+    saleMode: 'onRequest',
+    brand: 'Adidas',
+    variants: []
+  }),
+  { status: 'onRequest', available: false, totalStock: 0, sizes: [] }
+);
+
+const groupedProducts = groupProductsByAvailability([
+  { _id: 'stock-1', title: 'Stock 1', slug: 'stock-1', price: 1, category: 'shirt', brand: 'A', variants: [{ size: 'M', stock: 1 }] },
+  { _id: 'request-1', title: 'Pedido 1', slug: 'request-1', price: 1, category: 'shirt', brand: 'A', saleMode: 'onRequest' },
+  { _id: 'stock-2', title: 'Stock 2', slug: 'stock-2', price: 1, category: 'shirt', brand: 'A', variants: [{ size: 'L', stock: 1 }] },
+  { _id: 'out-1', title: 'Agotado', slug: 'out-1', price: 1, category: 'shirt', brand: 'A', variants: [] },
+  { _id: 'request-2', title: 'Pedido 2', slug: 'request-2', price: 1, category: 'shirt', brand: 'A', saleMode: 'onRequest' }
+]);
+assert.deepEqual(groupedProducts.inStock.map(({ _id }) => _id), ['stock-1', 'stock-2']);
+assert.deepEqual(groupedProducts.onRequest.map(({ _id }) => _id), ['request-1', 'request-2']);
 
 const currentProduct = {
   _id: 'current',
@@ -235,6 +290,7 @@ const currentProduct = {
   category: 'shirt',
   editorialTags: ['club'],
   brand: 'Marca',
+  variants: [{ size: 'M', stock: 1 }],
   team: { slug: 'river' }
 };
 const sameTeam = { ...currentProduct, _id: 'same-team', slug: 'same-team', category: 'jacket' };
@@ -243,10 +299,16 @@ const sameCategory = { ...currentProduct, _id: 'same-category', slug: 'same-cate
 const sharedTag = { ...currentProduct, _id: 'shared-tag', slug: 'shared-tag', category: 'jacket', team: { slug: 'boca' } };
 const fallbackFirst = { ...currentProduct, _id: 'fallback-first', slug: 'fallback-first', category: 'jacket', editorialTags: ['retro'], team: { slug: 'boca' } };
 const fallbackSecond = { ...fallbackFirst, _id: 'fallback-second', slug: 'fallback-second' };
+const outOfStockRelated = { ...sameTeam, _id: 'out-related', slug: 'out-related', variants: [] };
 
 assert.deepEqual(
   getRelatedProducts(currentProduct, [currentProduct, fallbackFirst, sameCategory, sharedTag, sameTeam, sameCategoryAndTag]).map((product) => product._id),
   ['same-team', 'same-category-tag', 'same-category']
+);
+assert.equal(
+  getRelatedProducts(currentProduct, [currentProduct, outOfStockRelated]).length,
+  0,
+  'Out-of-stock products must not appear in related products.'
 );
 assert.deepEqual(
   getRelatedProducts(currentProduct, [currentProduct, fallbackSecond, fallbackFirst]).map((product) => product._id),

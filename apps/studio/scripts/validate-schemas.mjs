@@ -19,6 +19,7 @@ for (const fieldName of [
   'league',
   'season',
   'variants',
+  'saleMode',
   'category',
   'editorialTags',
   'brand'
@@ -36,6 +37,7 @@ const leagueSlugField = schemasByName.get('league').fields.find((field) => field
 const imagesField = product.fields.find((field) => field.name === 'images');
 const imageAltField = imagesField.of[0].fields.find((field) => field.name === 'alt');
 const variantsField = product.fields.find((field) => field.name === 'variants');
+const saleModeField = product.fields.find((field) => field.name === 'saleMode');
 const variantFields = new Set(variantsField.of[0].fields.map((field) => field.name));
 const categoryField = product.fields.find((field) => field.name === 'category');
 const editorialTagsField = product.fields.find((field) => field.name === 'editorialTags');
@@ -50,6 +52,12 @@ assert.equal(typeof imageAltField.validation, 'function', 'Product image alt sho
 assert.ok(variantFields.has('size'), 'Variant should include size');
 assert.ok(variantFields.has('stock'), 'Variant should include stock');
 assert.equal(typeof variantsField.validation, 'function', 'Variants should validate duplicates and minimum stock rows');
+assert.deepEqual(saleModeField.options.list.map(({ value }) => value), ['stock', 'onRequest']);
+assert.equal(saleModeField.initialValue, 'stock');
+assert.equal(saleModeField.hidden, undefined, 'Sale mode must remain visible for every product category.');
+assert.equal(variantsField.hidden({ document: { category: 'shirt', saleMode: 'onRequest' } }), true);
+assert.equal(variantsField.hidden({ document: { category: 'jacket', saleMode: 'onRequest' } }), true);
+assert.equal(variantsField.hidden({ document: { category: 'shirt', saleMode: 'stock' } }), false);
 assert.deepEqual(
   categoryField.options.list.map(({ value }) => value),
   ['shirt', 'jacket', 'shorts', 'set']
@@ -81,6 +89,7 @@ assert.deepEqual(
     { name: 'season', group: 'producto' },
     { name: 'images', group: 'fotos' },
     { name: 'price', group: 'precioStock' },
+    { name: 'saleMode', group: 'precioStock' },
     { name: 'variants', group: 'precioStock' },
     { name: 'editorialTags', group: 'coleccionesPublicacion' },
     { name: 'description', group: 'coleccionesPublicacion' },
@@ -94,6 +103,43 @@ assert.match(imageAltField.description, /Camiseta Argentina titular 2026, frente
 assert.match(product.fields.find((field) => field.name === 'league').description, /Opcional/);
 assert.match(product.fields.find((field) => field.name === 'isFeatured').description, /No significa que sea el producto más nuevo/);
 assert.match(editorialTagsField.description, /Selecciones \+ Retro/);
+const saleModeValidations = [];
+saleModeField.validation({
+  custom(validation) {
+    saleModeValidations.push(validation);
+    return this;
+  }
+});
+const validateSaleMode = (saleMode, category) =>
+  saleModeValidations
+    .map((validation) => validation(saleMode, { document: { category } }))
+    .find((result) => result !== true) ?? true;
+
+assert.equal(validateSaleMode(undefined, 'shirt'), true, 'Legacy shirts default to stock.');
+assert.equal(validateSaleMode('stock', 'shirt'), true);
+assert.equal(validateSaleMode('onRequest', 'shirt'), true);
+assert.equal(validateSaleMode('onRequest', 'jacket'), true);
+assert.equal(validateSaleMode('onRequest', 'shorts'), true);
+assert.equal(validateSaleMode('onRequest', 'set'), true);
+assert.match(validateSaleMode('invalid', 'shirt'), /En stock o A pedido/);
+
+const variantValidations = [];
+variantsField.validation({
+  custom(validation) {
+    variantValidations.push(validation);
+    return this;
+  }
+});
+const validateVariants = (variants, category, saleMode) =>
+  variantValidations
+    .map((validation) => validation(variants, { document: { category, saleMode } }))
+    .find((result) => result !== true) ?? true;
+
+assert.match(validateVariants([], 'shirt', 'stock'), /al menos un talle/);
+assert.match(validateVariants(undefined, 'jacket', undefined), /al menos un talle/);
+assert.equal(validateVariants([], 'shirt', 'onRequest'), true);
+assert.equal(validateVariants([], 'jacket', 'onRequest'), true);
+assert.match(validateVariants([{ size: 'M' }, { size: 'M' }], 'shirt', 'stock'), /duplicado/);
 const editorialTagsValidation = [];
 const editorialTagsRule = {
   unique() {
@@ -135,6 +181,14 @@ assert.deepEqual(
     variants: [{ stock: 2 }, { stock: 1 }]
   }),
   { title: 'Camiseta Argentina 2026', subtitle: 'Camiseta · Argentina · 2026 · 3 en stock', media: undefined }
+);
+assert.equal(
+  product.preview.prepare({
+    category: 'shirt',
+    saleMode: 'onRequest',
+    variants: []
+  }).subtitle,
+  'Camiseta · A pedido'
 );
 assert.equal(
   product.preview.prepare({ category: 'jacket', variants: [{ stock: -1 }] }).subtitle,

@@ -14,11 +14,22 @@ const imageUrl = getImageUrl(product.image, 640);
 const imageSrcSet = getImageSrcSet(product.image, [320, 480, 640, 960, 1280]);
 const availability = getProductAvailability(product);
 const availableSizes = availability.sizes.filter((size) => size.available).map((size) => size.size);
-const stockLabel = availability.available ? 'Disponible' : 'Sin stock';
+const stockLabel = {
+  inStock: 'Disponible',
+  onRequest: 'A pedido',
+  outOfStock: 'Sin stock'
+}[availability.status];
 const identity = formatProductMetadata(product.brand, product.team?.name, product.season);
-const sizesPreview = availableSizes.length > 0
-  ? `Talles ${availableSizes.slice(0, 4).join(' / ')}${availableSizes.length > 4 ? ' +' : ''}`
-  : 'Consultar disponibilidad';
+const sizesPreview = availability.status === 'onRequest'
+  ? 'Talle a consultar'
+  : availableSizes.length > 0
+    ? `${availableSizes.length === 1 ? 'Talle' : 'Talles'} ${availableSizes.slice(0, 4).join(' / ')}${availableSizes.length > 4 ? ' +' : ''}`
+    : 'Consultar disponibilidad';
+const badgeClass = [
+  'product-card__badge',
+  availability.status === 'onRequest' && 'product-card__badge--on-request',
+  availability.status === 'outOfStock' && 'product-card__badge--empty'
+].filter(Boolean).join(' ');
 const price = new Intl.NumberFormat('es-AR', {
   style: 'currency',
   currency: 'ARS',
@@ -28,7 +39,7 @@ const price = new Intl.NumberFormat('es-AR', {
 
 <article class="product-card">
   <a class="product-card__media" href={`/producto/${product.slug}`} aria-label={`Ver ${product.title}`}>
-    <span class={availability.available ? 'product-card__badge' : 'product-card__badge product-card__badge--empty'}>
+    <span class={badgeClass}>
       {stockLabel}
     </span>
     {imageUrl ? (

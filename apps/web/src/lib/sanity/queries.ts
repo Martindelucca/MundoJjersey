@@ -4,6 +4,7 @@ const productProjection = `
   "slug": slug.current,
   price,
   category,
+  saleMode,
   editorialTags,
   brand,
   variants[]{size, stock},

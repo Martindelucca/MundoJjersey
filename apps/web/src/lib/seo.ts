@@ -1,4 +1,4 @@
-import type { ProductDetail } from './sanity/types';
+import type { ProductAvailabilityStatus, ProductDetail } from './sanity/types';
 import { isSafeExternalUrl, parseSiteOrigin } from './site-origin.ts';
 
 export type JsonLd = Record<string, unknown> | Array<Record<string, unknown>>;
@@ -64,8 +64,14 @@ export function buildSiteStructuredData(site?: string | URL, instagramUrl?: stri
 
 export function buildProductStructuredData(
   product: ProductDetail,
-  options: { url: string; imageUrl?: string; category?: string; available: boolean }
+  options: { url: string; imageUrl?: string; category?: string; availabilityStatus: ProductAvailabilityStatus }
 ): JsonLd {
+  const schemaAvailability = {
+    inStock: 'InStock',
+    onRequest: 'BackOrder',
+    outOfStock: 'OutOfStock'
+  }[options.availabilityStatus];
+
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -77,7 +83,7 @@ export function buildProductStructuredData(
       url: options.url,
       priceCurrency: 'ARS',
       price: product.price,
-      availability: `https://schema.org/${options.available ? 'InStock' : 'OutOfStock'}`
+      availability: `https://schema.org/${schemaAvailability}`
     }
   };
 

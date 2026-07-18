@@ -38,7 +38,9 @@ const price = product
       maximumFractionDigits: 0
     }).format(product.price)
   : '';
-const availability = product ? getProductAvailability(product) : { available: false, sizes: [], totalStock: null };
+const availability = product
+  ? getProductAvailability(product)
+  : { status: 'outOfStock' as const, available: false, sizes: [], totalStock: null };
 const categoryLabel = product ? getProductCategoryLabel(product.category) : 'Producto';
 const productMetadata = product
   ? formatProductMetadata(product.brand, product.team?.name, product.season)
@@ -56,7 +58,8 @@ const whatsappUrl = product
       productTitle: product.title,
       productCategory: categoryLabel,
       productUrl,
-      messageTemplate: settings?.whatsappMessage
+      messageTemplate: settings?.whatsappMessage,
+      availabilityStatus: availability.status
     })
   : '';
 const relatedProducts = product
@@ -68,7 +71,7 @@ const productStructuredData = product && canonicalProductUrl
       url: canonicalProductUrl,
       imageUrl: imageUrl || undefined,
       category: categoryLabel,
-      available: availability.available
+      availabilityStatus: availability.status
     })
   : undefined;
 ---
@@ -105,28 +108,44 @@ const productStructuredData = product && canonicalProductUrl
 
             <div class="product-detail__commerce" aria-label="Precio y disponibilidad">
               <p class="product-detail__price">{price}</p>
-              <p class={availability.available ? 'stock-label' : 'stock-label stock-label--empty'}>
-                {availability.available
-                  ? `${availability.totalStock} en tanda`
-                  : 'Sin stock'}
+              <p class:list={[
+                'stock-label',
+                availability.status === 'onRequest' && 'stock-label--on-request',
+                availability.status === 'outOfStock' && 'stock-label--empty'
+              ]}>
+                {availability.status === 'onRequest'
+                  ? 'A pedido'
+                  : availability.status === 'inStock'
+                    ? `${availability.totalStock} en tanda`
+                    : 'Sin stock'}
               </p>
             </div>
 
-            <div class="product-detail__sizes" aria-label="Talles y stock">
-              <p>Talles y stock</p>
-              <ul>
-                {availability.sizes.map((size) => (
-                  <li class={size.available ? '' : 'is-empty'}>
-                    <span>{size.size}</span>
-                    <small>{size.available ? 'disp.' : 'sin stock'}</small>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {availability.status === 'onRequest' ? (
+              <p class="product-detail__on-request">
+                Talle, demora y forma de reserva se confirman por WhatsApp.
+              </p>
+            ) : (
+              <div class="product-detail__sizes" aria-label="Talles y stock">
+                <p>Talles y stock</p>
+                <ul>
+                  {availability.sizes.map((size) => (
+                    <li class={size.available ? '' : 'is-empty'}>
+                      <span>{size.size}</span>
+                      <small>{size.available ? 'disp.' : 'sin stock'}</small>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div class="product-detail__cta">
-              <WhatsAppButton href={whatsappUrl} available={availability.available} productLabel={product.title} />
-              <p class="product-detail__trust">El mensaje incluye este producto. Te respondemos por disponibilidad, talle y envío.</p>
+              <WhatsAppButton href={whatsappUrl} status={availability.status} productLabel={product.title} />
+              <p class="product-detail__trust">
+                {availability.status === 'onRequest'
+                  ? 'El mensaje incluye este producto. Te respondemos por talle, demora y forma de reserva.'
+                  : 'El mensaje incluye este producto. Te respondemos por disponibilidad, talle y envío.'}
+              </p>
             </div>
 
             {product.description && <p class="product-detail__description">{product.description}</p>}

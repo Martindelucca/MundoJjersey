@@ -1,9 +1,12 @@
+import type { ProductAvailabilityStatus } from './sanity/types';
+
 interface BuildWhatsAppUrlInput {
   phoneNumber: string;
   productTitle: string;
   productCategory?: string;
   productUrl?: string;
   messageTemplate?: string;
+  availabilityStatus: ProductAvailabilityStatus;
 }
 
 interface BuildGeneralWhatsAppUrlInput {
@@ -33,7 +36,8 @@ export function buildWhatsAppUrl({
   productTitle,
   productCategory = 'camiseta',
   productUrl,
-  messageTemplate
+  messageTemplate,
+  availabilityStatus
 }: BuildWhatsAppUrlInput): string {
   const normalizedPhoneNumber = normalizeWhatsAppNumber(phoneNumber);
 
@@ -42,7 +46,9 @@ export function buildWhatsAppUrl({
   }
 
   const fallbackTemplate = 'Hola, quiero consultar por {productTitle}. Categoría: {category}. ¿Sigue disponible para separar?';
-  const template = messageTemplate || fallbackTemplate;
+  const template = availabilityStatus === 'onRequest'
+    ? 'Hola, quiero pedir {productTitle}. Quiero consultar talle, demora y forma de reserva'
+    : messageTemplate || fallbackTemplate;
   const message = template
     .replaceAll('{productTitle}', productTitle)
     .replaceAll('{category}', productCategory)

@@ -1,0 +1,29 @@
+---
+import ProductCard from './ProductCard.astro';
+import type { ProductSummary } from '../lib/sanity/types';
+
+interface Props {
+  inStock: ProductSummary[];
+  onRequest: ProductSummary[];
+}
+
+const { inStock, onRequest } = Astro.props;
+---
+
+{inStock.length > 0 && (
+  <section class="catalog-product-group" aria-labelledby="in-stock-products-title">
+    <h2 id="in-stock-products-title">En stock</h2>
+    <div class="product-grid">
+      {inStock.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
+)}
+
+{onRequest.length > 0 && (
+  <section class="catalog-product-group" aria-labelledby="on-request-products-title">
+    <h2 id="on-request-products-title">A pedido</h2>
+    <div class="product-grid">
+      {onRequest.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
+)}
