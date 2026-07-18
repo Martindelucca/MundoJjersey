@@ -121,11 +121,7 @@ const productStructuredData = product && canonicalProductUrl
               </p>
             </div>
 
-            {availability.status === 'onRequest' ? (
-              <p class="product-detail__on-request">
-                Talle, demora y forma de reserva se confirman por WhatsApp.
-              </p>
-            ) : (
+            {availability.status !== 'onRequest' && (
               <div class="product-detail__sizes" aria-label="Talles y stock">
                 <p>Talles y stock</p>
                 <ul>
