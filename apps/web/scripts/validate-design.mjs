@@ -229,6 +229,7 @@ assert.doesNotMatch(productCard, /product-card__ticket|product-card__season|Equi
 assert.doesNotMatch(productCard, /Nuevo ingreso/);
 assert.match(productCard, /headingLevel\?: 'h2' \| 'h3'/);
 assert.match(productCard, /headingLevel === 'h3'/);
+assert.match(productCard, /availableSizes\.length === 1 \? 'Talle' : 'Talles'/);
 const productHeadingRule = css.match(/\.product-card__body :is\(h2, h3\)\s*\{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.match(productHeadingRule, /font-size:\s*clamp\(1\.3rem, 2\.4vw, 1\.65rem\)/);
 assert.match(productHeadingRule, /line-height:\s*1/);
@@ -419,6 +420,21 @@ assert.match(css, /\.product-gallery__thumbnail::after\s*{(?<body>[^}]*)content:
 assert.match(css, /\.product-gallery__thumbnail::after\s*{(?<body>[^}]*)pointer-events:\s*none/);
 assert.match(css, /\.product-gallery__thumbnail\.is-loading img\s*{(?<body>[^}]*)opacity:\s*0/);
 assert.match(css, /\.product-card__media img\s*{(?<body>[^}]*)object-fit:\s*cover/);
+const mobileProductMediaRule = mobileHeroStyles.match(/\.product-card__media\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const mobileProductImageRule = mobileHeroStyles.match(/\.product-card__media img\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const mobileProductHeadingRule = mobileHeroStyles.match(/\.product-card__body :is\(h2, h3\)\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const mobileProductIdentityAndSizesRule = mobileHeroStyles.match(/\.product-card__identity,\s*\.product-card__sizes\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+const mobileProductPriceRule = mobileHeroStyles.match(/\.product-card__price\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
+assert.match(css, /\.product-card__media\s*\{[^}]*position:\s*relative;[^}]*display:\s*grid;[^}]*overflow:\s*hidden/);
+assert.match(mobileProductMediaRule, /aspect-ratio:\s*4 \/ 5/);
+assert.match(mobileProductImageRule, /position:\s*absolute/);
+assert.match(mobileProductImageRule, /inset:\s*0/);
+assert.match(mobileProductImageRule, /width:\s*100%/);
+assert.match(mobileProductImageRule, /height:\s*100%/);
+assert.match(mobileProductImageRule, /object-fit:\s*contain/);
+assert.match(mobileProductHeadingRule, /font-size:\s*1\.12rem/);
+assert.match(mobileProductIdentityAndSizesRule, /font-size:\s*0\.72rem/);
+assert.match(mobileProductPriceRule, /font-size:\s*1rem/);
 
 const productCardHover = css.match(/\.product-card:hover\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.match(productCardHover, /transform:\s*translateY\(-2px\)/);

@@ -11,6 +11,8 @@ export interface SanityImage {
 
 export type ProductCategory = 'shirt' | 'jacket' | 'shorts' | 'set';
 export type EditorialTag = 'club' | 'selection' | 'retro';
+export type SaleMode = 'stock' | 'onRequest';
+export type ProductAvailabilityStatus = 'inStock' | 'onRequest' | 'outOfStock';
 
 export interface ProductVariant {
   size: string;
@@ -37,6 +39,7 @@ export interface ProductSummary {
   slug: string;
   price: number;
   category: ProductCategory;
+  saleMode?: SaleMode;
   editorialTags?: EditorialTag[];
   brand: string;
   variants?: ProductVariant[];

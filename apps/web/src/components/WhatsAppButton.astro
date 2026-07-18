@@ -1,17 +1,25 @@
 ---
+import type { ProductAvailabilityStatus } from '../lib/sanity/types';
+
 interface Props {
   href: string;
-  available: boolean;
+  status: ProductAvailabilityStatus;
   productLabel?: string;
 }
 
-const { href, available, productLabel = 'este producto' } = Astro.props;
-const label = available ? `Consultar ${productLabel} por WhatsApp` : `Consultar disponibilidad de ${productLabel} por WhatsApp`;
+const { href, status, productLabel = 'este producto' } = Astro.props;
+const isOnRequest = status === 'onRequest';
+const available = status === 'inStock';
+const label = isOnRequest
+  ? `Pedir ${productLabel} por WhatsApp`
+  : available
+    ? `Consultar ${productLabel} por WhatsApp`
+    : `Consultar disponibilidad de ${productLabel} por WhatsApp`;
 ---
 
 {href ? (
   <a class="whatsapp-button" href={href} target="_blank" rel="noreferrer" aria-label={label}>
-    <span class="whatsapp-button__label">{available ? 'Consultar por WhatsApp' : 'Consultar disponibilidad'}</span>
+    <span class="whatsapp-button__label">{isOnRequest ? 'Pedir por WhatsApp' : available ? 'Consultar por WhatsApp' : 'Consultar disponibilidad'}</span>
     <span class="whatsapp-button__mark" aria-hidden="true">↗</span>
   </a>
 ) : (

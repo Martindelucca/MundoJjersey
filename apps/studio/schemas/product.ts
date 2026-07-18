@@ -108,10 +108,34 @@ export const product = defineType({
       validation: (Rule) => Rule.required().min(0)
     }),
     defineField({
+      name: 'saleMode',
+      title: 'Modalidad de venta',
+      type: 'string',
+      group: 'precioStock',
+      description: 'Elegí si el producto tiene stock inmediato o se consigue a pedido.',
+      initialValue: 'stock',
+      options: {
+        list: [
+          { title: 'En stock', value: 'stock' },
+          { title: 'A pedido', value: 'onRequest' }
+        ],
+        layout: 'radio'
+      },
+      validation: (Rule) =>
+        Rule.custom((saleMode) => {
+          if (saleMode !== undefined && !['stock', 'onRequest'].includes(saleMode)) {
+            return 'La modalidad de venta debe ser En stock o A pedido.';
+          }
+
+          return true;
+        })
+    }),
+    defineField({
       name: 'variants',
       title: 'Talles y stock',
       type: 'array',
       group: 'precioStock',
+      hidden: ({ document }) => document?.saleMode === 'onRequest',
       description: 'Fuente única de stock por talle para cada producto, incluidos los conjuntos completos.',
       of: [
         {
@@ -150,9 +174,13 @@ export const product = defineType({
         }
       ],
       validation: (Rule) =>
-        Rule.required().min(1).custom((variants) => {
-          if (!Array.isArray(variants)) {
+        Rule.custom((variants, context) => {
+          if (context.document?.saleMode === 'onRequest') {
             return true;
+          }
+
+          if (!Array.isArray(variants) || variants.length === 0) {
+            return 'Agregá al menos un talle con stock.';
           }
 
           const sizes = variants.map((variant) => variant?.size).filter(Boolean);
@@ -212,9 +240,10 @@ export const product = defineType({
       team: 'team.name',
       season: 'season',
       media: 'images.0',
+      saleMode: 'saleMode',
       variants: 'variants'
     },
-    prepare: ({ title, category, team, season, media, variants = [] }) => {
+    prepare: ({ title, category, team, season, media, saleMode, variants = [] }) => {
       const totalStock = Array.isArray(variants)
         ? variants.reduce((total, variant) => total + Math.max(0, variant?.stock || 0), 0)
         : 0;
@@ -227,7 +256,12 @@ export const product = defineType({
 
       return {
         title,
-        subtitle: [categoryTitle, team, season, `${totalStock} en stock`].filter(Boolean).join(' · '),
+        subtitle: [
+          categoryTitle,
+          team,
+          season,
+          saleMode === 'onRequest' ? 'A pedido' : `${totalStock} en stock`
+        ].filter(Boolean).join(' · '),
         media
       };
     }

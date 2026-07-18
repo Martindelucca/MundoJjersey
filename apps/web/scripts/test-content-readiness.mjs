@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
-import { validateContentReadiness } from './check-content-readiness.mjs';
+import {
+  contentReadinessProductsQuery,
+  validateContentReadiness
+} from './check-content-readiness.mjs';
+
+assert.match(contentReadinessProductsQuery, /_type == "product"/);
+assert.match(contentReadinessProductsQuery, /!\(_id in path\("drafts\.\*\*"\)\)/);
 
 const baseProduct = {
   _id: 'shirt-1',
@@ -72,9 +78,41 @@ const cases = [
   },
   {
     name: 'warns when total stock is zero',
-    products: [{ ...validProducts[0], variants: [{ size: 'M', stock: 0 }] }, validProducts[1]],
-    warning: 'Camiseta de prueba: total stock is 0, product will appear unavailable.',
+    products: [
+      { ...validProducts[0], variants: [{ size: 'M', stock: 0 }] },
+      validProducts[1],
+      { ...validProducts[0], _id: 'shirt-3', title: 'Club visible', slug: 'club-visible' }
+    ],
+    warning: 'Camiseta de prueba: total stock is 0, product will be hidden from catalogs.',
     noFailures: true
+  },
+  {
+    name: 'accepts an on-request shirt without variants or stock warning',
+    products: [{ ...validProducts[0], saleMode: 'onRequest', variants: [] }, validProducts[1]],
+    noFailures: true,
+    noWarnings: true
+  },
+  {
+    name: 'rejects invalid sale modes',
+    products: [{ ...validProducts[0], saleMode: 'invalid' }, validProducts[1]],
+    failure: 'Camiseta de prueba: invalid saleMode.'
+  },
+  {
+    name: 'accepts on-request mode for non-shirts without variants',
+    products: [
+      ...validProducts,
+      {
+        ...baseProduct,
+        _id: 'jacket-1',
+        title: 'Campera',
+        slug: 'campera',
+        category: 'jacket',
+        saleMode: 'onRequest',
+        variants: []
+      }
+    ],
+    noFailures: true,
+    noWarnings: true
   },
   {
     name: 'requires a club or selection tag for shirts',
@@ -102,6 +140,14 @@ const cases = [
   {
     name: 'requires the club public collection to have products',
     products: [{ ...validProducts[0], editorialTags: ['selection', 'retro'] }, validProducts[1]],
+    failure: 'Public shirt collection club has no products.'
+  },
+  {
+    name: 'requires a public collection to contain a visible product',
+    products: [
+      { ...validProducts[0], variants: [{ size: 'M', stock: 0 }] },
+      validProducts[1]
+    ],
     failure: 'Public shirt collection club has no products.'
   },
   {
@@ -142,12 +188,13 @@ const cases = [
   }
 ];
 
-for (const { name, products, options, failure, warning, noFailures } of cases) {
+for (const { name, products, options, failure, warning, noFailures, noWarnings } of cases) {
   const result = validate(products, options);
 
   if (failure) assert.ok(result.failures.includes(failure), name);
   if (warning) assert.ok(result.warnings.includes(warning), name);
   if (noFailures) assert.deepEqual(result.failures, [], name);
+  if (noWarnings) assert.deepEqual(result.warnings, [], name);
 }
 
 console.log('Content readiness validation validated.');

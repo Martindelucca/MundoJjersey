@@ -1,13 +1,16 @@
 ---
 import CatalogCategoryNavigation from '../components/CatalogCategoryNavigation.astro';
-import ProductCard from '../components/ProductCard.astro';
+import CatalogProductGroups from '../components/CatalogProductGroups.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { fetchPublic } from '../lib/sanity/client';
 import { productsQuery } from '../lib/sanity/queries';
 import type { ProductSummary } from '../lib/sanity/types';
 import { getSiteContact } from '../lib/site-contact';
+import { groupProductsByAvailability } from '../lib/catalog/availability';
 
 const products = await fetchPublic<ProductSummary[]>(productsQuery, []);
+const productGroups = groupProductsByAvailability(products);
+const hasVisibleProducts = productGroups.inStock.length + productGroups.onRequest.length > 0;
 const siteContact = await getSiteContact();
 const contactHref = siteContact.whatsappUrl || '#contacto';
 const contactTarget = siteContact.whatsappUrl ? '_blank' : undefined;
@@ -25,10 +28,8 @@ const contactRel = siteContact.whatsappUrl ? 'noreferrer' : undefined;
       <CatalogCategoryNavigation activeSlug="catalogo" />
     </section>
 
-    {products.length > 0 ? (
-      <section class="product-grid" aria-label="Productos">
-        {products.map((product) => <ProductCard product={product} />)}
-      </section>
+    {hasVisibleProducts ? (
+      <CatalogProductGroups {...productGroups} />
     ) : (
       <section class="empty-state" aria-live="polite">
         <h2>Estamos preparando la próxima selección.</h2>

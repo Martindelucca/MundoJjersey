@@ -1,4 +1,8 @@
-import type { ProductSummary, ProductVariant } from '../sanity/types';
+import type {
+  ProductAvailabilityStatus,
+  ProductSummary,
+  ProductVariant
+} from '../sanity/types';
 
 export interface SizeAvailability {
   size: string;
@@ -6,6 +10,7 @@ export interface SizeAvailability {
 }
 
 export interface ProductAvailability {
+  status: ProductAvailabilityStatus;
   available: boolean;
   sizes: SizeAvailability[];
   totalStock: number | null;
@@ -25,9 +30,27 @@ export function getAvailableSizes(variants: ProductVariant[] = []): string[] {
 
 export function getProductAvailability(product: ProductSummary): ProductAvailability {
   const variants = product.variants || [];
+  const totalStock = getTotalStock(variants);
+  const status: ProductAvailabilityStatus = product.saleMode === 'onRequest'
+    ? 'onRequest'
+    : totalStock > 0
+      ? 'inStock'
+      : 'outOfStock';
+
   return {
-    available: isAvailable(variants),
+    status,
+    available: status === 'inStock',
     sizes: variants.map((variant) => ({ size: variant.size, available: variant.stock > 0 })),
-    totalStock: getTotalStock(variants)
+    totalStock
+  };
+}
+
+export function groupProductsByAvailability(products: ProductSummary[]): {
+  inStock: ProductSummary[];
+  onRequest: ProductSummary[];
+} {
+  return {
+    inStock: products.filter((product) => getProductAvailability(product).status === 'inStock'),
+    onRequest: products.filter((product) => getProductAvailability(product).status === 'onRequest')
   };
 }

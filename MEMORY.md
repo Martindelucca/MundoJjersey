@@ -1,5 +1,13 @@
 # MEMORY.md
 
+## Productos a pedido — 2026-07-18
+
+- Todos los productos admiten `saleMode: stock | onRequest`; los documentos legacy sin campo se interpretan como `stock`. La modalidad `onRequest` no usa variantes.
+- La disponibilidad pública centralizada es `inStock | onRequest | outOfStock`. `available` sigue significando stock físico inmediato.
+- Los catálogos agrupan productos visibles en “En stock” y luego “A pedido”, conservando el orden de Sanity; los agotados se ocultan de grillas y relacionados, pero mantienen su ficha directa.
+- Home muestra solo stock inmediato. Cards, ficha, WhatsApp y Product JSON-LD distinguen pedidos; Schema.org usa `BackOrder`.
+- Readiness permite productos a pedido sin variantes y exige al menos un producto visible por colección pública.
+
 Contexto persistente para continuar el proyecto Mundo JJersey entre sesiones.
 
 ## Proyecto
@@ -60,7 +68,7 @@ El flujo principal es:
 - Todos los catálogos, incluido `/catalogo`, usan antes del grid una cabecera compacta con título, descripción breve y navegación; no hay CTA/facts/stamp genéricos antes del grid. Los estados vacíos conservan CTA de WhatsApp.
 - En mobile (`<=780px`) cada nivel de filtros es una sola fila horizontal desplazable al tacto con links de 44px; no se ocultan categorías ni se usa JS.
 - En Home, `garment-routes` pasa a `<=780px` a una franja de navegación ligera con divisor, etiqueta corta y una única fila interna desplazable; los links no envuelven y miden al menos 44px. Desktop conserva su tarjeta actual.
-- Las tarjetas de producto son compactas y compartidas por catálogo y Home de 360–780px: dos columnas, imagen 4:5 y ticket redundante oculto; una línea compacta conserva equipo · temporada, junto con título/enlaces, precio, stock y vista previa de talles. El body mobile usa padding asimétrico `0.9rem 0.7rem 0.7rem` para separar esa primera línea de la imagen, también en relacionados; entre 320–359px el grid es de una columna.
+- Las tarjetas de producto son compactas y compartidas por catálogo y Home de 360–780px: dos columnas, marco de imagen 4:5 con overflow recortado y foto completa mediante `contain`, y ticket redundante oculto; una línea compacta conserva equipo · temporada, junto con título/enlaces, precio, stock y vista previa de talle(s). El título tiene mayor jerarquía que los detalles; el body mobile usa padding asimétrico `0.9rem 0.7rem 0.7rem` para separar esa primera línea de la imagen, también en relacionados; entre 320–359px el grid es de una columna.
 - Con el inventario actual de 6 productos publicados no se pagina. Revisar paginación real server/static al superar 16 productos publicados; no implementar scroll infinito, productos ocultos pre-renderizados ni “load more” en cliente.
 - Phase 3: `ProductCard` usa `h2` por defecto en catálogo; Home arrivals y relacionados de ficha pasan explícitamente `headingLevel="h3"`, con estilos visuales idénticos para ambos niveles, incluso en mobile compacto.
 - Phase 3: relacionados excluyen el producto actual y se ordenan determinísticamente con los datos ya proyectados: mismo `team.slug` (100), misma categoría (10), cualquier `editorialTag` compartido (1); empates y candidatos sin coincidencia conservan el orden de `productsQuery` (`isFeatured desc, _createdAt desc`) y se devuelven como máximo tres.

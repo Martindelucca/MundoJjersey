@@ -1,5 +1,13 @@
 # Editorial routing plan
 
+## Productos a pedido — 2026-07-18, implementado
+
+- Sanity incorpora `saleMode` para todos los productos, con `stock` inicial y compatibilidad legacy; oculta talles/stock para `onRequest` y muestra “A pedido” en el preview.
+- Web centraliza `inStock`, `onRequest` y `outOfStock`. Los catálogos agrupan los dos estados visibles en ese orden; Home conserva solo stock y relacionados excluyen agotados.
+- Card y ficha muestran copy, talle y CTA específicos. WhatsApp usa el mensaje de pedido acordado con enlace; Product JSON-LD mapea a `InStock`, `BackOrder` y `OutOfStock`.
+- Readiness valida modalidad, variantes condicionales y colecciones con producto visible.
+- Validación local aprobada: Studio schema test, web tests de WhatsApp/catálogo/contenido/diseño/SEO, Astro check y build web.
+
 ## Goal
 
 Add explicit editorial routes for shirt collections without changing the existing product taxonomy:
@@ -244,3 +252,9 @@ Browser tooling remains unavailable. `docs/release-qa.md` defines the required p
 - Home usa `HERODESKTOP.svg` como única fuente visual en todos los breakpoints. Desktop conserva el hero full-bleed y su overlay; mobile cambia solo el layout a texto sobre navy seguido de la misma imagen en 16:9, sin altura mínima de viewport.
 - Los contratos de diseño cubren una única fuente de hero, media móvil 16:9, altura móvil natural y el tratamiento desktop full-bleed con overlay; no incluyen afirmaciones visuales frágiles.
 - La revisión visual en runtime sigue pendiente.
+
+## Product cards mobile — 2026-07-18
+
+- En `<=780px`, el marco 4:5 recorta cualquier desborde y posiciona la imagen fuera del cálculo del track con `object-fit: contain`; desktop conserva `cover`.
+- El título mobile gana jerarquía y los textos de identidad, precio y talles se reducen levemente, sin ocultar información.
+- La vista previa usa “Talle” cuando hay exactamente uno disponible y “Talles” cuando hay más de uno.

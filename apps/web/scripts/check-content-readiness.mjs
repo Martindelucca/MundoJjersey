@@ -3,8 +3,22 @@ import { fileURLToPath } from 'node:url';
 import { getSanityEnv, loadLocalEnv } from './env.mjs';
 
 const productCategories = new Set(['shirt', 'jacket', 'shorts', 'set']);
+const saleModes = new Set(['stock', 'onRequest']);
 export const editorialTags = new Set(['club', 'selection', 'retro']);
 export const publicShirtCollections = ['club', 'selection', 'retro'];
+export const contentReadinessProductsQuery = `*[
+  _type == "product"
+  && !(_id in path("drafts.**"))
+] {
+  _id, title, "slug": slug.current, price, category, saleMode, brand, season, editorialTags,
+  images[]{alt, asset}, variants[]{size, stock}, team->{_id, name}
+}`;
+
+function isPubliclyVisible(product) {
+  if (product.saleMode === 'onRequest') return true;
+  const variants = Array.isArray(product.variants) ? product.variants : [];
+  return variants.reduce((total, variant) => total + Math.max(0, variant?.stock || 0), 0) > 0;
+}
 
 export function validateContentReadiness({ products, siteSettings, fallbackWhatsappNumber }) {
   const failures = [];
@@ -27,18 +41,21 @@ export function validateContentReadiness({ products, siteSettings, fallbackWhats
     const duplicatedSize = sizes.find((size, index) => sizes.indexOf(size) !== index);
     const duplicatedTag = Array.isArray(tags) && tags.find((tag, index) => tags.indexOf(tag) !== index);
     const totalStock = variants.reduce((total, variant) => total + Math.max(0, variant?.stock || 0), 0);
+    const saleMode = product.saleMode ?? 'stock';
+    const isOnRequest = saleMode === 'onRequest';
 
     if (!product.title) failures.push(`${label}: missing title.`);
     if (!product.slug) failures.push(`${label}: missing slug.`);
     if (typeof product.price !== 'number') failures.push(`${label}: missing numeric price.`);
     if (!productCategories.has(product.category)) failures.push(`${label}: invalid category.`);
+    if (!saleModes.has(saleMode)) failures.push(`${label}: invalid saleMode.`);
     if (!product.brand) failures.push(`${label}: missing brand.`);
     if (!product.team?.name) failures.push(`${label}: missing team reference.`);
     if (images.length === 0) failures.push(`${label}: missing product image.`);
     if (images.some((image) => !image?.alt)) failures.push(`${label}: every image needs alt text.`);
-    if (variants.length === 0) failures.push(`${label}: missing variants for size and stock.`);
-    if (duplicatedSize) failures.push(`${label}: duplicated size ${duplicatedSize}.`);
-    if (variants.some((variant) => !variant?.size || typeof variant?.stock !== 'number')) {
+    if (!isOnRequest && variants.length === 0) failures.push(`${label}: missing variants for size and stock.`);
+    if (!isOnRequest && duplicatedSize) failures.push(`${label}: duplicated size ${duplicatedSize}.`);
+    if (!isOnRequest && variants.some((variant) => !variant?.size || typeof variant?.stock !== 'number')) {
       failures.push(`${label}: every variant needs size and numeric stock.`);
     }
     if (tags !== undefined && !Array.isArray(tags)) failures.push(`${label}: editorialTags must be an array.`);
@@ -49,12 +66,19 @@ export function validateContentReadiness({ products, siteSettings, fallbackWhats
     if (product.category === 'shirt' && (!Array.isArray(tags) || !tags.some((tag) => tag === 'club' || tag === 'selection'))) {
       failures.push(`${label}: shirts require a club or selection editorial tag.`);
     }
-    if (totalStock === 0) warnings.push(`${label}: total stock is 0, product will appear unavailable.`);
+    if (!isOnRequest && totalStock === 0) {
+      warnings.push(`${label}: total stock is 0, product will be hidden from catalogs.`);
+    }
   }
 
   if (products.length > 0) {
     for (const collection of publicShirtCollections) {
-      if (!products.some((product) => product.category === 'shirt' && Array.isArray(product.editorialTags) && product.editorialTags.includes(collection))) {
+      if (!products.some((product) =>
+        product.category === 'shirt'
+        && Array.isArray(product.editorialTags)
+        && product.editorialTags.includes(collection)
+        && isPubliclyVisible(product)
+      )) {
         failures.push(`Public shirt collection ${collection} has no products.`);
       }
     }
@@ -73,10 +97,7 @@ async function main() {
   }
 
   const client = createClient({ projectId, dataset, apiVersion, useCdn: token ? false : useCdn, token: token || undefined });
-  const products = await client.fetch(`*[_type == "product"] {
-    _id, title, "slug": slug.current, price, category, brand, season, editorialTags,
-    images[]{alt, asset}, variants[]{size, stock}, team->{_id, name}
-  }`);
+  const products = await client.fetch(contentReadinessProductsQuery);
   const siteSettings = await client.fetch('*[_type == "siteSettings"][0]{title, whatsappNumber}');
   const { failures, warnings } = validateContentReadiness({
     products,
