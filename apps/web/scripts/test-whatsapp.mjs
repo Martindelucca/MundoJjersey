@@ -16,7 +16,7 @@ const url = buildWhatsAppUrl({
 
 assert.equal(
   url,
-  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20consultar%20por%20Camiseta%20Boca%20Juniors%201998.%20Categor%C3%ADa%3A%20Camiseta.%20%C2%BFSigue%20disponible%20para%20separar%3F%0Ahttps%3A%2F%2Fmundojjersey.com%2Fproducto%2Fboca-1998'
+  'https://wa.me/5491112345678?text=Hola%2C%20quiero%20reservar%20Camiseta%20Boca%20Juniors%201998.%20Quiero%20coordinar%20talle%20y%20env%C3%ADo.%0Ahttps%3A%2F%2Fmundojjersey.com%2Fproducto%2Fboca-1998'
 );
 
 assert.equal(
@@ -76,9 +76,10 @@ const whatsappButton = await readFile(resolve(import.meta.dirname, '../src/compo
 assert.match(whatsappButton, /productLabel\?: string/);
 assert.match(whatsappButton, /status: ProductAvailabilityStatus/);
 assert.match(whatsappButton, /Pedir \$\{productLabel\} por WhatsApp/);
-assert.match(whatsappButton, /Consultar \$\{productLabel\} por WhatsApp/);
+assert.match(whatsappButton, /Reservar \$\{productLabel\} por WhatsApp/);
 assert.match(whatsappButton, /Consultar disponibilidad de \$\{productLabel\} por WhatsApp/);
 assert.match(whatsappButton, /isOnRequest \? 'Pedir por WhatsApp'/);
+assert.match(whatsappButton, /available \? 'Reservar por WhatsApp' : 'Consultar disponibilidad'/);
 assert.match(whatsappButton, /class="whatsapp-button__mark" aria-hidden="true">↗/);
 assert.match(whatsappButton, /\{href \? \(/);
 assert.match(whatsappButton, /<p class="contact-unavailable">WhatsApp no está configurado todavía\.<\/p>/);

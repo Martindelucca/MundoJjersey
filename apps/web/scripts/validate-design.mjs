@@ -247,7 +247,7 @@ assert.match(productGallery, /event\.key === ' '/);
 
 assert.match(whatsappButton, /rel="noreferrer"/);
 assert.match(whatsappButton, /aria-label/);
-assert.match(whatsappButton, /available \? 'Consultar por WhatsApp' : 'Consultar disponibilidad'/);
+assert.match(whatsappButton, /available \? 'Reservar por WhatsApp' : 'Consultar disponibilidad'/);
 assert.match(whatsappButton, /whatsapp-button__mark/);
 assert.match(whatsappButton, /aria-hidden="true">↗/);
 assert.match(whatsappButton, /\{href \? \(/);

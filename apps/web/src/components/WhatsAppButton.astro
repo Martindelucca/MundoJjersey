@@ -13,13 +13,13 @@ const available = status === 'inStock';
 const label = isOnRequest
   ? `Pedir ${productLabel} por WhatsApp`
   : available
-    ? `Consultar ${productLabel} por WhatsApp`
+    ? `Reservar ${productLabel} por WhatsApp`
     : `Consultar disponibilidad de ${productLabel} por WhatsApp`;
 ---
 
 {href ? (
   <a class="whatsapp-button" href={href} target="_blank" rel="noreferrer" aria-label={label}>
-    <span class="whatsapp-button__label">{isOnRequest ? 'Pedir por WhatsApp' : available ? 'Consultar por WhatsApp' : 'Consultar disponibilidad'}</span>
+    <span class="whatsapp-button__label">{isOnRequest ? 'Pedir por WhatsApp' : available ? 'Reservar por WhatsApp' : 'Consultar disponibilidad'}</span>
     <span class="whatsapp-button__mark" aria-hidden="true">↗</span>
   </a>
 ) : (
