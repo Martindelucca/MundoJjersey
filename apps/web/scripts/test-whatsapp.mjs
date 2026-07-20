@@ -11,6 +11,7 @@ const url = buildWhatsAppUrl({
   productTitle: 'Camiseta Boca Juniors 1998',
   productCategory: 'Camiseta',
   productUrl: 'https://mundojjersey.com/producto/boca-1998',
+  messageTemplate: 'Hola, quiero consultar por {productTitle}.',
   availabilityStatus: 'inStock'
 });
 
@@ -35,7 +36,7 @@ const templatedUrl = buildWhatsAppUrl({
   productCategory: 'Campera',
   productUrl: 'https://mundojjersey.com/producto/campera-argentina-2022',
   messageTemplate: 'Hola, me interesa esta {category}: {productTitle}. Link: {productUrl}',
-  availabilityStatus: 'inStock'
+  availabilityStatus: 'outOfStock'
 });
 
 assert.equal(
