@@ -45,7 +45,9 @@ export function buildWhatsAppUrl({
     return '';
   }
 
-  const fallbackTemplate = 'Hola, quiero consultar por {productTitle}. Categoría: {category}. ¿Sigue disponible para separar?';
+  const fallbackTemplate = availabilityStatus === 'inStock'
+    ? 'Hola, quiero reservar {productTitle}. Quiero coordinar talle y envío.'
+    : 'Hola, quiero consultar por {productTitle}. Categoría: {category}. ¿Sigue disponible para separar?';
   const template = availabilityStatus === 'onRequest'
     ? 'Hola, quiero pedir {productTitle}. Quiero consultar talle, demora y forma de reserva'
     : messageTemplate || fallbackTemplate;

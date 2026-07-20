@@ -140,7 +140,9 @@ const productStructuredData = product && canonicalProductUrl
               <p class="product-detail__trust">
                 {availability.status === 'onRequest'
                   ? 'El mensaje incluye este producto. Te respondemos por talle, demora y forma de reserva.'
-                  : 'El mensaje incluye este producto. Te respondemos por disponibilidad, talle y envío.'}
+                  : availability.status === 'inStock'
+                    ? 'El mensaje incluye este producto. Coordinamos talle, reserva y envío.'
+                    : 'El mensaje incluye este producto. Te respondemos por disponibilidad, talle y envío.'}
               </p>
             </div>
 
