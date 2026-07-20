@@ -50,7 +50,9 @@ export function buildWhatsAppUrl({
     : 'Hola, quiero consultar por {productTitle}. Categoría: {category}. ¿Sigue disponible para separar?';
   const template = availabilityStatus === 'onRequest'
     ? 'Hola, quiero pedir {productTitle}. Quiero consultar talle, demora y forma de reserva'
-    : messageTemplate || fallbackTemplate;
+    : availabilityStatus === 'inStock'
+      ? fallbackTemplate
+      : messageTemplate || fallbackTemplate;
   const message = template
     .replaceAll('{productTitle}', productTitle)
     .replaceAll('{category}', productCategory)
