@@ -441,6 +441,15 @@ const productCardHover = css.match(/\.product-card:hover\s*{(?<body>[^}]*)}/)?.g
 assert.match(productCardHover, /transform:\s*translateY\(-2px\)/);
 assert.doesNotMatch(productCardHover, /background|border-color|color\s*:|box-shadow/);
 
+assert.match(
+  css,
+  /@media \(min-width: 781px\)\s*{\s*\.catalog-product-group \.product-grid\s*{\s*grid-template-columns:\s*repeat\(auto-fit, minmax\(250px, 260px\)\);\s*justify-content:\s*start;/
+);
+assert.match(
+  css,
+  /@media \(min-width: 781px\)\s*{\s*\.product-grid--home\s*{\s*grid-template-columns:\s*repeat\(auto-fit, minmax\(230px, 260px\)\);\s*justify-content:\s*start;/
+);
+
 const catalogChipRule = css.match(/\.catalog-chips (?:span|li)\s*{(?<body>[^}]*)}/)?.groups?.body ?? '';
 assert.doesNotMatch(catalogChipRule, /cursor:\s*pointer/);
 assert.match(catalogChipRule, /transition:\s*transform 140ms var\(--ease-out\)/);

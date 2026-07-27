@@ -1162,6 +1162,13 @@ h1,
   gap: clamp(1rem, 2.5vw, 1.6rem);
 }
 
+@media (min-width: 781px) {
+  .catalog-product-group .product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 260px));
+    justify-content: start;
+  }
+}
+
 .catalog-product-group {
   display: grid;
   gap: 1rem;
