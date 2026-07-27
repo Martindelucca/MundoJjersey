@@ -120,6 +120,11 @@ const cases = [
     failure: 'Camiseta de prueba: shirts require a club or selection editorial tag.'
   },
   {
+    name: 'requires a club or selection tag when shirt editorial tags are null',
+    products: [{ ...validProducts[0], editorialTags: null }, validProducts[1]],
+    failure: 'Camiseta de prueba: shirts require a club or selection editorial tag.'
+  },
+  {
     name: 'rejects duplicated editorial tags',
     products: [{ ...validProducts[0], editorialTags: ['club', 'club'] }, validProducts[1]],
     failure: 'Camiseta de prueba: duplicated editorial tag club.'
@@ -136,6 +141,14 @@ const cases = [
       { ...baseProduct, _id: 'jacket-1', title: 'Campera', slug: 'campera', category: 'jacket', editorialTags: 'club' }
     ],
     failure: 'Campera: editorialTags must be an array.'
+  },
+  {
+    name: 'accepts null editorial tags for non-shirts',
+    products: [
+      ...validProducts,
+      { ...baseProduct, _id: 'jacket-1', title: 'Campera', slug: 'campera', category: 'jacket', editorialTags: null }
+    ],
+    noFailures: true
   },
   {
     name: 'requires the club public collection to have products',

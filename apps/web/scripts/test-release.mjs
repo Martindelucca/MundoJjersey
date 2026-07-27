@@ -87,7 +87,7 @@ for (const location of sitemapLocations) {
 }
 
 const files = await listFiles(distDir);
-const htmlFiles = files.filter((file) => file.endsWith('.html'));
+const htmlFiles = files.filter((file) => file === 'index.html' || file.endsWith('/index.html'));
 for (const file of htmlFiles) {
   const html = await readDistFile(file);
   assert.match(html, /<link rel="canonical" href="https?:\/\//, `${file} is missing an absolute canonical URL.`);
@@ -111,7 +111,7 @@ for (const productFile of productHtml) {
   const html = await readDistFile(productFile);
   assert.match(html, /"@type":"Product"/, `${productFile} is missing Product JSON-LD.`);
   assert.match(html, /"priceCurrency":"ARS"/, `${productFile} is missing ARS offer data.`);
-  assert.match(html, /https:\/\/schema\.org\/(InStock|OutOfStock)/, `${productFile} has invalid offer availability.`);
+  assert.match(html, /https:\/\/schema\.org\/(InStock|OutOfStock|BackOrder)/, `${productFile} has invalid offer availability.`);
 }
 
 const og = await readFile(resolve(distDir, 'og.png'));

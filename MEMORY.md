@@ -180,6 +180,16 @@ Evitar:
 - `design-taste-frontend`
 - `high-end-visual-design`
 
+## Prelaunch - 2026-07-26
+
+- Hero local migrated to `HERODESKTOP.webp` (2400x1350, 275 KB), with Astro variants 640/960/1440/1920/2400, `sizes="100vw"`, eager loading, and high priority.
+- Local `PUBLIC_SITE_URL` now uses `https://mundojjersey.com`; release QA only visits route HTML and accepts `BackOrder` Product JSON-LD availability.
+- Sanity production confirmed `editorialTags: null` for the five non-shirt targets, so readiness now accepts null/absent optional tags while still requiring them for shirts. River's first image alt was corrected through the authenticated Sanity CLI; its existing slug remains unchanged.
+- Vercel Production has `PUBLIC_SITE_URL=https://mundojjersey.com` and the final build is deployed on the custom domain. Live QA found 51 sitemap URLs, 42 product pages, no old-host references, and no missing product routes.
+- Final Lighthouse after making Google Fonts non-blocking: mobile 86, LCP 3.4 s, 736 KiB; desktop 97, LCP 1.2 s, 704 KiB; CLS and TBT are zero. The transfer target passed, but mobile LCP remains above the aspirational 2.5 s target.
+- Google Rich Results Test detected valid Product snippet and merchant listing items. Meta Sharing Debugger cache refresh remains blocked by Facebook login.
+- Mobile product-card images now paint their `object-fit: contain` canvas white at `<=780px`, eliminating navy bands around images without changing desktop crop behavior; deployed and visually verified on production.
+
 ## Phase 5 — SEO, performance and release QA
 
 - `/sitemap.xml` y `/robots.txt` son endpoints estáticos sin dependencia de sitemap; toman el origen normalizado de `PUBLIC_SITE_URL`/Astro `site`, con fallback local solo si falta configuración. Si Sanity no está configurado o falla, sitemap mantiene rutas públicas y omite productos.

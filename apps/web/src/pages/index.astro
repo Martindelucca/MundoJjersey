@@ -4,7 +4,7 @@ import FAQBlock from '../components/FAQBlock.astro';
 import ProductCard from '../components/ProductCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import { Image } from 'astro:assets';
-import heroImage from '../../fotos/HERODESKTOP.svg';
+import heroImage from '../../fotos/HERODESKTOP.webp';
 import camperasImage from '../../fotos/camperas.jpg';
 import clubesImage from '../../fotos/clubes2.jpg';
 import aboutImage from '../../fotos/nosotros.JPEG';
@@ -81,7 +81,7 @@ const editorialCategories = [
   <main id="contenido-principal">
     <section class="hero drop-scene" aria-labelledby="home-title">
       <div class="hero__poster" aria-hidden="true">
-        <Image src={heroImage} alt="" loading="eager" decoding="async" fetchpriority="high" />
+        <Image src={heroImage} alt="" widths={[640, 960, 1440, 1920, 2400]} sizes="100vw" loading="eager" decoding="async" fetchpriority="high" />
       </div>
       <div class="site-shell hero__inner drop-scene__inner">
         <div class="drop-scene__copy">

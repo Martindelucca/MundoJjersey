@@ -58,7 +58,7 @@ export function validateContentReadiness({ products, siteSettings, fallbackWhats
     if (!isOnRequest && variants.some((variant) => !variant?.size || typeof variant?.stock !== 'number')) {
       failures.push(`${label}: every variant needs size and numeric stock.`);
     }
-    if (tags !== undefined && !Array.isArray(tags)) failures.push(`${label}: editorialTags must be an array.`);
+    if (tags != null && !Array.isArray(tags)) failures.push(`${label}: editorialTags must be an array.`);
     if (Array.isArray(tags) && tags.some((tag) => !editorialTags.has(tag))) {
       failures.push(`${label}: editorialTags contains an invalid tag.`);
     }

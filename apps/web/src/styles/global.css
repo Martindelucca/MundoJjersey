@@ -2029,6 +2029,7 @@ h1,
     min-width: 0;
     height: 100%;
     min-height: 0;
+    background: var(--color-white);
     object-fit: contain;
   }
 

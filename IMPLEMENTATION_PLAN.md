@@ -1,5 +1,10 @@
 # Editorial routing plan
 
+## Prelaunch - 2026-07-26
+
+- Completed: WebP hero rasterization and responsive image contracts, public site origin update, and release route/availability checks.
+- Sanity read-only query found `editorialTags: null` for all five named products; readiness accepts this absent value for non-shirts but retains string rejection and shirt array requirements. The requested River frontal alt remains pending without a local write token.
+
 ## Productos a pedido — 2026-07-18, implementado
 
 - Sanity incorpora `saleMode` para todos los productos, con `stock` inicial y compatibilidad legacy; oculta talles/stock para `onRequest` y muestra “A pedido” en el preview.
@@ -237,7 +242,7 @@ The Phase 0 live `content:check` was run against Sanity on 2026-07-13 and correc
 
 ### Remaining manual QA
 
-Browser tooling remains unavailable. `docs/release-qa.md` defines the required preview checks at 320/375/390/780/1024/1440px, keyboard, zoom, reduced motion, Lighthouse capture, Rich Results Test, social debuggers, and preview-to-production process. No Lighthouse, Core Web Vital, visual, or social crawler result is claimed until measured in preview.
+Production QA was completed at 320/390/780/1024/1440px for home, catalog, and a representative product page. Lighthouse and Rich Results were measured against the custom domain. Meta Sharing Debugger still requires a Facebook login before its cache can be refreshed.
 
 ### Checks run
 
