@@ -11,3 +11,7 @@ npm-debug.log*
 
 # Generated design critiques
 .impeccable/
+
+# Configuracion local de tooling de agentes
+.codex/
+.opencode/
